@@ -1,0 +1,12 @@
+[내 mac PC mysql]
+1. mysql 접속
+ $ cd /usr/local/mysql/bin
+ $ ./mysql -u root -p
+ 
+ 암호는 607ghtlf
+ 
+
+[www.mysql.com 의 계정 정보]
+ID : dhkim94@gmail.com
+pass : wjstjf
+ 

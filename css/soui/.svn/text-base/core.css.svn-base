@@ -1,0 +1,156 @@
+html, body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	background-color: #ffffff;
+	overflow: hidden;
+	
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}
+
+/* 1. common style */
+/* 마우스 커서가 beam 으로 변해서 drag 가 되지 않게 한다 */
+.soui-none-select {
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+	cursor: default;
+}
+/* 텍스트를 한라인에 출력 하도록 한다. 자동 줄바꿈 하지 않음 */
+.soui-oneline {
+	overflow: hidden;
+	white-space: nowrap;
+	word-break: break-all;
+}
+/* soui 의 component 를 생성하기 위한 임시 저장 장소의 class */
+.soui-buffer {
+	position: absolute;
+	left: -1000px;
+	top: -1000px;
+	width: 100px;
+	height: 100px;
+	display: none;
+}
+
+
+/* 2. SOWSpinner 관련 css 정의 */
+/* spinner widget 에서 spinner 하단이 보이는 반투명 pane */
+.soui-spinner-block-pane {
+	position: relative;
+	margin: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0.5;
+	z-index: 0;
+}
+/* 해바라기 그림이 들어가는 상자 */
+.soui-spinner-load-box {
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	left: 50%;
+	top: 50%;
+	margin-top: -25px;
+	margin-left: -25px;
+	z-index: 1;
+	
+	-moz-transform: scale(1.0);
+	-webkit-transform: scale(1.0);
+	-ms-transform: scale(1.0);
+	-o-transform: scale(1.0);
+	transform: scale(1.0);
+}
+/* 해바라기 이파리 공통 형태 정의 */
+.soui-spinner-load-box div {
+	position: absolute;
+	left: 20px;
+	top: 20px;
+	width: 10px;
+	height: 10px;
+	
+	-moz-border-radius: 20px;
+	-webkit-border-radius: 20px;
+	-ms-border-radius: 20px;
+	-o-border-radius: 20px;
+	border-radius: 20px;
+  
+	-moz-box-shadow: black 0 0 2px;
+	-webkit-box-shadow: black 0 0 2px;
+	-ms-box-shadow: black 0 0 2px;
+	-o-box-shadow: black 0 0 2px;
+	box-shadow: black 0 0 2px;
+}
+/* 해바라기 이파리 각각 형태 정의 */
+.soui-spinner-load-element1 {
+	-moz-transform: rotate(0deg) translate(0, -20px);
+	-webkit-transform: rotate(0deg) translate(0, -20px);
+	-ms-transform: rotate(0deg) translate(0, -20px);
+	-o-transform: rotate(0deg) translate(0, -20px);
+	transform: rotate(0deg) translate(0, -20px);
+	opacity:0.12;
+}
+.soui-spinner-load-element2 {
+	-moz-transform: rotate(45deg) translate(0, -20px);
+	-webkit-transform: rotate(45deg) translate(0, -20px);
+	-ms-transform: rotate(45deg) translate(0, -20px);
+	-o-transform: rotate(45deg) translate(0, -20px);
+	transform: rotate(45deg) translate(0, -20px);
+	opacity:0.25;
+}
+.soui-spinner-load-element3 {
+	-moz-transform: rotate(90deg) translate(0, -20px);
+	-webkit-transform: rotate(90deg) translate(0, -20px);
+	-ms-transform: rotate(90deg) translate(0, -20px);
+	-o-transform: rotate(90deg) translate(0, -20px);
+	transform: rotate(90deg) translate(0, -20px);
+	opacity:0.37;
+}
+.soui-spinner-load-element4 {
+	-moz-transform: rotate(135deg) translate(0, -20px);
+	-webkit-transform: rotate(135deg) translate(0, -20px);
+	-ms-transform: rotate(135deg) translate(0, -20px);
+	-o-transform: rotate(135deg) translate(0, -20px);
+	transform: rotate(135deg) translate(0, -20px);
+	opacity:0.50;
+}
+.soui-spinner-load-element5 {
+	-moz-transform: rotate(180deg) translate(0, -20px);
+	-webkit-transform: rotate(180deg) translate(0, -20px);
+	-ms-transform: rotate(180deg) translate(0, -20px);
+	-o-transform: rotate(180deg) translate(0, -20px);
+	transform: rotate(180deg) translate(0, -20px);
+	opacity:0.62;
+}
+.soui-spinner-load-element6 {
+	-moz-transform: rotate(225deg) translate(0, -20px);
+	-webkit-transform: rotate(225deg) translate(0, -20px);
+	-ms-transform: rotate(225deg) translate(0, -20px);
+	-o-transform: rotate(225deg) translate(0, -20px);
+	transform: rotate(225deg) translate(0, -20px);
+	opacity:0.75;
+}
+.soui-spinner-load-element7 {
+	-moz-transform: rotate(270deg) translate(0, -20px);
+	-webkit-transform: rotate(270deg) translate(0, -20px);
+	-ms-transform: rotate(270deg) translate(0, -20px);
+	-o-transform: rotate(270deg) translate(0, -20px);
+	transform: rotate(270deg) translate(0, -20px);
+	opacity:0.87;
+}
+.soui-spinner-load-element8 {
+	-moz-transform: rotate(315deg) translate(0, -20px);
+	-webkit-transform: rotate(315deg) translate(0, -20px);
+	-ms-transform: rotate(315deg) translate(0, -20px);
+	-o-transform: rotate(315deg) translate(0, -20px);
+	transform: rotate(315deg) translate(0, -20px);
+	opacity:1;
+}

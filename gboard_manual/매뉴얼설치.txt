@@ -1,0 +1,6 @@
+1. database 생성
+ - gboard_db
+ 
+2. table 생성
+ - gbd_sites : site 관리 테이블
+ - gdb_member_group : member group 관리 테이블
