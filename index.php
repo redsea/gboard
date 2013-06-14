@@ -127,6 +127,8 @@ if (defined('ENVIRONMENT'))
 // --------------------------------------------------------------------
 // END OF USER CONFIGURABLE SETTINGS.  DO NOT EDIT BELOW THIS LINE
 // --------------------------------------------------------------------
+// load log4php
+require_once($application_folder."/third_party/log4php/BGLog.php");
 
 /*
  * ---------------------------------------------------------------

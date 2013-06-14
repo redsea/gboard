@@ -41,10 +41,10 @@ class CI_Log {
 
 		$this->_log_path = ($config['log_path'] != '') ? $config['log_path'] : APPPATH.'logs/';
 
-		if ( ! is_dir($this->_log_path) OR ! is_really_writable($this->_log_path))
-		{
-			$this->_enabled = FALSE;
-		}
+		//if ( ! is_dir($this->_log_path) OR ! is_really_writable($this->_log_path))
+		//{
+		//	$this->_enabled = FALSE;
+		//}
 
 		if (is_numeric($config['log_threshold']))
 		{

@@ -8,7 +8,16 @@
  */
 class Member_Group extends CI_Controller {
 	public function index() {
+	
+		$this->load->helper('html');
+		echo meta('Content-type', 'text/html; charset=utf-8');
+	
 		echo "member group index";
+		
+		$this->lang->load('default');
+		$val = $this->lang->line('default_test');
+		
+		echo "<br/>$val";
 	}
 	
 	public function hello() {

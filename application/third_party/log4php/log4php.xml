@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<log4php:configuration xmlns:log4php="http://logging.apache.org/log4php/">
+
+	<!-- appender for default log -->
+	<appender name="myAppender" class="LoggerAppenderFile">
+		<param name="file" value="/home/s1/myLog.log">
+	</appender>
+
+	<!-- appender for web service log -->
+	<!--appender name="webAppender" class="LoggerAppenderDailyFile"-->
+	<appender name="webAppender" class="LoggerAppenderDailyFile">
+
+		<param name="file" value="/home/s1/www/log/myLog.log">
+
+		<!--layout class="LoggerLayoutPattern">
+			<param name="conversionPattern" value="%d{Y-m-d H:i:s.u} : %c : %-5p : %l : %m%n" />
+		</layout>
+		<param name="datePattern" value="Ymd" />
+		<param name="file" value="/home/s1/www/log/sice.%s" /-->
+		<!--param name="maxFileSize" value="10MB" /-->
+		<!--param name="maxBackupIndex" value="3" /-->
+	</appender>
+
+
+	<!-- default log -->
+	<root>
+		<level value="WARN" />
+		<appender_ref ref="myAppender" />
+	</root>
+
+	<!-- log for web service -->
+	<logger name="web">
+        <level value="debug" /> 
+        <appender_ref ref="webAppender" />
+		<!--appender_ref ref="myAppender" /-->
+    </logger>
+
+</log4php:configuration>

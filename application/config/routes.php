@@ -46,6 +46,10 @@ $route['404_override'] = '';
 $route['admin'] = 'admin/admin/index';
 $route['admin/(:any)'] = 'admin/admin/$1';
 
+// route for controllers/member/member.php
+$route['member'] = 'member/member/index';
+$route['member/(:any)'] = 'member/member/$1';
+
 
 // route for controllers/member_group/member_group.php
 $route['mgroup'] = 'member_group/member_group/index';

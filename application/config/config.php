@@ -70,7 +70,7 @@ $config['url_suffix'] = '';
 |
 */
 //$config['language']	= 'english';
-$config['language']	= 'korean';
+$config['language']	= 'ko';
 
 /*
 |--------------------------------------------------------------------------
@@ -181,7 +181,7 @@ $config['directory_trigger']	= 'd'; // experimental not currently in use
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 4;
+$config['log_threshold'] = 0;
 
 /*
 |--------------------------------------------------------------------------
@@ -192,7 +192,7 @@ $config['log_threshold'] = 4;
 | application/logs/ folder. Use a full server path with trailing slash.
 |
 */
-$config['log_path'] = '/Users/dhkim/Sites/log/gboard';
+$config['log_path'] = '/gboard_log';
 
 /*
 |--------------------------------------------------------------------------
