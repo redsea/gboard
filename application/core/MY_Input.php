@@ -1,8 +1,8 @@
 <?php
 /**
- * MY_Input Controller
+ * MY_Input Core override(CI_Input)
  *
- * CI_Input 을 overloading 하였음.
+ * CI_Input 을 override 하였음.
  * 1. request payload 문제로 기존 post function 에 기능이 추가된 post2 function 을 추가.
  *
  * @author	dhkim94@gmail.com
@@ -46,5 +46,21 @@ class MY_Input extends CI_Input {
 		    return $this->_fetch_from_array($this->_request_payload, $index, $xss_clean);
 	    }
     }
+    
+    /**
+	 * CI_Input 의 get_post 에서 post 를 post2 로 변경
+	 *
+	 * @access	public
+	 * @param	string	The index key
+	 * @param	bool	XSS cleaning
+	 * @return	string
+	 */
+	function get_post2($index = '', $xss_clean = FALSE) {
+		if(!isset($_GET[$index])) {
+			return $this->post2($index, $xss_clean);
+		} else {
+			return $this->get($index, $xss_clean);
+		}
+	}
 }
 ?>

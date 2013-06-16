@@ -1,0 +1,2 @@
+1. system/database/DB_driver.php
+ - display_error 함수 변경 : 웹페이지로 내용을 보여주고 그냥 exit 하는 것을 로그만 찍는 것으로 변경

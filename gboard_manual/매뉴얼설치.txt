@@ -1,3 +1,4 @@
+[database]
 1. database 생성
  - gboard_db
  
@@ -13,6 +14,18 @@
  - root 용 member 추가
  - root group 과 root account mapping
 
- 
- 
 * 2번 부터 끝까지 install 시 테이블 작업 할 수 있는 파일은 sql/install.sql 이다. 이거 돌리면 된다.
+
+
+[디렉토리 권한 및 파일 경로]
+1. 로그
+ - CI 기본 로그를 사용하지 않고, log4php 를 사용한다. CI 기본 로그 출력에 무슨 문제가 있음(아마도 디렉토리 권한 인듯 보임. 추후 검토 예정)
+ - application/third_party/log4php/BGLog.php 에서 원하는 경로로 log4php 의 경로를 수정 해 주어야 함.
+ - application/third_party/log4php/log4php.properties 에서 실제 로그 파일이 떨어질 경로를 원하는 경로로 수정해 주어야 함.
+ - log4php 의 로그도 출력이 되지 않으면 대부분 권한 문제 이기 때문에 777 로 주고 테스트 해 보도록 한다.
+ 
+2. 업로드용 파일
+ - 업로드 된 파일의 저장 경로는 httpd 서비스 디렉토리에서 files/attach 디렉토리 임.
+   가령 httpd 서비스 디렉토리가 /User/dhkim/Sites/gboard 라면 /User/dhkim/Sites/gboard/files/attach 임.
+   이것도 디렉토리 권한 문제로 파일 업로드가 되지 않을 수 있으니, 일단 attach 디렉토리를 777 로 주고 테스트 해 보도록 한다.
+   물론 attach 까지 non-member 도 접근 가능 하도록  모두 x 권한을 다 주도록 한다.

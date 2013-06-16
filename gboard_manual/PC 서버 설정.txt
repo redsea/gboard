@@ -2,12 +2,8 @@
 1. mysql 접속
  $ cd /usr/local/mysql/bin
  $ ./mysql -u root -p
- 암호는 607ghtlf
+ 암호는 요즘 들어 많이 사용하는 것
  
  gboard database 는 gboard_db, 아이디, 패스는 gboard_user / gboard_pass
  
-
-[www.mysql.com 의 계정 정보]
-ID : dhkim94@gmail.com
-pass : wjstjf
  

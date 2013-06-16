@@ -50,6 +50,10 @@ $route['admin/(:any)'] = 'admin/admin/$1';
 $route['member'] = 'member/member/index';
 $route['member/(:any)'] = 'member/member/$1';
 
+// route for controllers/mfile/mfile.php
+$route['file'] = 'mfile/mfile/index';
+$route['file/(:any)'] = 'mfile/mfile/$1';
+
 
 // route for controllers/member_group/member_group.php
 $route['mgroup'] = 'member_group/member_group/index';

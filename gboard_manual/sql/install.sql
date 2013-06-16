@@ -41,15 +41,15 @@ CREATE TABLE  `gbd_member_group` (
 
 # create gboard root group.
 INSERT INTO  `gbd_member_group` (  `site_srl` ,  `title` ,  `is_root` ,  `c_date` ) 
-VALUES ( 1,  "default_root_group",  "Y", NOW( ) +0 ) ;
+VALUES ( 1,  "default_group_root",  "Y", NOW( ) +0 ) ;
 
 # create gboard formal member group
 INSERT INTO  `gbd_member_group` (  `site_srl` ,  `title` ,  `list_order` , `c_date` ) 
-VALUES ( 2,  "default_formal_member_group",  2, NOW( ) +0 ) ;
+VALUES ( 2,  "default_group_formal_member",  2, NOW( ) +0 ) ;
 
 # create gboard ready member group
 INSERT INTO  `gbd_member_group` (  `site_srl` ,  `title` ,  `is_default` , `list_order` ,  `c_date` ) 
-VALUES ( 2,  "default_ready_member_group",  "Y", 3, NOW( ) +0 ) ;
+VALUES ( 2,  "default_group_ready_member",  "Y", 3, NOW( ) +0 ) ;
 
 
 # create gbd_member table. this table manage member
@@ -57,15 +57,12 @@ CREATE TABLE `gbd_member` (
     `member_srl` bigint(11) NOT NULL AUTO_INCREMENT, 
     `user_id` varchar(128) NOT NULL, 
     `email_address` varchar(128) NOT NULL, 
-    `password` varchar(64) NOT NULL, 
+    `password` varchar(128) NOT NULL, 
     `user_name` varchar(64) NOT NULL, 
     `nick_name` varchar(64) NOT NULL, 
     `social_type` varchar(8) DEFAULT NULL,
     `find_account_question` bigint(11) DEFAULT NULL, 
     `find_account_answer` varchar(256) DEFAULT NULL, 
-    `homepage` varchar(256) DEFAULT NULL, 
-    `blog` varchar(256) DEFAULT NULL, 
-    `birthday` char(8) DEFAULT NULL, 
     `allow_mailing` char(2) NOT NULL DEFAULT 'N', 
     `allow_message` char(2) NOT NULL DEFAULT 'N', 
     `image_mark` TEXT NULL , 
@@ -85,7 +82,6 @@ CREATE TABLE `gbd_member` (
 ALTER TABLE  `gbd_member` ADD INDEX (  `user_id` ) ;
 ALTER TABLE  `gbd_member` ADD INDEX (  `email_address` ) ;
 ALTER TABLE  `gbd_member` ADD INDEX (  `nick_name` ) ;
-ALTER TABLE  `gbd_member` ADD INDEX (  `birthday` ) ;
 ALTER TABLE  `gbd_member` ADD INDEX (  `list_order` ) ;
 ALTER TABLE  `gbd_member` ADD INDEX (  `c_date` ) ;
 
@@ -113,6 +109,57 @@ VALUES (
     NOW( ) +0
 );
 
+# create gboard system default member
+INSERT INTO `gbd_member` (
+    `user_id`, 
+    `email_address`, 
+    `password`, 
+    `user_name`, 
+    `nick_name`, 
+    `email_confirm`, 
+    `last_login_date`, 
+    `change_password_date`, 
+    `c_date` 
+) 
+VALUES (
+    "nobody",
+    "dhkim94@gmail.com",
+    "123",
+    "노바디",
+    "노바디",
+    "Y",
+    NOW( ) +0,
+    NOW( ) +0,
+    NOW( ) +0
+);
+
+
+# create gbd_member_extra. this table manage member's extra information
+CREATE TABLE `gbd_member_extra` (
+	`member_srl` bigint(11) NOT NULL,
+    `homepage` varchar(256) DEFAULT NULL, 
+    `blog` varchar(256) DEFAULT NULL, 
+    `birthday` char(8) DEFAULT NULL, 
+    `gender` char(2) DEFAULT NULL, 
+    `nation` varchar(8) DEFAULT NULL, 
+    `nation_phone_number` varchar(8) DEFAULT NULL,
+    `mobile_phone_number` varchar(16) DEFAULT NULL, 
+    `phone_number` varchar(16) DEFAULT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    FOREIGN KEY( `member_srl`) REFERENCES `gbd_member`(`member_srl`) ON DELETE CASCADE, 
+    PRIMARY KEY(`member_srl`) 
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+# create extra information of gboard root acount 
+INSERT INTO `gbd_member_extra` ( 
+    `member_srl`, 
+    `c_date` 
+) VALUES ( 
+    "1", 
+    NOW()+0 
+);
+
 
 # create gbd_member_group_member. this table manage group of member
 CREATE TABLE `gbd_member_group_member` (
@@ -128,7 +175,7 @@ CREATE TABLE `gbd_member_group_member` (
     FOREIGN KEY( `member_srl`) REFERENCES `gbd_member`(`member_srl`) ON DELETE CASCADE, 
     FOREIGN KEY( `site_srl`) REFERENCES `gbd_sites`(`site_srl`) ON DELETE CASCADE, 
     PRIMARY KEY(`group_srl`, `member_srl`)
-);
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
 # mapping between gboard root group and gboard root account
 INSERT INTO `gbd_member_group_member`( 
@@ -144,3 +191,39 @@ VALUES (
     NOW() +0
 );
 
+# mapping between gboard normal group and gboard system default account
+INSERT INTO `gbd_member_group_member`( 
+    `group_srl`, 
+    `member_srl`, 
+    `site_srl`, 
+    `c_date`
+) 
+VALUES (
+    2, 
+    2, 
+    1, 
+    NOW() +0
+);
+
+
+# create gbd_files. this table manage uploaded file
+CREATE TABLE `gbd_files` (
+    `file_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+    `member_srl` bigint(11) NOT NULL, 
+    `download_count` bigint(11) DEFAULT '0', 
+    `file_type` varchar(128) NOT NULL, 
+    `orig_name` varchar(256) DEFAULT NULL, 
+    `local_path` varchar(128) DEFAULT NULL, 
+    `local_url` varchar(256) DEFAULT NULL, 
+    `network_url` varchar(256) DEFAULT NULL, 
+    `width` int(8) DEFAULT '0', 
+    `height` int(8) DEFAULT '0', 
+    `file_size` bigint(11) DEFAULT '0', 
+    `comment` varchar(256) DEFAULT NULL, 
+    `ipaddress` varchar(32) DEFAULT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    INDEX( `member_srl` ), 
+    FOREIGN KEY( `member_srl`) REFERENCES `gbd_member`(`member_srl`) ON DELETE CASCADE, 
+    PRIMARY KEY(`file_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;

@@ -18,6 +18,22 @@ $config['base_url']	= '';
 
 /*
 |--------------------------------------------------------------------------
+| Image Server Site URL
+|--------------------------------------------------------------------------
+|
+| URL to your CodeIgniter root. Typically this will be your image server URL,
+| WITH a trailing slash:
+|
+|	http://example.com/
+|
+| If this is not set then CodeIgniter will guess the protocol, domain and
+| path to your installation.
+|
+*/
+$config['my_image_server_url']	= 'img.gboard.org';
+
+/*
+|--------------------------------------------------------------------------
 | Index File
 |--------------------------------------------------------------------------
 |
@@ -27,6 +43,16 @@ $config['base_url']	= '';
 |
 */
 $config['index_page'] = 'index.php';
+
+/*
+|--------------------------------------------------------------------------
+| System default User ID
+|--------------------------------------------------------------------------
+|
+| 시스템에서 생성하는 기본적인 멤버의 member_srl. 로그인 하지 않고 이미지 업로드 할때 또는 기타 등등 상황에서 사용
+|
+*/
+$config['system_default_member_srl']	= '2';
 
 /*
 |--------------------------------------------------------------------------
@@ -171,17 +197,17 @@ $config['directory_trigger']	= 'd'; // experimental not currently in use
 | You can enable error logging by setting a threshold over zero. The
 | threshold determines what gets logged. Threshold options are:
 |
-|	0 = Disables logging, Error logging TURNED OFF
-|	1 = Error Messages (including PHP errors)
-|	2 = Debug Messages
-|	3 = Informational Messages
+|	0 = Disables logging, Error logging TURNED OFF	=> 모든 로그가 막히는것은 그대로
+|	1 = Error Messages (including PHP errors)		=> debug, info, warn log 가 막히도록 변경
+|	2 = Debug Messages								=> debug, info log 가 막히도록 변경
+|	3 = Informational Messages						=> debug log가 막히도록 변경
 |	4 = All Messages
 |
 | For a live site you'll usually only enable Errors (1) to be logged otherwise
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 0;
+$config['log_threshold'] = 4;
 
 /*
 |--------------------------------------------------------------------------

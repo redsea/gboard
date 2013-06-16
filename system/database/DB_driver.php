@@ -355,7 +355,6 @@ class CI_DB_driver {
 			{
 				$this->CACHE->delete();
 			}
-
 			return TRUE;
 		}
 
@@ -1152,6 +1151,7 @@ class CI_DB_driver {
 
 	/**
 	 * Display an error message
+	 * 에러 메시지 출력을 원하는데로 하기 위해서 변경 함.
 	 *
 	 * @access	public
 	 * @param	string	the error message
@@ -1159,19 +1159,20 @@ class CI_DB_driver {
 	 * @param	boolean	whether to localize the message
 	 * @return	string	sends the application/error_db.php template
 	 */
-	function display_error($error = '', $swap = '', $native = FALSE)
-	{
+	function display_error($error = '', $swap = '', $native = FALSE) {
+		// 에러 메시지만 출력 하는 것으로 변경
+		log_message('error', json_encode($error));
+		
+		/*
+		// 원본
 		$LANG =& load_class('Lang', 'core');
 		$LANG->load('db');
 
 		$heading = $LANG->line('db_error_heading');
 
-		if ($native == TRUE)
-		{
+		if ($native == TRUE) {
 			$message = $error;
-		}
-		else
-		{
+		} else {
 			$message = ( ! is_array($error)) ? array(str_replace('%s', $swap, $LANG->line($error))) : $error;
 		}
 
@@ -1181,21 +1182,20 @@ class CI_DB_driver {
 
 		$trace = debug_backtrace();
 
-		foreach ($trace as $call)
-		{
-			if (isset($call['file']) && strpos($call['file'], BASEPATH.'database') === FALSE)
-			{
+		foreach ($trace as $call) {
+			if (isset($call['file']) && strpos($call['file'], BASEPATH.'database') === FALSE) {
 				// Found it - use a relative path for safety
 				$message[] = 'Filename: '.str_replace(array(BASEPATH, APPPATH), '', $call['file']);
 				$message[] = 'Line Number: '.$call['line'];
-
 				break;
 			}
 		}
 
 		$error =& load_class('Exceptions', 'core');
+		
 		echo $error->show_error($heading, $message, 'error_db');
 		exit;
+		*/
 	}
 
 	// --------------------------------------------------------------------
