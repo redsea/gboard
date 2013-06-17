@@ -6,13 +6,22 @@
  - gbd_sites : site 관리 테이블
  - gbd_member_group : member group 관리 테이블
  - gbd_member : member 관리 테이블
+ - gbd_member_extra : member 부가 정보 관리 테이블
  - gbd_member_group_member : member 와 group 의 mapping 테이블
+ - gbd_files : 업로드 된 파일 정보 관리 테이블
  
 3. 기본 데이터 insert
  - root 용 site 추가
+ - 서비스 용 site 추가
  - root 용 group 추가
+ - 일반 group 추가
+ - 준일반 group 추가
  - root 용 member 추가
+ - nobody member 추가
+ - root 의 extra information 추가
+ - nobody 의 extra information 추가
  - root group 과 root account mapping
+ - 일반 그룹과 nobody account mapping
 
 * 2번 부터 끝까지 install 시 테이블 작업 할 수 있는 파일은 sql/install.sql 이다. 이거 돌리면 된다.
 

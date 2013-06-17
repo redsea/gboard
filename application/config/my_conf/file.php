@@ -11,7 +11,7 @@ $config['local_file_directory'] = './files/attach/';	// 파일 업로드시 저�
 														// 만일 파일 서버가 다른 장비에 있다면 다른 장비의 경로도 위와 같아야 함.
 														// 즉, apache 접속 홈 디렉토리에서 ./files/attach 로 저장되어야 함.
 														
-$config['supported_file_type'] = 'gif|jpg|png';			// 파일 업로드시 받아 들일 수 있는 파일 타입
+$config['supported_file_type'] = 'gif|jpg|png|zip';			// 파일 업로드시 받아 들일 수 있는 파일 타입
 $config['supported_file_max_size'] = 2000;				// 업로드 된 파일의 최대 크기(KB 단위임)
 $config['supported_file_max_width'] = 0;				// 업로드 된 파일의 최대 너비(픽셀 단위) 0 이면 제한 없음
 $config['supported_file_max_height'] = 0;				// 업로드 된 파일의 최대 높이(픽셀 단위) 0 이면 제한 없음
@@ -20,16 +20,19 @@ $config['supported_file_remove_space'] = TRUE;			// 업로드 된 파일의 이�
 
 $config['upload_form_name'] = 'gboard_file';			// 업로드 form 에서 input-file tag 의 name
 
-$config['network_disk_use'] = TRUE;						// 네트워크 디스크 사용 여부.
+$config['thumbnail_max_width'] = 200;					// 이미지 파일 thumbnail 생성시 thumbnail 의 최대 너비
+$config['thumbnail_max_height'] = 200;					// 이미지 파일 thumbnail 생성시 thumbnail 의 최대 높이
+
+$config['network_disk_use'] = FALSE;						// 네트워크 디스크 사용 여부.
 														// 네트워크 디스크를 사용한다면 로컬은 네트워크 디스크로 올리는 임시 저장소 역할만 한다.
 $config['network_disk_type'] = 'amazon_s3';				// 현재는 amazon s3 만 지원함.
 
 // amazon s3 에 대한 설정
-$config['amazon_s3_bucket_file'] = 'org.gboard.img1';
+$config['amazon_s3_bucket_file'] = 'org.gboard.img';
 
 /*
 |--------------------------------------------------------------------------
-| amazon s3 의 지역
+| amazon s3 의 지역 설정
 |--------------------------------------------------------------------------
 |
 | amazon s3 저장소 지역

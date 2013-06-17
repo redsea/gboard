@@ -19,8 +19,8 @@ INSERT INTO  `gbd_sites` (`domain`, `default_language`, `c_date` )
 VALUES ('admin.gboard.org',  'ko', NOW( ) +0);
 
 # create gboard default service site. site URL is gboard.org
-INSERT INTO  `gbd_sites` (`domain`, `default_language`, `c_date` ) 
-VALUES ('gboard.org',  'ko', NOW( ) +0);
+INSERT INTO  `gbd_sites` (`domain`, `default_language`, `list_order`, `c_date` ) 
+VALUES ('gboard.org',  'ko', 2, NOW( ) +0);
 
 
 # create gbd_member_group table. this table manage group
@@ -116,6 +116,7 @@ INSERT INTO `gbd_member` (
     `password`, 
     `user_name`, 
     `nick_name`, 
+    `list_order`, 
     `email_confirm`, 
     `last_login_date`, 
     `change_password_date`, 
@@ -127,6 +128,7 @@ VALUES (
     "123",
     "노바디",
     "노바디",
+    2, 
     "Y",
     NOW( ) +0,
     NOW( ) +0,
@@ -157,6 +159,15 @@ INSERT INTO `gbd_member_extra` (
     `c_date` 
 ) VALUES ( 
     "1", 
+    NOW()+0 
+);
+
+# create extra information of gboard nobody acount 
+INSERT INTO `gbd_member_extra` ( 
+    `member_srl`, 
+    `c_date` 
+) VALUES ( 
+    "2", 
     NOW()+0 
 );
 
@@ -220,6 +231,11 @@ CREATE TABLE `gbd_files` (
     `height` int(8) DEFAULT '0', 
     `file_size` bigint(11) DEFAULT '0', 
     `comment` varchar(256) DEFAULT NULL, 
+    `thumbnail_local_path` varchar(128) DEFAULT NULL, 
+    `thumbnail_local_url` varchar(256) DEFAULT NULL, 
+    `thumbnail_network_url` varchar(256) DEFAULT NULL, 
+    `thumbnail_width` int(8) DEFAULT '0', 
+    `thumbnail_height` int(8) DEFAULT '0', 
     `ipaddress` varchar(32) DEFAULT NULL, 
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
