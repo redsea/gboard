@@ -11,7 +11,7 @@ class Mfile_model extends CI_Model {
 		$this->config->load('my_conf/common', TRUE);
 		$this->config->load('my_conf/file', TRUE);
 		$this->config->load('error_code/common', TRUE);
-		//$this->config->load('error_code/join', TRUE);
+		$this->config->load('error_code/mfile', TRUE);
 		
 		//$this->yes = $this->config->item('yes', 'my_conf/common');
 		//$this->no = $this->config->item('no', 'my_conf/common');
@@ -123,9 +123,8 @@ class Mfile_model extends CI_Model {
 	
 	/** 
 	 * upload 된 파일을 저장한다.
-	 * 성공하면 업로드 된 파일 정보를 리턴하고, 실패하면 FALSE 를 리턴한다.
 	 *
-	 * 그런데, 실제로 실패 했을 경우 CI 의 실패 기본 웹페이지를 보여주는 경우가 있음(이것 잡아야 함.)
+	 * @return {string|objet} 성공하면 업로드 된 파일 정보를 리턴하고, 실패하면 error_code/mfile.php 에서 설정된 에러 코드를 리턴한다.
 	 */
 	public function save_file_in_local($member_srl=FALSE) {
 		if(!$member_srl) { $member_srl = $this->config->system_member_srl(); }
@@ -137,7 +136,7 @@ class Mfile_model extends CI_Model {
 			}
 		} else {
 			log_message('error', 'save_file_in_local non-config local_file_directory in my_conf/file');
-			return FALSE;
+			return $this->config->item('mfile_file_upload_no_upload_config', 'error_code/mfile');
 		}
 		
 		$config['upload_path'] = $config['upload_path'].$member_srl.DIRECTORY_SEPARATOR;
@@ -145,7 +144,7 @@ class Mfile_model extends CI_Model {
 		if(!is_dir($config['upload_path'])) {
 			if(!mkdir($config['upload_path'], 0777)) {
 				log_message('error', 'save_file_in_local can\'t create directory['.$config['upload_path'].']');
-				return FALSE;
+				return $this->config->item('mfile_file_upload_mkdir', 'error_code/mfile');
 			}
 		}
 		
@@ -159,7 +158,8 @@ class Mfile_model extends CI_Model {
 		$this->load->library('upload', $config);
 		
 		$result = $this->upload->do_upload($this->config->item('upload_form_name', 'my_conf/file'));
-		if($result) {
+		
+		if($result == $this->success_code) {
 			$file_info = $this->upload->data();
 			if(!chmod($file_info['full_path'], 0666)) {
 				log_message('warn', 'save_file_in_local can\'t change permission 0646 file['.$file_info['full_path'].']');
@@ -167,7 +167,7 @@ class Mfile_model extends CI_Model {
 			return $file_info;
 		}
 		
-		return FALSE;
+		return $result;
 	}
 	
 	/**

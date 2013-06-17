@@ -137,15 +137,162 @@ class CI_Upload {
 
 	/**
 	 * Perform the file upload
+	 * 웹으로 출력하지 않고 원하는 리턴값을 던지는 것으로 변경함.
 	 *
-	 * @return	bool
+	 * @return {string} error_code/mfile.php 에서 설정된 에러 코드와 error_code/common.php 에 설정된 성공 코드를 리턴한다.
 	 */
-	public function do_upload($field = 'userfile')
-	{
+	public function do_upload($field = 'userfile') {
+		// 수정한 것
+		$CI =& get_instance();
+		$CI->config->load('error_code/mfile', TRUE);
+		$CI->config->load('error_code/common', TRUE);
+		
+		// Is $_FILES[$field] set? If not, no reason to continue.
+		if(!isset($_FILES[$field])) {
+			return $CI->config->item('mfile_file_upload_no_selected_file', 'error_code/mfile');
+		}
 
-	// Is $_FILES[$field] set? If not, no reason to continue.
-		if ( ! isset($_FILES[$field]))
-		{
+		// Is the upload path valid?
+		if(!$this->validate_upload_path()) {
+			// errors will already be set by validate_upload_path() so just return FALSE
+			return $CI->config->item('mfile_file_upload_fail', 'error_code/mfile');
+		}
+
+		// Was the file able to be uploaded? If not, determine the reason why.
+		if(!is_uploaded_file($_FILES[$field]['tmp_name'])) {
+			$error = (!isset($_FILES[$field]['error'])) ? 4 : $_FILES[$field]['error'];
+
+			switch($error) {
+				case 1:	// UPLOAD_ERR_INI_SIZE
+					return $CI->config->item('mfile_file_upload_big_size_by_php', 'error_code/mfile');
+				case 2: // UPLOAD_ERR_FORM_SIZE
+					return $CI->config->item('mfile_file_upload_big_size_by_form', 'error_code/mfile');
+				case 3: // UPLOAD_ERR_PARTIAL
+					return $CI->config->item('mfile_file_upload_partial', 'error_code/mfile');
+				case 4: // UPLOAD_ERR_NO_FILE
+					return $CI->config->item('mfile_file_upload_no_selected_file', 'error_code/mfile');
+				case 6: // UPLOAD_ERR_NO_TMP_DIR
+					return $CI->config->item('mfile_file_upload_no_tmp_directory', 'error_code/mfile');
+				case 7: // UPLOAD_ERR_CANT_WRITE
+					return $CI->config->item('mfile_file_upload_unable_to_write', 'error_code/mfile');
+				case 8: // UPLOAD_ERR_EXTENSION
+					return $CI->config->item('mfile_file_upload_stop_by_extension', 'error_code/mfile');
+				default :
+					return $CI->config->item('mfile_file_upload_no_selected_file', 'error_code/mfile');
+			}
+		}
+
+		// Set the uploaded data as class variables
+		$this->file_temp = $_FILES[$field]['tmp_name'];
+		$this->file_size = $_FILES[$field]['size'];
+		$this->_file_mime_type($_FILES[$field]);
+		$this->file_type = preg_replace("/^(.+?);.*$/", "\\1", $this->file_type);
+		$this->file_type = strtolower(trim(stripslashes($this->file_type), '"'));
+		$this->file_name = $this->_prep_filename($_FILES[$field]['name']);
+		$this->file_ext	 = $this->get_extension($this->file_name);
+		$this->client_name = $this->file_name;
+
+		// Is the file type allowed to be uploaded?
+		if(!$this->is_allowed_filetype()) {
+			return $CI->config->item('mfile_file_upload_invalid_filetype', 'error_code/mfile');
+		}
+
+		// if we're overriding, let's now make sure the new name and type is allowed
+		if($this->_file_name_override != '') {
+			$this->file_name = $this->_prep_filename($this->_file_name_override);
+
+			// If no extension was provided in the file_name config item, use the uploaded one
+			if(strpos($this->_file_name_override, '.') === FALSE) {
+				$this->file_name .= $this->file_ext;
+			}
+			// An extension was provided, lets have it!
+			else {
+				$this->file_ext	 = $this->get_extension($this->_file_name_override);
+			}
+
+			if(!$this->is_allowed_filetype(TRUE)) {
+				return $CI->config->item('mfile_file_upload_invalid_filetype', 'error_code/mfile');
+			}
+		}
+
+		// Convert the file size to kilobytes
+		if($this->file_size > 0) {
+			$this->file_size = round($this->file_size/1024, 2);
+		}
+
+		// Is the file size within the allowed maximum?
+		if(!$this->is_allowed_filesize()) {
+			return $CI->config->item('mfile_file_upload_invalid_filesize', 'error_code/mfile');
+		}
+
+		// Are the image dimensions within the allowed size?
+		// Note: This can fail if the server has an open_basdir restriction.
+		if(!$this->is_allowed_dimensions()) {
+			return $CI->config->item('mfile_file_upload_invalid_dimensions', 'error_code/mfile');
+		}
+
+		// Sanitize the file name for security
+		$this->file_name = $this->clean_file_name($this->file_name);
+
+		// Truncate the file name if it's too long
+		if($this->max_filename > 0) {
+			$this->file_name = $this->limit_filename_length($this->file_name, $this->max_filename);
+		}
+
+		// Remove white spaces in the name
+		if($this->remove_spaces == TRUE) {
+			$this->file_name = preg_replace("/\s+/", "_", $this->file_name);
+		}
+
+		// Validate the file name
+		// This function appends an number onto the end of
+		// the file if one with the same name already exists.
+		// If it returns false there was a problem.
+		$this->orig_name = $this->file_name;
+
+		if($this->overwrite == FALSE) {
+			$this->file_name = $this->set_filename($this->upload_path, $this->file_name);
+
+			if($this->file_name === FALSE) {
+				return $CI->config->item('mfile_file_upload_fail', 'error_code/mfile');
+			}
+		}
+
+		// Run the file through the XSS hacking filter
+		// This helps prevent malicious code from being
+		// embedded within a file.  Scripts can easily
+		// be disguised as images or other file types.
+		if($this->xss_clean) {
+			if($this->do_xss_clean() === FALSE) {
+				return $CI->config->item('mfile_file_upload_unable_to_write', 'error_code/mfile');
+			}
+		}
+
+		// Move the file to the final destination
+		// To deal with different server configurations
+		// we'll attempt to use copy() first.  If that fails
+		// we'll use move_uploaded_file().  One of the two should
+		// reliably work in most environments
+		if(!@copy($this->file_temp, $this->upload_path.$this->file_name)) {
+			if(!@move_uploaded_file($this->file_temp, $this->upload_path.$this->file_name)) {
+				return $CI->config->item('mfile_file_upload_destination_error', 'error_code/mfile');
+			}
+		}
+
+		// Set the finalized image dimensions
+		// This sets the image width/height (assuming the
+		// file was an image).  We use this information
+		// in the "data" function.
+		$this->set_image_properties($this->upload_path.$this->file_name);
+
+		return $CI->config->item('common_success', 'error_code/common');
+		
+	
+	
+		/*
+		// 원본
+		// Is $_FILES[$field] set? If not, no reason to continue.
+		if(! isset($_FILES[$field])) {
 			$this->set_error('upload_no_file_selected');
 			return FALSE;
 		}
@@ -270,12 +417,10 @@ class CI_Upload {
 			$this->file_name = preg_replace("/\s+/", "_", $this->file_name);
 		}
 
-		/*
-		 * Validate the file name
-		 * This function appends an number onto the end of
-		 * the file if one with the same name already exists.
-		 * If it returns false there was a problem.
-		 */
+		// Validate the file name
+		// This function appends an number onto the end of
+		// the file if one with the same name already exists.
+		// If it returns false there was a problem.
 		$this->orig_name = $this->file_name;
 
 		if ($this->overwrite == FALSE)
@@ -288,12 +433,10 @@ class CI_Upload {
 			}
 		}
 
-		/*
-		 * Run the file through the XSS hacking filter
-		 * This helps prevent malicious code from being
-		 * embedded within a file.  Scripts can easily
-		 * be disguised as images or other file types.
-		 */
+		// Run the file through the XSS hacking filter
+		// This helps prevent malicious code from being
+		// embedded within a file.  Scripts can easily
+		// be disguised as images or other file types.
 		if ($this->xss_clean)
 		{
 			if ($this->do_xss_clean() === FALSE)
@@ -303,13 +446,11 @@ class CI_Upload {
 			}
 		}
 
-		/*
-		 * Move the file to the final destination
-		 * To deal with different server configurations
-		 * we'll attempt to use copy() first.  If that fails
-		 * we'll use move_uploaded_file().  One of the two should
-		 * reliably work in most environments
-		 */
+		// Move the file to the final destination
+		// To deal with different server configurations
+		// we'll attempt to use copy() first.  If that fails
+		// we'll use move_uploaded_file().  One of the two should
+		// reliably work in most environments
 		if ( ! @copy($this->file_temp, $this->upload_path.$this->file_name))
 		{
 			if ( ! @move_uploaded_file($this->file_temp, $this->upload_path.$this->file_name))
@@ -319,15 +460,14 @@ class CI_Upload {
 			}
 		}
 
-		/*
-		 * Set the finalized image dimensions
-		 * This sets the image width/height (assuming the
-		 * file was an image).  We use this information
-		 * in the "data" function.
-		 */
+		// Set the finalized image dimensions
+		// This sets the image width/height (assuming the
+		// file was an image).  We use this information
+		// in the "data" function.
 		$this->set_image_properties($this->upload_path.$this->file_name);
 
 		return TRUE;
+		*/
 	}
 
 	// --------------------------------------------------------------------

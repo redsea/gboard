@@ -58,15 +58,16 @@ class Mfile extends CI_Controller {
 		
 		// 로컬에 파일을 저장한다.
 		$file_info = $this->model->save_file_in_local();
-		if(!$file_info) {
+		if(is_string($file_info)) {
 			$this->load->view(
 					'output_view', 
 					array(
-							'output'=>$this->myutil, 
-							'code'=>$this->config->item('mfile_file_upload_fail', 'error_code/mfile'),
+							'output' => $this->myutil, 
+							'code' => $file_info,
 							'controller' => 'mfile'
 						)
 				);
+			return;
 		}
 		
 		if(!$this->config->item('network_disk_use', 'my_conf/file')) {
