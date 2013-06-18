@@ -2,6 +2,7 @@ RewriteEngine On
 
 
 RewriteRule ^files/(.*)$ files/$1 [L]
+RewriteRule ^samples/(.*)$ samples/$1 [L]
 RewriteRule ^css/(.*)$ css/$1 [L]
 RewriteRule ^js/(.*)$ js/$1 [L]
 

@@ -60,7 +60,6 @@ CREATE TABLE `gbd_member` (
     `password` varchar(128) NOT NULL, 
     `user_name` varchar(64) NOT NULL, 
     `nick_name` varchar(64) NOT NULL, 
-    `social_type` varchar(8) DEFAULT NULL,
     `find_account_question` bigint(11) DEFAULT NULL, 
     `find_account_answer` varchar(256) DEFAULT NULL, 
     `allow_mailing` char(2) NOT NULL DEFAULT 'N', 
@@ -91,7 +90,7 @@ INSERT INTO `gbd_member` (
     `email_address`, 
     `password`, 
     `user_name`, 
-    `nick_name`, 
+    `list_order`, 
     `email_confirm`, 
     `last_login_date`, 
     `change_password_date`, 
@@ -138,15 +137,17 @@ VALUES (
 
 # create gbd_member_extra. this table manage member's extra information
 CREATE TABLE `gbd_member_extra` (
-	`member_srl` bigint(11) NOT NULL,
+	`member_srl` bigint(11) NOT NULL, 
     `homepage` varchar(256) DEFAULT NULL, 
     `blog` varchar(256) DEFAULT NULL, 
     `birthday` char(8) DEFAULT NULL, 
     `gender` char(2) DEFAULT NULL, 
     `nation` varchar(8) DEFAULT NULL, 
-    `nation_phone_number` varchar(8) DEFAULT NULL,
+    `country_call_code` varchar(8) DEFAULT NULL,
     `mobile_phone_number` varchar(16) DEFAULT NULL, 
     `phone_number` varchar(16) DEFAULT NULL, 
+    `account_social_type` varchar(32) DEFAULT NULL, 
+    `account_social_id` varchar(64) DEFAULT NULL, 
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
     FOREIGN KEY( `member_srl`) REFERENCES `gbd_member`(`member_srl`) ON DELETE CASCADE, 
@@ -243,3 +244,24 @@ CREATE TABLE `gbd_files` (
     FOREIGN KEY( `member_srl`) REFERENCES `gbd_member`(`member_srl`) ON DELETE CASCADE, 
     PRIMARY KEY(`file_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+
+# create gbd_nations. this table manage national code
+CREATE TABLE `gbd_nations` (
+    `nation_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+    `alpha2` char(2) NOT NULL, 
+    `alpha3` char(3) NOT NULL, 
+    `numberic` varchar(8) NOT NULL, 
+    `name` varchar(64) NOT NULL, 
+    `name_alias` varchar(64) DEFAULT NULL, 
+    `country_call_code` varchar(8) DEFAULT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    INDEX( `alpha2` ),
+    INDEX( `alpha3` ), 
+    INDEX( `numberic` ), 
+    INDEX( `name` ),
+    INDEX( `name_alias` ),
+    PRIMARY KEY(`nation_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+

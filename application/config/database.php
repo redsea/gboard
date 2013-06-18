@@ -45,24 +45,41 @@
 | the active record class
 */
 
-$active_group = 'default';
+$active_group = 'master';
 $active_record = TRUE;
 
-$db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'gboard_user';
-$db['default']['password'] = 'gboard_pass';
-$db['default']['database'] = 'gboard_db';
-$db['default']['dbdriver'] = 'mysql';
-$db['default']['dbprefix'] = '';
-$db['default']['pconnect'] = TRUE;
-$db['default']['db_debug'] = TRUE;
-$db['default']['cache_on'] = FALSE;
-$db['default']['cachedir'] = '';
-$db['default']['char_set'] = 'utf8';
-$db['default']['dbcollat'] = 'utf8_general_ci';
-$db['default']['swap_pre'] = '';
-$db['default']['autoinit'] = TRUE;
-$db['default']['stricton'] = FALSE;
+$db['master']['hostname'] = 'localhost';
+$db['master']['username'] = 'gboard_user';
+$db['master']['password'] = 'gboard_pass';
+$db['master']['database'] = 'gboard_db';
+$db['master']['dbdriver'] = 'mysql';
+$db['master']['dbprefix'] = '';
+$db['master']['pconnect'] = TRUE;
+$db['master']['db_debug'] = TRUE;
+$db['master']['cache_on'] = FALSE;
+$db['master']['cachedir'] = '';
+$db['master']['char_set'] = 'utf8';
+$db['master']['dbcollat'] = 'utf8_general_ci';
+$db['master']['swap_pre'] = '';
+$db['master']['autoinit'] = TRUE;
+$db['master']['stricton'] = FALSE;
+
+
+$db['slave']['hostname'] = 'localhost';
+$db['slave']['username'] = 'gboard_user';
+$db['slave']['password'] = 'gboard_pass';
+$db['slave']['database'] = 'gboard_db';
+$db['slave']['dbdriver'] = 'mysql';
+$db['slave']['dbprefix'] = '';
+$db['slave']['pconnect'] = TRUE;
+$db['slave']['db_debug'] = TRUE;
+$db['slave']['cache_on'] = FALSE;
+$db['slave']['cachedir'] = '';
+$db['slave']['char_set'] = 'utf8';
+$db['slave']['dbcollat'] = 'utf8_general_ci';
+$db['slave']['swap_pre'] = '';
+$db['slave']['autoinit'] = TRUE;
+$db['slave']['stricton'] = FALSE;
 
 
 /* End of file database.php */

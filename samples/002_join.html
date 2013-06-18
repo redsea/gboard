@@ -1,0 +1,133 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<link rel="stylesheet" href="css/jquery/smoothness/jquery-ui-1.10.2.custom.min.css" type="text/css" />
+	
+	<!--style type="text/css"></style-->
+	
+	<script type="text/javascript" src="js/jquery/core/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="js/jquery/ui/jquery-ui-1.10.2.custom.min.js"></script>
+	<script type="text/javascript" src="js/knockout/knockout-2.2.1.js"></script>
+	
+	<!--script type="text/javascript"></script-->
+	
+	<title>2. gboard join API</title>
+</head>
+<body>
+join API :<br/><br/>
+<form method="post" action="http://gboard.org/member/join">
+	<table border="0">
+		<tr>
+			<td>user_id(M) </td>
+			<td><input type="text" size="50" name="user_id" value="" /></td>
+		</tr>
+		<tr>
+			<td>email_address(M) </td>
+			<td><input type="text" size="50" name="email_address" value="" /></td>
+		</tr>
+		<tr>
+			<td>password(M) </td>
+			<td><input type="text" size="50" name="password" value="" /></td>
+		</tr>
+		<tr>
+			<td>user_name(M) </td>
+			<td><input type="text" size="50" name="user_name" value="" /></td>
+		</tr>
+		<tr>
+			<td>nick_name(M) </td>
+			<td><input type="text" size="50" name="nick_name" value="" /></td>
+		</tr>
+		<tr>
+			<td>find_account_question(O) </td>
+			<td>
+				<select name="find_account_question">
+					<option value="">사용하지 않음</option>
+					<option value="FCQ1">다른 이메일 주소는?</option>
+					<option value="FCQ2">나의 보물 1호는?</option>
+					<option value="FCQ3">나의 출신 초등학교는?</option>
+					<option value="FCQ4">나의 출신 고향은?</option>
+					<option value="FCQ5">나의 이샹형은?</option>
+					<option value="FCQ6">어머니 성함은?</option>
+					<option value="FCQ7">아버지 성함은?</option>
+					<option value="FCQ8">가장 좋아하는 색깔은?</option>
+					<option value="FCQ9">가장 좋아하는 음식은?</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>find_account_answer(O) </td>
+			<td><input type="text" size="50" name="find_account_answer" value="" /></td>
+		</tr>
+		<tr>
+			<td>allow_mailing(O) </td>
+			<td>
+				<select name="allow_message">
+					<option value="Y">Yup</option>
+					<option value="N">Nope</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>allow_message(O) </td>
+			<td>
+				<select name="allow_message">
+					<option value="Y">Yup</option>
+					<option value="N">Nope</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>description(O) </td>
+			<td><input type="text" size="50" name="description" value="" /></td>
+		</tr>
+		<tr>
+			<td>image_mark(O) </td>
+			<td><input type="text" size="50" name="image_mark" value="" /></td>
+		</tr>
+		<tr>
+			<td>homepage(O) </td>
+			<td><input type="text" size="50" name="homepage" value="" /></td>
+		</tr>
+		<tr>
+			<td>blog(O) </td>
+			<td><input type="text" size="50" name="blog" value="" /></td>
+		</tr>
+		<tr>
+			<td>birthday(O) </td>
+			<td><input type="text" size="50" name="birthday" value="" /></td>
+		</tr>
+		<tr>
+			<td>gender(O) </td>
+			<td><input type="text" size="50" name="gender" value="" /></td>
+		</tr>
+		<tr>
+			<td>nation(O) </td>
+			<td><input type="text" size="50" name="nation" value="" /></td>
+		</tr>
+		<tr>
+			<td>country_call_code(O) </td>
+			<td><input type="text" size="50" name="country_call_code" value="" /></td>
+		</tr>
+		<tr>
+			<td>mobile_phone_number(O) </td>
+			<td><input type="text" size="50" name="mobile_phone_number" value="" /></td>
+		</tr>
+		<tr>
+			<td>phone_number(O) </td>
+			<td><input type="text" size="50" name="phone_number" value="" /></td>
+		</tr>
+		<tr>
+			<td>social_type(O) </td>
+			<td><input type="text" size="50" name="social_type" value="" /></td>
+		</tr>
+		<tr>
+			<td>social_id(O) </td>
+			<td><input type="text" size="50" name="social_id" value="" /></td>
+		</tr>
+	</table>
+	<br/>
+	<input type="submit">
+</form>
+
+</body>
+</html>

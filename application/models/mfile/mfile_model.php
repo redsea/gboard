@@ -13,9 +13,6 @@ class Mfile_model extends CI_Model {
 		$this->config->load('error_code/common', TRUE);
 		$this->config->load('error_code/mfile', TRUE);
 		
-		//$this->yes = $this->config->item('yes', 'my_conf/common');
-		//$this->no = $this->config->item('no', 'my_conf/common');
-				
 		$this->table_prefix = $this->config->item('table_prefix', 'my_conf/common');
 		$this->success_code = $this->config->item('common_success', 'error_code/common');
 	}

@@ -9,12 +9,25 @@
 class Member extends CI_Controller {
 	function __construct() {
 		parent::__construct();
+		
+		$this->config->load('error_code/member', TRUE);
+		
+		$this->load->library('myutil');
 	}
 
 	public function index() {
 		echo "member index";
 	}
 	
+	/**
+	 * 회원 가입을 하는 API
+	 *
+	 * 다음에 주의 해야 한다.
+	 * 1. social 로 가입 했다면 social 에서 받은 social user id 를 uesr_id 로 사용해야 한다.
+	 * 2. nick_name 이 없다면 user_name 을 nick_name 으로 자동 사용하는데, user_name 은 중복 허용, nick_name 은 중복 허용 하지
+	 *    않기 때문에 왠만하면 nick_name 을 주는 것이 좋다.
+	 *
+	 */
 	public function join() {
 		$this->load->model('member/member_model', 'model');
 		$result = $this->model->join();
@@ -22,7 +35,15 @@ class Member extends CI_Controller {
 		echo $result."<br/>";
 		
 		
-		
+		$this->load->view(
+				'output_view', 
+				array(
+						'output'=>$this->myutil, 
+						//'code'=>$this->config->item('mfile_insert_table_fail', 'error_code/member'),
+						'code'=>$result,
+						'controller' => 'member'
+				)
+			);
 		
 		
 		
