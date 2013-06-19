@@ -17,4 +17,17 @@ $config['member_join_not_supported_social']		= 'E010008';		// 가입을 지원�
 $config['member_join_invalid_image_mark']		= 'E010009';		// 가입시 받은 image_mark 파일이 존재하지 않음(여러개 중 하나만 없어도 발생)
 $config['member_join_invalid_account_question']	= 'E010010';		// 계정 찾기 질문이 invalid 함
 $config['member_join_invalid_account_answer']	= 'E010011';		// 계정 찾기 질문이 있는데 답변이 없음
+$config['member_join_invalid_homepage']			= 'E010012';		// homepage invalid. 길이가 너무 김
+$config['member_join_invalid_blog']				= 'E010013';		// blog invalid. 길이가 너무 김.
+$config['member_join_invalid_birthday']			= 'E010014';		// birthday invalid. 길이가 8자리가 아니거나 올바른 데이터 형태가 아님
+$config['member_join_invalid_country']			= 'E010015';		// country code 가 틀림
+$config['member_join_invalid_social_type']		= 'E010016';		// 가입에 대해 지원하지 않는 social_type
+$config['member_join_invalid_social_id']		= 'E010017';		// social_id 값이 없음
+$config['member_join_insert_member']			= 'E010018';		// member table 에 insert 실패
+$config['member_join_insert_member_extra']		= 'E010019';		// member_extra table 에 insert 실패
+$config['member_join_update_list_order']		= 'E010020';		// membe table 의 list_order update 실패
+$config['member_join_select_default_group']		= 'E010021';		// member_group table 에서 가입시 설정할 기본 그룹 정보 가져오기 실패
+$config['member_join_select_default_site']		= 'E010022';		// sites table 에서 가입시 설정할 기본 사이트 정보 가져오기 실패
+$config['member_join_insert_member_group_member']='E010023';		// member_group_member table 에 insert 실패(기본 그룹 가입 실패)
+$config['member_join_update_file_owner']		= 'E010024';		// files table 의 member_srl update 실패
 ?>

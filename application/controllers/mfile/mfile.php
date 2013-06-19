@@ -10,7 +10,7 @@ class Mfile extends CI_Controller {
 	function __construct() {
 		parent::__construct();
 		
-		$this->config->load('my_conf/file.php', TRUE);
+		$this->config->load('my_conf/mfile', TRUE);
 		$this->config->load('error_code/common', TRUE);
 		$this->config->load('error_code/mfile', TRUE);
 		
@@ -24,7 +24,7 @@ class Mfile extends CI_Controller {
 	}
 	
 	/**
-	 * 서버나 원격 디스크(amazon s3 등등)에 파일을 업로드 한다.
+	 * 서버나 원격 디스크(amazon s3 등등)에 이미지 파일을 업로드 한다.
 	 * local 서버에 저장 디렉토리의 member_srl 디렉토리 하단에 파일로 저장된다.
 	 *
 	 * 다음의 사항을 지켜야 한다.
@@ -61,7 +61,7 @@ class Mfile extends CI_Controller {
 	 *		"message" : "실패"
 	 *	}
 	 */
-	public function upload() {
+	public function uploadi() {
 		$this->load->model('mfile/mfile_model', 'model');
 		
 		// 로컬에 파일을 저장한다.
@@ -82,17 +82,20 @@ class Mfile extends CI_Controller {
 		$is_make_thumbnail = $this->input->post2('thumbnail', TRUE);
 		$thumbnail_info = FALSE;
 		if($is_make_thumbnail && strtoupper($is_make_thumbnail) == 'Y') {
-			if($file_info['image_type'] == 'jpeg' || $file_info['image_type'] == 'jpg' || 
-					$file_info['image_type'] == 'jpe' || $file_info['image_type'] == 'png' ||
-					$file_info['image_type'] == 'gif') {
-				$thumbnail_info = $this->model->save_thumbnail_file_in_local($file_info);
-				if($thumbnail_info == FALSE) {
-					log_message('warn', 'upload can\'t create thumbnail for file['.$file_info['full_path'].']');
-				}
-			} else {
-				log_message('warn', 'upload wanna create thumbnail, but original file['.
-						$file_info['full_path'].'] isn\'t image. filetype['.
-						$file_info['file_type'].']');
+			$thumbnail_info = $this->model->save_thumbnail_file_in_local($file_info);
+			if($thumbnail_info == FALSE) {
+				$error_code = $this->config->item('mfile_create_thumbnail', 'error_code/mfile');
+				log_message('error', "uploadi E[$error_code] can\'t create thumbnail for file[".$file_info['full_path']."]");
+				
+				$this->load->view(
+						'output_view', 
+						array(
+								'output' => $this->myutil, 
+								'code' => $error_code,
+								'controller' => 'mfile'
+							)
+					);
+				return;
 			}
 		}
 		
@@ -118,11 +121,14 @@ class Mfile extends CI_Controller {
 					);
 			} else {
 				// table insert 실패
+				$error_code = $this->config->item('mfile_insert_table_fail', 'error_code/mfile');
+				log_message('error', "uploadi E[$error_code] insert files table failed");
+				
 				$this->load->view(
 						'output_view', 
 						array(
 								'output'=>$this->myutil, 
-								'code'=>$this->config->item('mfile_insert_table_fail', 'error_code/mfile'),
+								'code'=>$error_code,
 								'controller' => 'mfile'
 						)
 					);
@@ -130,13 +136,13 @@ class Mfile extends CI_Controller {
 				// local 에 저장된 파일을 삭제 한다.
 				$result_delete = unlink($file_info['full_path']);
 				if(!$result_delete) {
-					log_message('warn', 'upload failed delete file['.$file_info['full_path'].'] in local-disk');
+					log_message('warn', 'uploadi failed delete file['.$file_info['full_path'].'] in local-disk');
 				}
 				
 				if($thumbnail_info) {
 					$result_delete = unlink($thumbnail_info['full_path']);
 					if(!$result_delete) {
-						log_message('warn', 'upload failed delete(thumbnail) file['.$thumbnail_info['full_path'].'] in local-disk');
+						log_message('warn', 'uploadi failed delete(thumbnail) file['.$thumbnail_info['full_path'].'] in local-disk');
 					}
 				}
 			}
@@ -168,22 +174,28 @@ class Mfile extends CI_Controller {
 				);
 			} else {
 				// table insert 실패
+				$error_code = $this->config->item('mfile_insert_table_fail', 'error_code/mfile');
+				log_message('error', "uploadi E[$error_code] insert files table failed");
+				
 				$this->load->view(
 						'output_view', 
 						array(
 								'output'=>$this->myutil, 
-								'code'=>$this->config->item('mfile_insert_table_fail', 'error_code/mfile'),
+								'code'=>$error_code,
 								'controller' => 'mfile'
 						)
 					);
 			}
 		} else {
 			// network disk upload 실패
+			$error_code = $this->config->item('mfile_upload_to_network_disk_fail', 'error_code/mfile');
+			log_message('error', "uploadi E[$error_code] upload to network disk fail");
+			
 			$this->load->view(
 					'output_view', 
 					array(
 							'output'=>$this->myutil, 
-							'code'=>$this->config->item('mfile_upload_to_network_disk_fail', 'error_code/mfile'),
+							'code'=>$error_code,
 							'controller' => 'mfile'
 					)
 				);
@@ -193,13 +205,13 @@ class Mfile extends CI_Controller {
 		// CI 의 delete_files 는 디렉토리 삭제임.
 		$result_delete = unlink($file_info['full_path']);
 		if(!$result_delete) {
-			log_message('warn', 'upload failed delete(orig) file['.$file_info['full_path'].'] in local-disk');
+			log_message('warn', 'uploadi failed delete(orig) file['.$file_info['full_path'].'] in local-disk');
 		}
 		
 		if($thumbnail_info) {
 			$result_delete = unlink($thumbnail_info['full_path']);
 			if(!$result_delete) {
-				log_message('warn', 'upload failed delete(thumbnail) file['.$thumbnail_info['full_path'].'] in local-disk');
+				log_message('warn', 'uploadi failed delete(thumbnail) file['.$thumbnail_info['full_path'].'] in local-disk');
 			}
 		}
 	}

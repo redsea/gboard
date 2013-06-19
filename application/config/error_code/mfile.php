@@ -21,4 +21,5 @@ $config['mfile_file_upload_destination_error']	= 'E020014';		// A problem was en
 																	// file to the final destination.
 $config['mfile_file_upload_no_upload_config']	= 'E020015';		// my_conf/file.php 에  upload_path 설정이 없음
 $config['mfile_file_upload_mkdir']				= 'E020016';		// local 서버에 파일 저장하기 위해 디렉토리 생성 실패
+$config['mfile_create_thumbnail']				= 'E020017';		// thumbnail 생성 요청이 있으나 thumbnail 생성 실패
 ?>

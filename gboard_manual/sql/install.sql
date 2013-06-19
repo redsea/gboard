@@ -4,6 +4,7 @@ CREATE TABLE  `gbd_sites` (
     `site_srl` BIGINT( 11 ) NOT NULL AUTO_INCREMENT ,
     `index_module_srl` BIGINT( 11 ) NOT NULL DEFAULT  '0',
     `domain` VARCHAR( 256 ) NOT NULL ,
+    `is_default` CHAR(2) DEFAULT 'N', 
     `default_language` VARCHAR( 8 ) DEFAULT NULL ,
     `image_mark` TEXT,
     `description` TEXT,
@@ -19,8 +20,8 @@ INSERT INTO  `gbd_sites` (`domain`, `default_language`, `c_date` )
 VALUES ('admin.gboard.org',  'ko', NOW( ) +0);
 
 # create gboard default service site. site URL is gboard.org
-INSERT INTO  `gbd_sites` (`domain`, `default_language`, `list_order`, `c_date` ) 
-VALUES ('gboard.org',  'ko', 2, NOW( ) +0);
+INSERT INTO  `gbd_sites` (`domain`, `is_default`, `default_language`, `list_order`, `c_date` ) 
+VALUES ('gboard.org',  `Y`, 'ko', -2, NOW( ) +0);
 
 
 # create gbd_member_group table. this table manage group
@@ -60,14 +61,14 @@ CREATE TABLE `gbd_member` (
     `password` varchar(128) NOT NULL, 
     `user_name` varchar(64) NOT NULL, 
     `nick_name` varchar(64) NOT NULL, 
-    `find_account_question` bigint(11) DEFAULT NULL, 
+    `find_account_question` varchar(8) DEFAULT NULL, 
     `find_account_answer` varchar(256) DEFAULT NULL, 
     `allow_mailing` char(2) NOT NULL DEFAULT 'N', 
     `allow_message` char(2) NOT NULL DEFAULT 'N', 
     `image_mark` TEXT NULL , 
     `block` char(2) NOT NULL DEFAULT 'N', 
     `description` text, 
-    `list_order` bigint(11) NOT NULL DEFAULT '1', 
+    `list_order` bigint(11) NOT NULL DEFAULT '-1', 
     `email_confirm` char(2) NOT NULL DEFAULT 'N', 
     `limit_date` char(14) DEFAULT NULL, 
     `last_login_date` char(14) DEFAULT NULL, 
@@ -90,6 +91,7 @@ INSERT INTO `gbd_member` (
     `email_address`, 
     `password`, 
     `user_name`, 
+    `nick_name`, 
     `list_order`, 
     `email_confirm`, 
     `last_login_date`, 
@@ -102,6 +104,7 @@ VALUES (
     "123",
     "김대희",
     "루트",
+    -1,
     "Y",
     NOW( ) +0,
     NOW( ) +0,
@@ -127,7 +130,7 @@ VALUES (
     "123",
     "노바디",
     "노바디",
-    2, 
+    -2, 
     "Y",
     NOW( ) +0,
     NOW( ) +0,
@@ -142,8 +145,7 @@ CREATE TABLE `gbd_member_extra` (
     `blog` varchar(256) DEFAULT NULL, 
     `birthday` char(8) DEFAULT NULL, 
     `gender` char(2) DEFAULT NULL, 
-    `nation` varchar(8) DEFAULT NULL, 
-    `country_call_code` varchar(8) DEFAULT NULL,
+    `country` varchar(8) DEFAULT NULL, 
     `mobile_phone_number` varchar(16) DEFAULT NULL, 
     `phone_number` varchar(16) DEFAULT NULL, 
     `account_social_type` varchar(32) DEFAULT NULL, 
@@ -246,9 +248,9 @@ CREATE TABLE `gbd_files` (
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
 
-# create gbd_nations. this table manage national code
-CREATE TABLE `gbd_nations` (
-    `nation_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+# create gbd_country_code. this table manage country code
+CREATE TABLE `gbd_country_code` (
+    `country_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
     `alpha2` char(2) NOT NULL, 
     `alpha3` char(3) NOT NULL, 
     `numberic` varchar(8) NOT NULL, 
@@ -262,6 +264,7 @@ CREATE TABLE `gbd_nations` (
     INDEX( `numberic` ), 
     INDEX( `name` ),
     INDEX( `name_alias` ),
-    PRIMARY KEY(`nation_srl`)
+    INDEX( `country_call_code` ),
+    PRIMARY KEY(`country_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 

@@ -9,7 +9,7 @@
  - gbd_member_extra : member 부가 정보 관리 테이블
  - gbd_member_group_member : member 와 group 의 mapping 테이블
  - gbd_files : 업로드 된 파일 정보 관리 테이블
- - gbd_nations : 국가 코드 테이블
+ - gbd_country_code : 국가 코드 테이블
  
 3. 기본 데이터 insert
  - root 용 site 추가
@@ -25,8 +25,16 @@
  - 일반 그룹과 nobody account mapping
 
 * 2번 부터 끝까지 install 시 테이블 작업 할 수 있는 파일은 sql/install.sql 이다. 이거 돌리면 된다.
-* sql/install.sql 돌리고 나면, sql/nations.sql 을 돌린다.(국가 코드 넣기)
-* sql/nations.sql 은 cat nations.txt | awk -f nations.awk > nations.sql 로 재생성 가능하다.
+
+* sql/install.sql 돌리고 나면, sql/country_code.sql 을 돌린다.(국가 코드 넣기)
+* sql/country_code.sql 은 cat country_code.txt | awk -f country_code.awk > country_code.sql 로 재생성 가능하다.
+
+* sql/country_code.sql 돌리고 나면, sql/country_call_number.sql 을 돌린다(국가 전화 번호)
+* 알 수 있는 국가 코드만 gbd_country_code table 에 업데이트 한다.
+* sql/country_code.sql 은 cat country_phone_number.txt | awk -f country_phone_number.awk > country_phone_number.sql 로 재생성 가능하다.
+
+* 국가코드는 http://en.wikipedia.org/wiki/ISO_3166-1 에서 참고 하였음
+* 국가전화번호는 https://en.wikipedia.org/wiki/List_of_country_calling_codes 에서 참고 하였음.
 
 
 [디렉토리 권한 및 파일 경로]

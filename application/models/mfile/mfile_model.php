@@ -9,12 +9,15 @@ class Mfile_model extends CI_Model {
 		parent::__construct();
 		
 		$this->config->load('my_conf/common', TRUE);
-		$this->config->load('my_conf/file', TRUE);
+		$this->config->load('my_conf/mfile', TRUE);
 		$this->config->load('error_code/common', TRUE);
 		$this->config->load('error_code/mfile', TRUE);
 		
 		$this->table_prefix = $this->config->item('table_prefix', 'my_conf/common');
 		$this->success_code = $this->config->item('common_success', 'error_code/common');
+		
+		$this->master_db = FALSE;
+		//$this->slave_db = FALSE;
 	}
 	
 	/**
@@ -32,7 +35,7 @@ class Mfile_model extends CI_Model {
 		
 		$s3 = new AmazonS3();
 		
-		$region = $this->config->item('amazon_s3_region', 'my_conf/file');
+		$region = $this->config->item('amazon_s3_region', 'my_conf/mfile');
 		switch($region) {
 			case 'us_w1':
 			case 'california':
@@ -99,7 +102,7 @@ class Mfile_model extends CI_Model {
 		$s3_path = $member_srl.DIRECTORY_SEPARATOR.$file_info['file_name'];
 		
 		try {
-			$response = $s3->create_mpu_object($this->config->item('amazon_s3_bucket_file', 'my_conf/file'), 
+			$response = $s3->create_mpu_object($this->config->item('amazon_s3_bucket_file', 'my_conf/mfile'), 
 					$s3_path, array(
 						'fileUpload'  => $file_info['full_path'],
 						//'fileUpload'  => './files/attach/'.$file_info['file_name'],
@@ -128,7 +131,7 @@ class Mfile_model extends CI_Model {
 			$s3_path = $member_srl.DIRECTORY_SEPARATOR.$thumbnail_info['file_name'];
 			
 			try {
-				$response = $s3->create_mpu_object($this->config->item('amazon_s3_bucket_file', 'my_conf/file'), 
+				$response = $s3->create_mpu_object($this->config->item('amazon_s3_bucket_file', 'my_conf/mfile'), 
 						$s3_path, array(
 							'fileUpload'  => $thumbnail_info['full_path'],
 							//'fileUpload'  => './files/attach/'.$file_info['file_name'],
@@ -163,35 +166,37 @@ class Mfile_model extends CI_Model {
 	public function save_file_in_local($member_srl=FALSE) {
 		if(!$member_srl) { $member_srl = $this->config->system_member_srl(); }
 		
-		$config['upload_path'] = $this->config->item('local_file_directory', 'my_conf/file');
+		$config['upload_path'] = $this->config->item('local_file_directory', 'my_conf/mfile');
 		if($config['upload_path']) {
 			if(substr($config['upload_path'], strlen($config['upload_path'])-1) != DIRECTORY_SEPARATOR) {
 				$config['upload_path'] = $config['upload_path'] . DIRECTORY_SEPARATOR;
 			}
 		} else {
-			log_message('error', 'save_file_in_local non-config local_file_directory in my_conf/file');
-			return $this->config->item('mfile_file_upload_no_upload_config', 'error_code/mfile');
+			$error_code = $this->config->item('mfile_file_upload_no_upload_config', 'error_code/mfile');
+			log_message('error', "save_file_in_local E[$error_code] non-config local_file_directory in my_conf/mfile");
+			return $error_code;
 		}
 		
 		$config['upload_path'] = $config['upload_path'].$member_srl.DIRECTORY_SEPARATOR;
 		
 		if(!is_dir($config['upload_path'])) {
 			if(!mkdir($config['upload_path'], 0777)) {
-				log_message('error', 'save_file_in_local can\'t create directory['.$config['upload_path'].']');
-				return $this->config->item('mfile_file_upload_mkdir', 'error_code/mfile');
+				$error_code = $this->config->item('mfile_file_upload_mkdir', 'error_code/mfile');
+				log_message('error', "save_file_in_local E[$error_code] can't create directory[".$config['upload_path']."]");
+				return $error_code;
 			}
 		}
 		
-		$config['allowed_types'] = $this->config->item('supported_file_type', 'my_conf/file');
-		$config['max_size']	= $this->config->item('supported_file_max_size', 'my_conf/file');
-		$config['max_width']  = $this->config->item('supported_file_max_width', 'my_conf/file');
-		$config['max_height']  = $this->config->item('supported_file_max_height', 'my_conf/file');
-		$config['encrypt_name'] = $this->config->item('supported_file_encrypt_name', 'my_conf/file');
-		$config['remove_spaces'] = $this->config->item('supported_file_remove_space', 'my_conf/file');
+		$config['allowed_types'] = $this->config->item('supported_image_file_type', 'my_conf/mfile');
+		$config['max_size']	= $this->config->item('supported_image_file_max_size', 'my_conf/mfile');
+		$config['max_width']  = $this->config->item('supported_image_file_max_width', 'my_conf/mfile');
+		$config['max_height']  = $this->config->item('supported_image_file_max_height', 'my_conf/mfile');
+		$config['encrypt_name'] = $this->config->item('supported_file_encrypt_name', 'my_conf/mfile');
+		$config['remove_spaces'] = $this->config->item('supported_file_remove_space', 'my_conf/mfile');
 		
 		$this->load->library('upload', $config);
 		
-		$result = $this->upload->do_upload($this->config->item('upload_form_name', 'my_conf/file'));
+		$result = $this->upload->do_upload($this->config->item('upload_form_name', 'my_conf/mfile'));
 		
 		if($result == $this->success_code) {
 			$file_info = $this->upload->data();
@@ -225,24 +230,24 @@ class Mfile_model extends CI_Model {
 		$thumbnail_width = $this->input->post2('thumbnail_width', TRUE);
 		$thumbnail_height = $this->input->post2('thumbnail_height', TRUE);
 		
-		if(!$thumbnail_width || $thumbnail_width > $this->config->item('thumbnail_max_width', 'my_conf/file')) {
+		if(!$thumbnail_width || $thumbnail_width > $this->config->item('thumbnail_max_width', 'my_conf/mfile')) {
 			log_message('warn', 'save_thumbnail_file_in_local user thumbnail size wrong['.
 					$thumbnail_width.'x'.$thumbnail_height.', set default thumbnail size['.
-					$this->config->item('thumbnail_max_width', 'my_conf/file').'x'.
-					$this->config->item('thumbnail_max_height', 'my_conf/file').']');
+					$this->config->item('thumbnail_max_width', 'my_conf/mfile').'x'.
+					$this->config->item('thumbnail_max_height', 'my_conf/mfile').']');
 		
-			$thumbnail_width = $this->config->item('thumbnail_max_width', 'my_conf/file');
-			$thumbnail_height = $this->config->item('thumbnail_max_height', 'my_conf/file');
+			$thumbnail_width = $this->config->item('thumbnail_max_width', 'my_conf/mfile');
+			$thumbnail_height = $this->config->item('thumbnail_max_height', 'my_conf/mfile');
 		}
 		
-		if(!$thumbnail_height || $thumbnail_height > $this->config->item('thumbnail_max_height', 'my_conf/file')) {
+		if(!$thumbnail_height || $thumbnail_height > $this->config->item('thumbnail_max_height', 'my_conf/mfile')) {
 			log_message('warn', 'save_thumbnail_file_in_local user thumbnail size wrong['.
 					$thumbnail_width.'x'.$thumbnail_height.', set default thumbnail size['.
-					$this->config->item('thumbnail_max_width', 'my_conf/file').'x'.
-					$this->config->item('thumbnail_max_height', 'my_conf/file').']');
+					$this->config->item('thumbnail_max_width', 'my_conf/mfile').'x'.
+					$this->config->item('thumbnail_max_height', 'my_conf/mfile').']');
 			
-			$thumbnail_width = $this->config->item('thumbnail_max_width', 'my_conf/file');
-			$thumbnail_height = $this->config->item('thumbnail_max_height', 'my_conf/file');
+			$thumbnail_width = $this->config->item('thumbnail_max_width', 'my_conf/mfile');
+			$thumbnail_height = $this->config->item('thumbnail_max_height', 'my_conf/mfile');
 		}
 		
 		$config['image_library'] = 'gd2';
@@ -280,7 +285,7 @@ class Mfile_model extends CI_Model {
 	 *         나머지 : 원격 디스크에 업로드 한 정보(접속 할 수 있는 url)
 	 */
 	public function save_file_to_network_disk($file_info, $thumbnail_info=FALSE, $member_srl=FALSE) {
-		$disk_type = $this->config->item('network_disk_type', 'my_conf/file');
+		$disk_type = $this->config->item('network_disk_type', 'my_conf/mfile');
 		switch($disk_type) {
 			case 'amazon_s3':
 				return $this->_upload_to_amazon_s3($file_info, $thumbnail_info, $member_srl);
@@ -302,12 +307,12 @@ class Mfile_model extends CI_Model {
 	 * @param network_url {string} network disk 의 url
 	 */
 	public function save_file_in_db($file_info, $thumbnail_info=FALSE, $member_srl=FALSE, $comment=FALSE, $network_url=FALSE) {
-		$this->load->database();
+		if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
 		
 		$this->load->helper('url');
 		$this->load->helper('date');
 		
-		$local_image_dir_path = $this->config->item('local_file_directory', 'my_conf/file');
+		$local_image_dir_path = $this->config->item('local_file_directory', 'my_conf/mfile');
 		if($local_image_dir_path) {
 			$local_image_dir_path = substr($local_image_dir_path, 2);
 			if(substr($local_image_dir_path, strlen($local_image_dir_path)-1) != DIRECTORY_SEPARATOR) {
@@ -339,13 +344,13 @@ class Mfile_model extends CI_Model {
 				'c_date' => mdate('%Y%m%d%h%i%s')
 			);
 		
-		$result = $this->db->insert($this->table_prefix.'files', $data);
+		$result = $this->master_db->insert($this->table_prefix.'files', $data);
 		if(!$result) {
 			log_message('error', 'save_file_in_db insert file meta-data failed');
 			return FALSE;
 		}
 		
-		$row_count = $this->db->affected_rows();
+		$row_count = $this->master_db->affected_rows();
 		if($row_count <= 0) {
 			log_message('error', 'save_file_in_db insert file meta-data, but not found affected row');
 			return FALSE;
@@ -355,7 +360,7 @@ class Mfile_model extends CI_Model {
 		// insert_id 가 내부에서 mysql_insert_id 을 사용하고 있음.
 		// mysql_insert_id 는 thread safe 하니, insert query 와 mysql_insert_id 사이에
 		// 또 다른 insert query 가 와도 상관 없다. 만쉐이~ 이거 못 믿겨서 sleep 으로 테스트 해 보았음.
-		$data['file_srl'] = $this->db->insert_id();
+		$data['file_srl'] = $this->master_db->insert_id();
 		
 		return $data;
 	}
