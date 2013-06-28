@@ -10,9 +10,14 @@ class Member extends CI_Controller {
 	function __construct() {
 		parent::__construct();
 		
+		$this->config->load('error_code/common', TRUE);
 		$this->config->load('error_code/member', TRUE);
 		
 		$this->load->library('myutil');
+		
+		$this->load->model('common/common_model', 'cmodel');
+		
+		$this->success_code = $this->config->item('common_success', 'error_code/common');
 	}
 
 	public function index() {
@@ -33,9 +38,10 @@ class Member extends CI_Controller {
 		
 		// TODO 가입을 했으니, 로그인 까지 시켜 줘야 하는데, email confirm 때문에 로그인 대기를 타야 한다.
 		// TODO 이메일도 보내야 하네....
+		// TODO 로그인 이후 다시 진행 하도록 하자.
 		
 		$this->load->view(
-				'output_view', 
+				'common/output_view', 
 				array(
 						'output'=>$this->myutil, 
 						'code'=>$result,
@@ -44,11 +50,36 @@ class Member extends CI_Controller {
 			);
 	}
 	
+	public function login() {
+		$result = $this->cmodel->getAuthorization();
+		if($result != $this->success_code) {
+			$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'member'
+				)
+			);
+			return;
+		}
+	
+	
+/*
+	
+	
+		$this->load->model('member/member_model', 'model');
+		$result = $this->model->login();
+*/
+	
+		echo "login";
+	}
+	
 	
 	public function hello() {
 		$this->load->model('member_group/member_group_model', 'model');
 		
-		
+		// TODO oauth 이후에 진행한다.
 		
 		
 		echo $this->model->dhkim();

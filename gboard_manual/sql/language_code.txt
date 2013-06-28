@@ -1,0 +1,492 @@
+gaa	-	가어	Ga
+gay	-	가요어	Gayo
+lug	lg	간다어	Ganda
+glg	gl	갈리시아어; 갈레고어	galicien
+gem	-	게르만어파 (기타)	Germanic languages
+gez	-	게에즈어	Geez
+gla	gd	게일어; 스코틀랜드 게일어	Gaelic; Scottish Gaelic
+got	-	고트어	Gothic
+gon	-	곤드어	Gondi
+grn	gn	과라니어	Guarani
+guj	gu	구자라트어	Gujarati
+grb	-	그레보어	Grebo
+grc	-	그리스어 (고대) (1453년 이전)	Ancient Greek
+gre	el	그리스어 (현대) (1453년 이후)	Modern Greek
+ell	el	그리스어 (현대) (1453년 이후)	Modern Greek
+kal	kl	그린란드어; 칼랄리수트	Greenlandic; Kalaallisut
+gba	-	그바야어	Gbaya
+gwi	-	그위친어	Gwich'in
+mis	-	기타 언어	Miscellaneous languages
+nav	nv	나바호어	Navajo; Navaho
+nah	-	나와어; 나와틀어	Nahuatl
+nau	na	나우루어	Nauru
+ssa	-	나일사하라어족 (기타)	Nilo-Saharan languages
+nap	-	나폴리어	Neopolitan
+sai	-	남아메리카 인디언 제어 (기타)	South American Indian languages
+dut	nl	네덜란드어; 플라망어	Dutch; Flemish
+nld	nl	네덜란드어; 플라망어	Dutch; Flemish
+dum	-	네덜란드어 (중세) (1050년-1350년경)	Middle Dutch
+new	-	네와르어; 네팔바사	Newari; Nepal
+nwc	-	네와르어 (고전)	Classical Newari; Old Newari
+nep	ne	네팔어	Nepali
+nog	-	노가이어	Nogai
+non	-	노르드어 (고대)	Old Norse
+nor	no	노르웨이어	Norwegian
+nno	nn	노르웨이어 (뉘노르스크); 신노르웨이어	Norwegian Nynorsk
+nob	nb	노르웨이어 (보크몰); 덴마크-노르웨이어	Norwegian Bokmål
+nub	-	누비아어군	Nubian languages
+nya	ny	니안자어; 체와어; 치체와	Chichewa; Chewa; Nyanja
+nym	-	니암웨지어	Nyamwezi
+nyo	-	니오로어	Nyoro
+niu	-	니우에어	Niuean
+nic	-	니제르코르도판어족 (기타)	Niger-Kordofanian languages
+dar	-	다르과어	Dargwa
+day	-	다야크어	Dayak
+mul	-	다중 언어	Multiple languages
+dak	-	다코타어	Dakota
+dan	da	덴마크어	Danish
+del	-	델라웨어어	Delaware
+doi	-	도그라어	Dogri
+dgr	-	도그리브어	Dogrib
+ger	de	독일어	German
+deu	de	독일어	German
+goh	-	독일어 (고대 고지) (750년-1050년경)	Old High German
+gmh	-	독일어 (중세 고지) (1050년-1500년경)	Middle High German
+dua	-	두알라어	Duala
+dyu	-	듈라어	Dyula
+dra	-	드라비다어족 (기타)	Dravidian languages
+div	dv	디베히어	Divehi language
+din	-	딩카어	Dinka language
+lad	-	라디노어; 유대스페인어	Ladino
+rar	-	라로통가어	Rarotongan
+lao	lo	라오어	Lao
+raj	-	라자스탄어	Rajasthani
+lav	lv	라트비아어	Latvian
+lat	la	라틴어	Latin
+rap	-	라파누이어	Rapanui
+lah	-	란다어	Lahnda
+lam	-	람바어	Lamba
+rus	ru	러시아어	Russian
+lez	-	레즈긴어	Lezghian
+roh	rm	로만슈어; 레토로망어; 라이티아 로망스어	Rhaeto-Romance
+roa	-	로망스어군 (기타)	Romance languages
+jbo	-	로지반	Lojban
+loz	-	로지어	Lozi
+rom	-	롬어; 로마니어; 집시어	Romany
+rum	ro	루마니아어	Romanian
+ron	ro	루마니아어	Romanian
+lua	-	루바룰루아어	Luba-Lulua
+lub	lu	루바카탕가어	Luba-Katanga
+lus	-	루샤이어	Lushai
+rue	-	루신어	Rusyn
+luo	-	루오어 (케냐와 탄자니아)	Luo (Kenya and Tanzania)
+lui	-	루이세뇨어	Luiseno
+ltz	lb	룩셈부르크어	Luxembourgish; Letzeburgesch
+lun	-	룬다어	Lunda
+run	rn	룬디어	Rundi
+smj	-	룰레 사미어	Lule Sami
+kin	rw	르완다어; 키냐르완다어	Kinyarwanda
+lit	lt	리투아니아어	Lithuanian
+lim	li	림뷔르흐어	Limburgan; Limburger; Limburgish
+lin	ln	링갈라어	Lingala
+mag	-	마가드어; 마가히어	Magahi
+mno	-	마노보어군	Manobo languages
+mni	-	마니푸르어; 마니푸리어	Manipuri
+mlg	mg	마다가스카르어	Malagasy
+mad	-	마두라어	Madurese
+mar	mr	마라티어	Marathi
+mwr	-	마르와르어	Marwari
+chm	-	마리어	Mari
+mas	-	마사이어	Masai
+mah	mh	마셜어	Marshallese
+myn	-	마야어족	Mayan languages
+mao	mi	마오리어	Maori
+mri	mi	마오리어	Maori
+mai	-	마이틸라어; 마이틸리어	Maithili
+mak	-	마카사르어	Makasar
+mac	mk	마케도니아어	Macedonian
+mkd	mk	마케도니아어	Macedonian
+mdr	-	만다르어	Mandar
+man	-	만데어; 만딩고어	Mandingo
+mnc	-	만주어	Manchu
+mal	ml	말라얄람어	Malayalam
+may	ms	말레이어	Malay
+msa	ms	말레이어	Malay
+glv	gv	맨어; 맹크스어	Manx
+men	-	멘데어	Mende
+mos	-	모시어	Mossi
+mdf	-	모크샤어	Moksha
+moh	-	모호크어	Mohawk
+mkh	-	몬크메르어파 (기타)	Mon-Khmer languages
+mol	mo	몰도바어	Moldavian; Moldovan
+mlt	mt	몰타어	Maltese
+lol	-	몽고어	Mongo
+mon	mn	몽골어	Mongolian
+hmn	-	몽어	Hmong
+mus	-	무스코지어; 크리크어	Creek
+mun	-	문다어파	Munda languages
+min	-	미낭카바우어	Minangkabau
+mwl	-	미란데어	Mirandese
+mic	-	미크맥어	Mi'kmaq; Micmac
+und	-	미확인 언어	Undetermined
+bai	-	바밀레케어계	Bamileke languages
+bas	-	바사어	Basa
+bak	ba	바슈키르어	Bashkir
+baq	eu	바스크어	Basque
+eus	eu	바스크어	Basque
+vai	-	바이어	Vai
+bar	-	바바리아어	Bavarian
+bad	-	반다어	Banda
+bnt	-	반투어군 (기타)	Bantu languages
+bal	-	발루치어	Baluchi
+ban	-	발리어	Balinese
+bat	-	발트어파 (기타)	Baltic languages
+bam	bm	밤바라어	Bambara
+bur	my	버마어	Burmese
+mya	my	버마어	Burmese
+ber	-	베르베르어파 (기타)	Berber languages
+bej	-	베자어	Beja
+vie	vi	베트남어	Vietnamese
+ven	ve	벤다어	Venda
+bel	be	벨라루스어	Belarusian
+bem	-	벰바어	Bemba
+ben	bn	벵골어	Bengali
+bos	bs	보스니아어	Bosnian
+bho	-	보지푸르어; 보지푸리어	Bhojpuri
+vot	-	보트어	Votic
+vol	vo	볼라퓌크	Volapük
+bug	-	부기어	Buginese
+bua	-	부리아트어	Buriat
+nai	-	북아메리카 인디언 제어	North American Indian languages
+bul	bg	불가리아어	Bulgarian
+bra	-	브라지어	Braj
+bre	br	브르타뉴어	Breton
+bla	-	블랙풋어; 식시카어	Siksika
+byn	-	블린어	Blin; Bilin
+bin	-	비니어	Bini
+bis	bi	비슐라마어	Bislama
+bik	-	비콜어	Bikol
+bih	bh	비하르어	Bihari
+srd	sc	사르데냐어	Sardinian
+sam	-	사마리아 아람어	Samaritan Aramaic
+smo	sm	사모아어	Samoan
+sma	-	사미어 (남)	Southern Sami
+smj	-	사미어 (룰레)	Lule Sami
+sme	se	사미어 (북)	Northern Sami
+sms	-	사미어 (스콜트)	Skolt Sami
+smn	-	사미어 (이나리)	Inari Sami
+smi	-	사미어계 (기타)	langues sami
+sas	-	사사크어	Sasak
+zap	-	사포텍어	Zapotec
+sad	-	산다웨어	Sandawe
+san	sa	산스크리트어	Sanskrit
+sat	-	산탈어	Santali
+sag	sg	상고어	Sango
+sal	-	살리시어족	Salishan languages
+chy	-	샤이엔어	Cheyenne
+shn	-	샨어	Shan
+srr	-	세레르어	Serer
+scc	sr	세르비아어	Serbian
+srp	sr	세르비아어	Serbian
+ceb	-	세부어; 세부아노어	Cebuano
+sel	-	셀쿠프어	Selkup
+sem	-	셈어파 (기타)	Semitic languages
+sog	-	소그드어	Sogdian
+hsb	-	소르비아어 (고지)	Upper Sorbian
+dsb	-	소르비아어 (저지)	Lower Sorbian
+wen	-	소르비아어계	Sorbian languages
+som	so	소말리어	Somali
+sot	st	소토어 (남)	Southern Sotho
+nso	-	소토어 (북)	Pedi; Sepedi; Northern Sotho
+son	-	송가이어	Songhai
+sna	sn	쇼나어	Shona
+sux	-	수메르어	Sumerian
+sus	-	수수어	Susu
+sio	-	수어족	Siouan languages
+suk	-	수쿠마어	Sukuma
+sgn	-	수화, 각종	Sign languages
+sun	su	순다어	Sundanese
+ssw	ss	스와티어	Swati
+swa	sw	스와힐리어; 키스와힐리어	Swahili
+swe	sv	스웨덴어	Swedish
+sco	-	스코트어	Scots
+spa	es	스페인어; 에스파냐어; 카스티야어	Spanish; Castilian
+chu	cu	슬라브어 (고대 교회); 고대 슬라브어; 교회 슬라브어; 고대 불가리아어	Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic
+sla	-	슬라브어파 (기타)	Slavic languages
+den	-	슬레이비어 (아타파스카)	Slave (Athapascan)
+slo	sk	슬로바키아어	Slovak
+slk	sk	슬로바키아어	Slovak
+slv	sl	슬로베니아어	Slovenian
+sit	-	시노티베트어족 (기타)	Sino-Tibetan languages
+sid	-	시다모어	Sidamo
+syr	-	시리아어	Syriac
+scn	-	시칠리아어	Sicilian
+snd	sd	신드어	Sindhi
+sin	si	싱할라어	Sinhala; Sinhalese
+iii	ii	쓰촨 이어	Sichuan Yi
+ada	-	아당메어	Adangme
+ady	-	아디게어	Adyghe; Adygei
+arg	an	아라곤어	Aragonese
+arw	-	아라와크어	Arawak
+arn	-	아라우칸어	Araucanian
+arp	-	아라파호어	Arapaho
+arc	-	아람어	Aramaic
+ara	ar	아랍어	Arabic
+arm	hy	아르메니아어	Armenian
+hye	hy	아르메니아어	Armenian
+ava	av	아바르어	Avar
+ave	ae	아베스타어	Avestan
+aah	-	아라페시어, 아부	Arapesh, Abu'
+asm	as	아삼어	Assamese
+ast	-	아스투리아스어; 바블리어	Asturian; Bable
+awa	-	아와드어	Awadhi
+ain	-	아이누어	Ainu
+aym	ay	아이마라어	Aymara
+ice	is	아이슬란드어	Icelandic
+isl	is	아이슬란드어	Icelandic
+hat	ht	아이티 크리올어	Haitian; Haitian Creole
+gle	ga	아일랜드어	Irish
+sga	-	아일랜드어 (고대) (900년 이전)	Old Irish
+mga	-	아일랜드어 (중세) (900년-1200년경)	Middle Irish
+aze	az	아제르바이잔어; 아제리어	Azeri; Azerbaijani
+ace	-	아체어	Achinese
+ach	-	아촐리어	Acoli
+akk	-	아카드어	Akkadian
+aka	ak	아칸어	Akan
+ath	-	아타파스카어군	Athapascan languages
+aar	aa	아파르어	Afar
+apa	-	아파치 제어	Apache languages
+afa	-	아프리카아시아어족; 함셈어족 (기타)	Afro-Asiatic languages
+afr	af	아프리칸스어	Afrikaans
+afh	-	아프리힐리어	Afrihili
+alg	-	알공킨어파	Algonquian languages
+ale	-	알류트어	Aleut
+alb	sq	알바니아어	Albanian
+sqi	sq	알바니아어	Albanian
+alt	-	남부 알타이어	Southern Altai
+tut	-	알타이어족 (기타)	Altaic languages
+amh	am	암하라어	Amharic
+abk	ab	압하스어; 압수아어	Abkhazian
+yao	-	야오어	Yao
+sah	-	야쿠트어	Yakut
+yap	-	야프어	Yapese
+myv	-	에르지아어	Erzya
+est	et	에스토니아어	Estonian
+epo	eo	에스페란토	Esperanto
+ewo	-	에원도어; 야운데어	Ewondo
+ewe	ee	에웨어	Ewe
+eka	-	에카주크어	Ekajuk language
+efi	-	에피크어	Efik
+elx	-	엘람어	Elamite
+eng	en	영어	English
+ang	-	영어 (고대); 앵글로색슨어 (450년-1100년경)	Old English
+enm	-	영어 (중세) (1100년-1500년경)	Middle English
+orm	om	오로모어; 갈라어	Oromo
+ori	or	오리야어	Oriya
+osa	-	오세이지어	Osage
+oss	os	오세트어	Ossetian; Ossetic
+aus	-	오스트레일리아어족	Australian languages
+map	-	오스트로네시아어족 (기타)	Austronesian languages
+oji	oj	오지브와어	Ojibwa
+oci	oc	오크어; 옥시탕; 랑그도크어; 프로방스어 (1500년 이후)	Occitan; Provençal
+oto	-	오토미어군	Otomian languages
+war	-	와라이어	Waray
+was	-	와쇼어	Washo
+wak	-	와카시어족	Wakashan languages
+wal	-	왈라모어; 월라이타어	Walamo
+wln	wa	왈론어	Walloon
+yor	yo	요루바어	Yoruba
+uga	-	우가리트어	Ugaritic
+udm	-	우드무르트어	Udmurt
+urd	ur	우르두어	Urdu
+uzb	uz	우즈베크어	Uzbek
+ukr	uk	우크라이나어	Ukrainian
+umb	-	움분두어	Umbundu
+wol	wo	월로프어	Wolof
+wel	cy	웨일스어	Welsh
+cym	cy	웨일스어	Welsh
+uig	ug	위구르어	Uighur
+jrb	-	유대아랍어	Judeo-Arabic
+jpr	-	유대페르시아어	Judeo-Persian
+ypk	-	유피크어군	Yupik languages
+nbl	nr	은데벨레어 (남)	South Ndebele
+nde	nd	은데벨레어 (북)	North Ndebele
+ndo	ng	은동가어	Ndonga
+nzi	-	은제마어	Nzima
+nyn	-	은콜레어; 니안콜레어	Nyankole
+ibo	ig	이그보어	Igbo
+iku	iu	이누크티투트어	Inuktitut
+ipk	ik	이누피아크어; 북부 이누이트어	Inupiaq
+ido	io	이도	Ido
+yid	yi	이디시어	Yiddish
+ira	-	이란어군 (기타)	Iranian languages
+iro	-	이로쿼이어족	Iroquoian languages
+iba	-	이반어	Iban
+ijo	-	이조어	Ijo
+egy	-	이집트어 (고대)	Ancient Egyptian
+ita	it	이탈리아어	Italian
+art	-	인공 언어 (기타)	Artificial languages
+inh	-	인구시어	Ingush
+ind	id	인도네시아어	Indonesian
+inc	-	인도아리아어군 (기타)	Indic languages
+ine	-	인도유럽어족 (기타)	Indo-European languages
+ina	ia	인테르링구아 (국제보조어협회)	Interlingua (International Auxiliary Language Association)
+ine	ie	인테르링구에; 옥시덴탈	Interlingue
+ilo	-	일로코어; 일로카노어	Iloko
+jpn	ja	일본어	Japanese
+jav	jv	자바어	Javanese
+znd	-	잔데어; 아잔데어	Zande
+nds	-	저지 색슨어; 저지 독일어	Low German; Low Saxon
+zen	-	제나가어	Zenaga
+geo	ka	조지아어	Georgian
+kat	ka	조지아어	Georgian
+dzo	dz	종카어	Dzongkha
+zha	za	좡어	Zhuang; Chuang
+zun	-	주니어	Zuni
+zul	zu	줄루어	Zulu
+chi	zh	중국어	Chinese
+zho	zh	중국어	Chinese
+cai	-	중앙아메리카 인디언 제어 (기타)	Central American Indian languages
+chg	-	차가타이어	Chagatai
+cha	ch	차모로어	Chamorro
+cmc	-	참어군	Chamic languages
+chr	-	체로키어	Cherokee
+che	ce	체첸어	Chechen
+cze	cs	체코어	Czech
+ces	cs	체코어	Czech
+cho	-	촉토어	Choctaw
+tso	ts	총가어	Tsonga
+chv	cv	추바슈어	Chuvash
+chk	-	추크어; 트루크어	Chuukese
+tsn	tn	츠와나어	Tswana
+chn	-	치누크 통상어	Chinook jargon
+chb	-	치브차어	Chibcha
+chp	-	치페위안어	Chipewyan
+tsi	-	침시아어	Tsimshian
+kau	kr	카누리어	Kanuri
+cad	-	카도어	Caddo
+krc	-	카라차이발카르어	Karachay-Balkar
+kaa	-	카라칼파크어	Kara-Kalpak
+kar	-	카렌어	Karen
+car	-	카리브어	Carib
+kbd	-	카바르디아어	Kabardian
+kab	-	카빌어	Kabyle
+kas	ks	카슈미르어	Kashmiri
+csb	-	카슈브어	Kashubian
+kha	-	카시어	Khasi
+kaw	-	카위어	Kawi
+kaz	kk	카자흐어	Kazakh
+kac	-	카친어	Kachin
+cat	ca	카탈루냐어; 카탈란	Catalan
+cau	-	카프카스 제어 (기타)	Caucasian languages
+kan	kn	칸나다어	Kannada
+xal	-	칼미크어	Kalmyk; Oirat
+kam	-	캄바어	Kamba
+que	qu	케추아어	Quechua
+cel	-	켈트어파 (기타)	Celtic languages
+cos	co	코르시카어	Corsican
+kom	kv	코미어	Komi
+xho	xh	코사어	Xhosa
+kus	-	코스라에어; 쿠사이에어	Kosraean
+khi	-	코이산어족 (기타)	Khoisan languages
+cor	kw	콘월어	Cornish
+kok	-	콘칸어	Konkani
+cop	-	콥트어	Coptic
+kon	kg	콩고어	Kongo
+kua	kj	콰냐마어	Kuanyama; Kwanyama
+kru	-	쿠루크어	Kurukh
+kur	ku	쿠르드어	Kurdish
+kum	-	쿠미크어	Kumyk
+cus	-	쿠시어파 (기타)	Cushitic languages
+kut	-	쿠테나이어	Kutenai
+scr	hr	크로아티아어	Croatian
+hrv	hr	크로아티아어	Croatian
+kro	-	크루어	Kru
+cpe	-	크리올어 및 피진어 (영어를 바탕으로 한 기타)	English-based creoles and pidgins
+crp	-	크리올어 및 피진어 (이외의 언어를 바탕으로 한 기타)	other creoles and pidgins
+cpp	-	크리올어 및 피진어 (포르투갈어를 바탕으로 한 기타)	Portuguese-based creoles and pidgins
+cpf	-	크리올어 및 피진어 (프랑스어를 바탕으로 한 기타)	French-based creoles and pidgins
+cre	cr	크리어	Cree
+crh	-	크림 타타르어; 크림 튀르크어	Crimean Turkish; Crimean Tatar
+khm	km	크메르어	Khmer
+kpe	-	크펠레어	Kpelle
+tlh	-	클링온어	Klingon; tlhIngan-Hol
+kir	ky	키르기스어	Kirghiz
+gil	-	키리바스어	Gilbertese
+kik	ki	키쿠유어; 기쿠유어	Kikuyu; Gikuyu
+tgl	tl	타갈로그어	Tagalog
+tmh	-	타마셰크어	Tamashek
+tam	ta	타밀어	Tamil
+tha	th	타이어	Thai
+tai	-	타이어군 (기타)	Tai languages
+tgk	tg	타지크어	Tajik
+tat	tt	타타르어	Tatar
+tah	ty	타히티어	Tahitian
+tur	tr	터키어; 튀르크어	Turkish
+ter	-	테레나어; 테레노어	Tereno
+tet	-	테툼어	Tetum
+tel	te	텔루구어	Telugu
+tem	-	템네어	Timne
+tpi	-	톡피신어	Tok Pisin
+tog	-	통가어 (니아사)	Tonga (Nyasa)
+ton	to	통가어 (통가 제도)	Tonga (Tonga Islands)
+tuk	tk	투르크멘어	Turkmen
+tvl	-	투발루어	Tuvalu
+tup	-	투피어족	Tupi languages
+tyv	-	투바어	Tuvinian
+tum	-	툼부카어	Tumbuka
+ota	-	튀르크어 (오스만); 오스만 투르크어 (1500년경-1928년)	Ottoman Turkish
+twi	tw	트위어	Twi
+tli	-	틀링깃어	Tlingit
+tig	-	티그레어	Tigre
+tir	ti	티그리냐어	Tigrinya
+tib	bo	티베트어	Tibetan
+bod	bo	티베트어	Tibetan
+tiv	-	티브어	Tiv
+pus	ps	파슈토어	Pushto
+paa	-	파푸아 제어 (기타)	Papuan languages
+pap	-	파피아멘토어	Papiamento
+fat	-	판티어	Fanti
+pau	-	팔라우어	Palauan
+pal	-	팔레비어	Pahlavi
+pli	pi	팔리어	Pali
+pam	-	팜팡가어; 카팜팡가어	Pampanga
+pag	-	팡가시난어	Pangasinan
+fan	-	팡어	Fang
+pan	pa	펀자브어	Panjabi; Punjabi
+phn	-	페니키아어	Phoenician
+fao	fo	페로어	Faroese
+per	fa	페르시아어; 파르시어	Persian
+fas	fa	페르시아어; 파르시어	Persian
+peo	-	페르시아어 (고대) (BC 600년-BC 400년경)	Old Persian
+por	pt	포르투갈어	Portuguese
+fon	-	폰어	Fon
+pon	-	폰페이어; 포나페어	Pohnpeian
+pol	pl	폴란드어	Polish
+ful	ff	풀라어	Fulah; Fulani
+pra	-	프라크리트 제어	Prakrit languages
+fre	fr	프랑스어	French
+fra	fr	프랑스어	French
+fro	-	프랑스어 (고대) (842년-1400년경)	Old French
+frm	-	프랑스어 (중세) (1400년-1600년경)	Middle French
+pro	-	프로방스어 (고대) (1500년 이전)	Old Provençal
+fry	fy	프리지아어	Frisian
+fij	fj	피지어	Fijian
+fin	fi	핀란드어	Finnish
+fiu	-	핀우고르어파 (기타)	Finno-Ugrian languages
+fil	-	필리핀어	Filipino; Pilipino
+phi	-	필리핀 제어 (기타)	Philippine languages
+haw	-	하와이어	Hawaiian
+hau	ha	하우사어	Hausa
+hai	-	하이다어	Haida
+kor	ko	한국어	Korean
+hun	hu	헝가리어	Hungarian
+her	hz	헤레로어	Herero
+kho	-	호탄어	Khotanese
+hup	-	후파어	Hupa
+hmo	ho	히리 모투어	Hiri Motu
+him	-	히마찰어	Himachali
+heb	he	히브리어	Hebrew
+hit	-	히타이트어	Hittite
+hin	hi	힌디어	Hindi
+hil	-	힐리가이노어	Hiligaynon

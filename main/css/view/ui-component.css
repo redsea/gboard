@@ -1,0 +1,77 @@
+.navigator-tree {
+/* 	depth 에 따라서 margin-left 를 조정해 줘야 한다. */
+	margin-left: 6px;
+	margin-top: 5px;
+	height: 100%;
+}
+
+.navigator-tree-row {
+/* 	background-color: red; */
+	height: 20px;
+}
+
+
+
+.navigator-tree-row-folder-arrow {
+	padding: 0;
+	margin: 0;
+	margin-top: 1px;
+	width: 9px;
+	height: 16px;
+	background-position-x: -85px;
+	background-image: url(images/icons_16x16.png);
+	display: inline-block;
+}
+
+.navigator-tree-row-unfolder-arrow {
+	padding: 0;
+	margin: 0;
+	margin-top: 1px;
+	width: 9px;
+	height: 16px;
+	background-position-x: -68px;
+	background-image: url(images/icons_16x16.png);
+	display: inline-block;
+}
+
+.navigator-tree-row-empy-arrow {
+	padding: 0;
+	margin: 0;
+	margin-top: 1px;
+	width: 9px;
+	height: 16px;
+	display: inline-block;
+}
+
+
+
+.navigator-tree-row-unnamed-icon {
+	padding: 0;
+	margin: 0;
+	margin-left: 2px;
+	width: 16px;
+	height: 16px;
+	background-position-x: -52px;
+	background-image: url(images/icons_16x16.png);
+	display: inline-block;
+}
+
+.navigator-row-folder-icon {
+	padding: 0;
+	margin: 0;
+	margin-left: 2px;
+	width: 16px;
+	height: 16px;
+	background-position-x: -34px;
+	background-image: url(images/icons_16x16.png);
+	display: inline-block;
+}
+
+.navigator-tree-row-label {
+	position:absolute;
+	/* 이건 계산 해서 맞추어야 한다 */
+	margin-top: 4px;
+	/* 이것도 계산 해서 맞추어야 한다 */
+	margin-left: 5px;
+	padding:0;
+}

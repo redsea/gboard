@@ -68,7 +68,7 @@ class Mfile extends CI_Controller {
 		$file_info = $this->model->save_file_in_local();
 		if(is_string($file_info)) {
 			$this->load->view(
-					'output_view', 
+					'common/output_view', 
 					array(
 							'output' => $this->myutil, 
 							'code' => $file_info,
@@ -88,7 +88,7 @@ class Mfile extends CI_Controller {
 				log_message('error', "uploadi E[$error_code] can\'t create thumbnail for file[".$file_info['full_path']."]");
 				
 				$this->load->view(
-						'output_view', 
+						'common/output_view', 
 						array(
 								'output' => $this->myutil, 
 								'code' => $error_code,
@@ -103,7 +103,7 @@ class Mfile extends CI_Controller {
 			$result_insert = null;
 			if(($result_insert=$this->model->save_file_in_db($file_info, $thumbnail_info))) {
 				$this->load->view(
-						'output_view', 
+						'common/output_view', 
 						array(
 							'output' => $this->myutil, 
 							'code' => $this->success_code,
@@ -125,7 +125,7 @@ class Mfile extends CI_Controller {
 				log_message('error', "uploadi E[$error_code] insert files table failed");
 				
 				$this->load->view(
-						'output_view', 
+						'common/output_view', 
 						array(
 								'output'=>$this->myutil, 
 								'code'=>$error_code,
@@ -156,7 +156,7 @@ class Mfile extends CI_Controller {
 			if(($result_insert=$this->model->save_file_in_db($file_info, $thumbnail_info, FALSE, FALSE, 
 					$result_upload_network_disk))) {
 				$this->load->view(
-						'output_view', 
+						'common/output_view', 
 						array(
 								'output' => $this->myutil, 
 								'code' => $this->success_code,
@@ -178,7 +178,7 @@ class Mfile extends CI_Controller {
 				log_message('error', "uploadi E[$error_code] insert files table failed");
 				
 				$this->load->view(
-						'output_view', 
+						'common/output_view', 
 						array(
 								'output'=>$this->myutil, 
 								'code'=>$error_code,
@@ -192,7 +192,7 @@ class Mfile extends CI_Controller {
 			log_message('error', "uploadi E[$error_code] upload to network disk fail");
 			
 			$this->load->view(
-					'output_view', 
+					'common/output_view', 
 					array(
 							'output'=>$this->myutil, 
 							'code'=>$error_code,

@@ -146,10 +146,13 @@ CREATE TABLE `gbd_member_extra` (
     `birthday` char(8) DEFAULT NULL, 
     `gender` char(2) DEFAULT NULL, 
     `country` varchar(8) DEFAULT NULL, 
+    `country_phone_number` varchar(8) DEFAULT NULL, 
     `mobile_phone_number` varchar(16) DEFAULT NULL, 
     `phone_number` varchar(16) DEFAULT NULL, 
     `account_social_type` varchar(32) DEFAULT NULL, 
     `account_social_id` varchar(64) DEFAULT NULL, 
+    `login_count` bigint(11) DEFAULT '0', 
+    `serial_login_count` bigint(11) DEFAULT '0', 
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
     FOREIGN KEY( `member_srl`) REFERENCES `gbd_member`(`member_srl`) ON DELETE CASCADE, 
@@ -268,3 +271,95 @@ CREATE TABLE `gbd_country_code` (
     PRIMARY KEY(`country_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
+
+# create gbd_language_code. this table manage language code
+CREATE TABLE `gbd_language_code` (
+    `language_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+    `alpha2` char(2) DEFAULT NULL, 
+    `alpha3` char(3) NOT NULL, 
+    `name` varchar(32) DEFAULT NULL, 
+    `description1` varchar(128) DEFAULT NULL, 
+    `description2` varchar(128) DEFAULT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    INDEX(`alpha2`), 
+    INDEX(`alpha3`), 
+    PRIMARY KEY(`language_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+
+# create gbd_oauth20. this table manage oauth key
+CREATE TABLE `gbd_oauth20` (
+    `client_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+    `api_key` char(32) NOT NULL, 
+    `api_secret` char(32) NOT NULL, 
+    `api_version` char(11) NOT NULL, 
+    `is_using_root` char(1) DEFAULT 'N', 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    INDEX(`api_key`, `is_using_root`),
+    PRIMARY KEY(`client_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+# create client_id for using local system
+INSERT INTO `gbd_oauth20` (
+    `api_key`,
+    `api_secret`, 
+    `api_version`, 
+    `is_using_root`, 
+    `c_date`
+) VALUES (
+    "e44f11e891d4c8afdd6ffbf7a0c03bd3", 
+    "9c10a58811c6932fd388c0959b0ec112", 
+    "000.000.001", 
+    "Y",
+    NOW()+0
+);
+
+
+# create gbd_oauth20_extra. this table manage extra information of using oauth client
+CREATE TABLE `gbd_oauth20_extra` (
+    `client_srl` bigint(11) NOT NULL, 
+    `company_name` varchar(64) NOT NULL, 
+    `manager_name` varchar(64) NOT NULL, 
+    `manager_email` varchar(128) NOT NULL, 
+    `company_address` varchar(256) DEFAULT NULL, 
+    `country` varchar(8) DEFAULT NULL, 
+    `country_phone_number` varchar(8) DEFAULT NULL, 
+    `mobile_phone_number` varchar(16) DEFAULT NULL, 
+    `phone_number` varchar(16) DEFAULT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL,
+    FOREIGN KEY( `client_srl`) REFERENCES `gbd_oauth20`(`client_srl`) ON DELETE CASCADE, 
+    PRIMARY KEY(`client_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+# create oauth extra information of using local system client id
+INSERT INTO `gbd_oauth20_extra` (
+    `client_srl`, 
+    `company_name`, 
+    `manager_name`, 
+    `manager_email`, 
+    `c_date`
+) VALUES (
+    1, 
+    "system", 
+    "루트", 
+    "dhkim94@gmail.com", 
+    NOW()+0
+);
+
+# create gbd_oauth20_code. authorization, access_token 발급을 관리하는 테이블
+CREATE TABLE `gbd_oauth20_code` (
+    `client_srl` bigint(11) NOT NULL, 
+    `authorization_code` char(32) DEFAULT NULL, 
+    `access_token` char(32) DEFAULT NULL, 
+    `access_token_expire` char(14) DEFAULT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    INDEX(`access_token`),
+    INDEX(`c_date`),
+    INDEX(`client_srl`),
+    FOREIGN KEY( `client_srl`) REFERENCES `gbd_oauth20`(`client_srl`) ON DELETE CASCADE, 
+    PRIMARY KEY(`authorization_code`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;

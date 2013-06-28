@@ -54,10 +54,9 @@ $route['member/(:any)'] = 'member/member/$1';
 $route['file'] = 'mfile/mfile/index';
 $route['file/(:any)'] = 'mfile/mfile/$1';
 
-
-// route for controllers/member_group/member_group.php
-$route['mgroup'] = 'member_group/member_group/index';
-$route['mgroup/(:any)'] = 'member_group/member_group/$1';
+// route for controllers/member/member.php
+$route['oauth'] = 'oauth20/oauth20/index';
+$route['oauth/(:any)'] = 'oauth20/oauth20/$1';
 
 
 /* End of file routes.php */

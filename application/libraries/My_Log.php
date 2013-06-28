@@ -35,5 +35,9 @@ class MY_Log extends CI_Log {
 		}
 		$this->_log4php->{$level}($msg);
 	}
+	
+	public function set_log_key($log_key) {
+		if($log_key) { $this->_log4php = BGLog::sharedInstance($log_key); }
+	}
 }
 ?>

@@ -1,0 +1,217 @@
+html, body, ul, li {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background-image: url("/resource/images/lineslight.jpg");
+}
+
+ul {
+	list-style: none;
+}
+
+input {
+	width: 378px;
+	height: 30px;
+	outline: none;
+	border: 1px solid #D9D9D9;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	-ms-border-radius: 4px;
+	-o-border-radius: 4px;
+	border-radius: 4px;
+	font-family: Helvetica, Arial, sans-serif;
+	color: #696969;
+	font-size: 12px;
+	padding-left: 6px;
+	padding-right: 6px;
+}
+
+@font-face {
+	font-family: Coolio;
+	src: url("/resource/font/Coolio.otf") format("opentype");
+}
+
+/*--- 화면에 보여지는 모든 것을 포함하는 root 설정 ---*/
+.window-container {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	cursor: default;
+	
+	font-family: Helvetica, Arial, sans-serif;
+/* 	font-family: 돋음, Dotum, Baekmuk Dotum, Undotum, Apple Gothic, Latin font, sans-serif; */
+	color: #696969;
+	font-size: 12px;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}
+
+
+/*--- 화면 최상단 퀵바 설정 ---*/
+/* 화면 최상단 quick icon 들이 들어갈 영역 */
+.window-top-quick-bar:before {
+	content: '';
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 1px;
+	border-bottom: 1px solid #A8A8A8;
+	background-color: #B1B1B1;
+	background: -webkit-linear-gradient(#E3E3E3 0%, #9A9A9A 100%);
+	background: -moz-linear-gradient(#E3E3E3 0%, #9A9A9A 100%);
+	background: -ms-linear-gradient(#E3E3E3 0%, #9A9A9A 100%);
+	background: -o-linear-gradient(#E3E3E3 0%, #9A9A9A 100%);
+	background: linear-gradient(#E3E3E3 0%, #9A9A9A 100%);
+}
+.window-top-quick-bar {
+	position: relative;
+	width: 100%;
+	height: 70px;
+	background-color: #4B4B4B;
+}
+/* 화면 최상단 퀵바의 view port */
+.view-port-top-quick-bar {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+
+/*--- 화면 중간의 컨텐츠 설정 ---*/
+/* 화면 중간의 컨텐츠 영역 */
+.window-content {
+	position: absolute;
+	width: 100%;
+	top: 70px;
+	bottom: 24px;
+	background-color: white;
+}
+/* 컨텐츠 영역 좌측에 네비게이션 window */
+.window-menu-navigator:before {
+	content: '';
+	position: absolute;
+	left: 0px;
+	right: 1px;
+	top: 0px;
+	bottom: 0px;
+	border-right: 1px solid #E5E8EE;
+	background-color: #E0E5EB;
+}
+.window-menu-navigator {
+	position: relative;
+	float: left;
+	width: 250px;
+	top: 0px;
+	height: 100%;
+	background-color: #BBBBBB;
+/* 	overflow: scroll; */
+}
+/* 컨텐츠 영역 좌측에 네비게이션 view port */
+.view-port-menu-navigator {
+	position: absolute;
+	width: -moz-calc(100% - 1px);
+	width: -webkit-calc(100% - 1px);
+    width: calc(100% - 1px);
+    height: 100%;
+}
+/* 컨텐츠 영역 window */
+.window-content-display {
+	position: relative;
+	float: left;
+	width: -moz-calc(100% - 250px);
+	width: -webkit-calc(100% - 250px);
+    width: calc(100% - 250px);
+	height: 100%;
+}
+/* content display 의 현재 보여주고 있는 Content 의 depth 표시하는 view port */
+.view-port-depth-indicator {
+	position: relative;
+	width: 100%;
+	height: 23px;
+	border-bottom: 1px solid #A3A3A3;
+	background-color: #EDEDED;
+	background: -webkit-linear-gradient(#FFFFFF 0%, #D4D4D4 100%);
+	background: -moz-linear-gradient(#FFFFFF 0%, #D4D4D4 100%);
+	background: -ms-linear-gradient(#FFFFFF 0%, #D4D4D4 100%);
+	background: -o-linear-gradient(#FFFFFF 0%, #D4D4D4 100%);
+	background: linear-gradient(#FFFFFF 0%, #D4D4D4 100%);
+}
+/* content display 되는 view port */
+.view-port-content-display {
+	position: relative;
+	width: 100%;
+	height: -moz-calc(100% - 24px);
+	height: -webkit-calc(100% - 24px);
+    height: calc(100% - 24px);
+}
+
+
+/*--- 화면 하단의 상태바 설정 ---*/
+/* 화면 최하단의 상태바 영역 */
+.window-bottom-status-bar:before {
+	content: '';
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top: 1px;
+	bottom: 0px;
+	border-top: 1px solid #CBCBCB;
+	background-color: #B9B9B9;
+	background: -webkit-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
+	background: -moz-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
+	background: -ms-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
+	background: -o-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
+	background: linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
+}
+.window-bottom-status-bar {
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+	left: 0px;
+	height: 24px;
+	background-color: #626262;
+}
+/* 화면 최하단 상태바 영역중, 네비게이션 영역 하단에 존재하는 영역의 view port */
+.view-port-bottom-status-bar-left:before {
+	content: '';
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	bottom: 0px;
+	right: 0px;
+	border-right: 1px solid #7D7D7D;
+}
+.view-port-bottom-status-bar-left {
+	position: relative;
+	width: 250px;
+	height: 100%;
+	float: left;
+}
+/* 화면 최하단 상태바 영역중, 컨텐츠 영역 하단에 존재하는 영역의 view port */
+.view-port-bottom-status-bar-right {
+	position: relative;
+	width: -moz-calc(100% - 250px);
+	width: -webkit-calc(100% - 250px);
+    width: calc(100% - 250px);
+    height: 100%;
+	float: left;
+}
+
+/* navigator 닫기 버튼 */
+.button-close-navigator {
+	cursor: pointer;
+	margin-left: 8px;
+	margin-top: 3.5px;
+	width: 15px;
+	height: 15px;
+	background-image: url("/resource/images/icons_16x16.png");
+}

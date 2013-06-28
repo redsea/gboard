@@ -192,6 +192,10 @@ require_once($application_folder."/third_party/log4php/BGLog.php");
 
 		define('APPPATH', BASEPATH.$application_folder.'/');
 	}
+	
+	// authorization 을 했는지 체크 하기 위한 key value
+	// 해당값은 request header 에 들어 있다.
+	define('_OAUTH_KEY', 'X-authorization');
 
 /*
  * --------------------------------------------------------------------

@@ -426,6 +426,20 @@ class Member_model extends CI_Model {
 		}
 		
 		return $error_code;
+	}
+	
+	/**
+	 * 서비스에 로그인 한다.
+	 *
+	 * @param user_id {string} user id. 값이 없으면 post 로 가져온다.
+	 * @param password {string} password. 값이 없으면 post 로 가져온다.
+	 */
+	public function login($user_id=FALSE, $password=FALSE) {
+		if($user_id) { $user_id = trim($this->input->post2('user_id', TRUE)); }
+		if($password) { $password = trim($this->input->post2('password', TRUE)); }
+	
+		
+		return 1;
 	}	
 }
 ?>

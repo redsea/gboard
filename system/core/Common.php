@@ -363,6 +363,32 @@ if ( ! function_exists('log_message'))
 // ------------------------------------------------------------------------
 
 /**
+* Set Logging Interface
+*
+* 로그키를 설정한다.
+*
+* @access	public
+* @return	void
+*/
+if ( ! function_exists('set_log_key'))
+{
+	function set_log_key($log_key=FALSE)
+	{
+		static $_log;
+
+		if (config_item('log_threshold') == 0)
+		{
+			return;
+		}
+
+		$_log =& load_class('Log');
+		$_log->set_log_key($log_key);
+	}
+}
+
+// ------------------------------------------------------------------------
+
+/**
  * Set HTTP Status Header
  *
  * @access	public

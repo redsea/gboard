@@ -10,15 +10,13 @@
 |
 */
 
-/*
-$hook['post_controller_constructor'][] = array(
+$hook['pre_controller'][] = array(
 		'class'    => 'Gboard_hook',
-		'function' => 'hook_request_content_type',
+		'function' => 'detect_language',
 		'filename' => 'gboard_hook.php',
 		'filepath' => 'hooks',
 		'params'   => array()
 	);
-*/
 
 /* End of file hooks.php */
 /* Location: ./application/config/hooks.php */

@@ -9,7 +9,7 @@ class Myutil {
 	public function result_for_json($result_code=TRUE, $other=FALSE, $controller=FALSE) {
 		$CI = &get_instance();
 		
-		$CI->lang->load('error_message/common');
+		$CI->lang->load('error_message/common', $CI->load->get_var('h_lang'));
 		
 		// controller 파라미터가 valid 하면 controller 에 맞는 메시지를 로딩 한다.
 		$error_message_file = FALSE;
@@ -37,7 +37,7 @@ class Myutil {
 		$tid = $CI->input->get_post2('tid', TRUE);
 		if(!$tid) { $tid = ''; }
 		
-		$ret->tid = $tid;
+		$ret->tid = $tid.'';
 		
 		if($other) {
 			foreach($other as $key=>$value) {

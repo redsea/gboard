@@ -1,10 +1,9 @@
 RewriteEngine On
 
-
+RewriteRule ^main/(.*)$ main/$1 [L]
 RewriteRule ^files/(.*)$ files/$1 [L]
 RewriteRule ^samples/(.*)$ samples/$1 [L]
-RewriteRule ^css/(.*)$ css/$1 [L]
-RewriteRule ^js/(.*)$ js/$1 [L]
+RewriteRule ^resource/(.*)$ resource/$1 [L]
 
 
 RewriteCond $1 !^(index\.php|images|robots\.txt)
