@@ -13,18 +13,40 @@ class Admin extends CI_Controller {
 		
 		// $this->load->get_var('h_lang'); 언어 설정값 가져오기
 		
-		log_message('debug', '-----> create Admin controller. u_lang['.$this->load->get_var('h_lang').']');
 		
+		// 언어를 가져온다. hook 에서 언어 체크 로직에 따라 값을 미리 넣어 두었음.
+		//$this->load->get_var('h_lang');
+		
+		$this->lang->load('default', $this->load->get_var('h_lang'));
+		
+		$this->load->library('session');
 	}
 	
 
 	public function index() {
+		$member_srl = $this->session->userdata('member_srl');
+		$is_root = $this->session->userdata('is_root');
+		
+		if($member_srl) {
+			if($is_root != 'Y') {
+				// TODO 안내 페이지로 넘겨야 한다.
+				//      안내 페이지에는 로그아웃 버튼을 넣어야 한다.
+			
+				log_message('debug', '-----> this page connect only root group');
+				return;
+			}
+			
+			// admin 메인 페이지를 보여 준다.
+			// TODO 로그인 완료 하고 난 다음 보여 주는 것을 완성 해야 한다.
+			//      page 는 형태만 있고, 실제 내용은 ajax 로 호출 하여 완성 해야 한다.
+			
+			$data['title'] = $this->lang->line('page_title_gboard_admin');
+			$this->load->view('common/header', $data);
+			$this->load->view('admin/main');
+			return;
+		}
 	
-		//$this->load->library('user_agent');
-		//log_message('debug', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-		log_message('debug', $this->input->server('HTTP_ACCEPT_LANGUAGE'));
-	
-		$data['title'] = 'Login';
+		$data['title'] = $this->lang->line('page_title_login');
 		$this->load->view('common/header', $data);
 		$this->load->view('admin/login');
 	

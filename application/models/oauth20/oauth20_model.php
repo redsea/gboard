@@ -39,11 +39,24 @@ class Oauth20_model extends CI_Model {
 	 *    모두 access_token 을 발급 해 주어야 한다.(안전빵으로...)
 	 */
 	public function authorizationRequest(&$ret, $api_key=FALSE) {
+		$this->load->library('session');
+	
 		if(!$api_key) { $api_key = trim($this->input->post2('api_key', TRUE)); }
 		if(!$api_key) {
 			$err_code = $this->config->item('oauth20_no_api_key', 'error_code/oauth20');
 			log_message('warn', "authorizationCodeGrant E[$err_code] no api_key[$api_key]");
 			return $err_code;
+		}
+		
+		// 만일 authorization_code 가 session 에 들어 있다면 이 값을 그대로 사용한다.
+		$authorization_code = $this->session->userdata('authorization_code');
+		$client_api_version = $this->session->userdata('client_api_version');
+		
+		if($authorization_code) {
+			$ret['server_api_version'] = $this->config->item('system_api_version', 'my_conf/oauth20');
+			$ret['client_api_version'] = $client_api_version;
+			$ret['code'] = $authorization_code;
+			return $this->success_code;
 		}
 		
 		if(!$this->slave_db) { $this->slave_db = $this->load->database('slave', TRUE); }
@@ -91,7 +104,7 @@ class Oauth20_model extends CI_Model {
 		// access_token 발생시 authorization code 재사용 할 수 있는 로직은 없음(주석 처리도 안함)
 		// 발급을 했는데 2분이 지나도 사용하지 않는 authorization code 가 존재하는지 체크
 		$authorize_code_reuse_tm = time() - $this->config->item('authorization_code_reuse_sec', 'my_conf/oauth20');
-		$authorize_code_reuse_sec = mdate('%Y%m%d%h%i%s', $authorize_code_reuse_tm);
+		$authorize_code_reuse_sec = mdate('%Y%m%d%H%i%s', $authorize_code_reuse_tm);
 		
 		$data_where = array(
 				'client_srl' => $row['client_srl'],
@@ -113,7 +126,7 @@ class Oauth20_model extends CI_Model {
 			$row = $query->row_array(mt_rand(0, $row_count-1));
 			
 			$this->master_db->where(array('client_srl'=>$row['client_srl'], 'authorization_code'=>$row['authorization_code']));
-			$result = $this->master_db->update($this->table_prefix.'oauth20_code', array('c_date'=>mdate('%Y%m%d%h%i%s')));
+			$result = $this->master_db->update($this->table_prefix.'oauth20_code', array('c_date'=>mdate('%Y%m%d%H%i%s')));
 			if(!$result) {
 				// 이건 warn 로그만 찍고 넘어 간다.
 				log_message('error', "authorizationCodeGrant update c_date column in oauth20_code table for reuse authorization code failed");
@@ -130,7 +143,7 @@ class Oauth20_model extends CI_Model {
 		$data_oauth_code = array(
 				'client_srl' => $row['client_srl'],
 				'authorization_code' => $authorization_code,
-				'c_date' => mdate('%Y%m%d%h%i%s')
+				'c_date' => mdate('%Y%m%d%H%i%s')
 			);
 		
 		if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
@@ -141,6 +154,15 @@ class Oauth20_model extends CI_Model {
 			log_message('error', "authorizationCodeGrant E[$error_code] insert authorization_code in oauth20_code table failed");
 			return $err_code;
 		}
+		
+		// 한번 발급된 것은 저장 한다. access_token 발급되면 없앤다.
+		$this->load->model('common/common_model', 'cmodel');
+		$this->cmodel->saveSessionDataByArray(
+				array(
+						'authorization_code' => $ret['code'],
+						'client_api_version' => $ret['client_api_version']
+					)
+			);
 		
 		return $this->success_code;
 	}
@@ -236,11 +258,12 @@ class Oauth20_model extends CI_Model {
 		// access_token 을 생성한다.
 		$access_token = random_string('unique');
 		$expire_tm = time() + $this->config->item('access_token_expire_sec', 'my_conf/oauth20');
+		$expire_date = mdate('%Y%m%d%H%i%s', $expire_tm);
 		
 		$data_oauth = array(
 				'access_token' => $access_token,
-				'access_token_expire' => mdate('%Y%m%d%h%i%s', $expire_tm),
-				'u_date' => mdate('%Y%m%d%h%i%s')
+				'access_token_expire' => $expire_date,
+				'u_date' => mdate('%Y%m%d%H%i%s')
 			);
 		
 		if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
@@ -255,6 +278,19 @@ class Oauth20_model extends CI_Model {
 		
 		$ret['access_token'] = $access_token;
 		$ret['expire_in'] = $this->config->item('access_token_expire_sec', 'my_conf/oauth20').'';
+		
+		// autorization_code 를 세션에서 삭제 한다.
+		$this->load->library('session');
+		$this->session->unset_userdata('authorization_code');
+		
+		// 발급 된 access_token 을 세션에 저장한다.
+		$this->load->model('common/common_model', 'cmodel');
+		$this->cmodel->saveSessionDataByArray(
+				array(
+						'access_token' => $ret['access_token'],
+						'access_token_expire' => $expire_date
+					)
+			);
 		
 		return $this->success_code;
 	}
@@ -337,11 +373,12 @@ class Oauth20_model extends CI_Model {
 		
 		$access_token = random_string('unique');
 		$expire_tm = $curr_tm + $this->config->item('access_token_expire_sec', 'my_conf/oauth20');
+		$expire_date = mdate('%Y%m%d%H%i%s', $expire_tm);
 		
 		$data_oauth = array(
 				'access_token' => $access_token,
-				'access_token_expire' => mdate('%Y%m%d%h%i%s', $expire_tm),
-				'u_date' => mdate('%Y%m%d%h%i%s', $curr_tm)
+				'access_token_expire' => $expire_date,
+				'u_date' => mdate('%Y%m%d%H%i%s', $curr_tm)
 			);
 		
 		if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
@@ -356,6 +393,15 @@ class Oauth20_model extends CI_Model {
 		
 		$ret['access_token'] = $access_token;
 		$ret['expire_in'] = $this->config->item('access_token_expire_sec', 'my_conf/oauth20').'';
+		
+		// refresh 된 access_token 을 session 에 저장한다.
+		$this->load->model('common/common_model', 'cmodel');
+		$this->cmodel->saveSessionDataByArray(
+				array(
+						'access_token' => $ret['access_token'],
+						'access_token_expire' => $expire_date
+					)
+			);
 		
 		return $this->success_code;
 	}

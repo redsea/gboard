@@ -18,4 +18,5 @@ $lang['E020013'] = 'The image you are attempting to upload exceedes the maximum 
 $lang['E020014'] = 'A problem was encountered while attempting to move the uploaded file to the final destination.';
 $lang['E020015'] = '파일 업로드를 실패 했습니다';						// my_conf/file.php 에  upload_path 설정이 없음
 $lang['E020016'] = '파일 업로드를 실패 했습니다';						// local 서버에 파일 저장하기 위해 디렉토리 생성 실패
+$lang['E020017'] = '섬네일 생성을 실패 했습니다';						// thumbnail 생성 요청이 있으나 thumbnail 생성 실패
 ?>

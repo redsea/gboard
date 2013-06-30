@@ -15,9 +15,9 @@ CREATE TABLE  `gbd_sites` (
     KEY  `list_order` (  `list_order` )
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
-# create gboard root site. site URL is admin.gboard.org
+# create gboard root site. site URL is gboard.org
 INSERT INTO  `gbd_sites` (`domain`, `default_language`, `c_date` ) 
-VALUES ('admin.gboard.org',  'ko', NOW( ) +0);
+VALUES ('gboard.org',  'ko', NOW( ) +0);
 
 # create gboard default service site. site URL is gboard.org
 INSERT INTO  `gbd_sites` (`domain`, `is_default`, `default_language`, `list_order`, `c_date` ) 
@@ -54,11 +54,12 @@ VALUES ( 2,  "default_group_ready_member",  "Y", 3, NOW( ) +0 ) ;
 
 
 # create gbd_member table. this table manage member
+DROP TABLE IF EXISTS  `gbd_member`;
 CREATE TABLE `gbd_member` ( 
     `member_srl` bigint(11) NOT NULL AUTO_INCREMENT, 
     `user_id` varchar(128) NOT NULL, 
     `email_address` varchar(128) NOT NULL, 
-    `password` varchar(128) NOT NULL, 
+    `user_password` varchar(128) NOT NULL, 
     `user_name` varchar(64) NOT NULL, 
     `nick_name` varchar(64) NOT NULL, 
     `find_account_question` varchar(8) DEFAULT NULL, 
@@ -89,7 +90,7 @@ ALTER TABLE  `gbd_member` ADD INDEX (  `c_date` ) ;
 INSERT INTO `gbd_member` (
     `user_id`, 
     `email_address`, 
-    `password`, 
+    `user_password`, 
     `user_name`, 
     `nick_name`, 
     `list_order`, 
@@ -101,7 +102,7 @@ INSERT INTO `gbd_member` (
 VALUES (
     "dhkim94@gmail.com",
     "dhkim94@gmail.com",
-    "123",
+    "202cb962ac59075b964b07152d234b70",
     "김대희",
     "루트",
     -1,
@@ -115,7 +116,7 @@ VALUES (
 INSERT INTO `gbd_member` (
     `user_id`, 
     `email_address`, 
-    `password`, 
+    `user_password`, 
     `user_name`, 
     `nick_name`, 
     `list_order`, 
@@ -127,7 +128,7 @@ INSERT INTO `gbd_member` (
 VALUES (
     "nobody",
     "dhkim94@gmail.com",
-    "123",
+    "202cb962ac59075b964b07152d234b70",
     "노바디",
     "노바디",
     -2, 
@@ -139,6 +140,7 @@ VALUES (
 
 
 # create gbd_member_extra. this table manage member's extra information
+DROP TABLE IF EXISTS  `gbd_member_extra`;
 CREATE TABLE `gbd_member_extra` (
 	`member_srl` bigint(11) NOT NULL, 
     `homepage` varchar(256) DEFAULT NULL, 
@@ -146,7 +148,7 @@ CREATE TABLE `gbd_member_extra` (
     `birthday` char(8) DEFAULT NULL, 
     `gender` char(2) DEFAULT NULL, 
     `country` varchar(8) DEFAULT NULL, 
-    `country_phone_number` varchar(8) DEFAULT NULL, 
+    `country_call_code` varchar(8) DEFAULT NULL, 
     `mobile_phone_number` varchar(16) DEFAULT NULL, 
     `phone_number` varchar(16) DEFAULT NULL, 
     `account_social_type` varchar(32) DEFAULT NULL, 
@@ -179,6 +181,7 @@ INSERT INTO `gbd_member_extra` (
 
 
 # create gbd_member_group_member. this table manage group of member
+DROP TABLE IF EXISTS  `gbd_member_group_member`;
 CREATE TABLE `gbd_member_group_member` (
     `group_srl` bigint(11) NOT NULL, 
     `member_srl` bigint(11) NOT NULL, 
@@ -224,6 +227,7 @@ VALUES (
 
 
 # create gbd_files. this table manage uploaded file
+DROP TABLE IF EXISTS  `gbd_files`;
 CREATE TABLE `gbd_files` (
     `file_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
     `member_srl` bigint(11) NOT NULL, 
@@ -252,6 +256,7 @@ CREATE TABLE `gbd_files` (
 
 
 # create gbd_country_code. this table manage country code
+DROP TABLE IF EXISTS  `gbd_country_code`;
 CREATE TABLE `gbd_country_code` (
     `country_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
     `alpha2` char(2) NOT NULL, 
@@ -273,6 +278,7 @@ CREATE TABLE `gbd_country_code` (
 
 
 # create gbd_language_code. this table manage language code
+DROP TABLE IF EXISTS  `gbd_language_code`;
 CREATE TABLE `gbd_language_code` (
     `language_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
     `alpha2` char(2) DEFAULT NULL, 
@@ -289,6 +295,7 @@ CREATE TABLE `gbd_language_code` (
 
 
 # create gbd_oauth20. this table manage oauth key
+DROP TABLE IF EXISTS  `gbd_oauth20`;
 CREATE TABLE `gbd_oauth20` (
     `client_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
     `api_key` char(32) NOT NULL, 
@@ -318,6 +325,7 @@ INSERT INTO `gbd_oauth20` (
 
 
 # create gbd_oauth20_extra. this table manage extra information of using oauth client
+DROP TABLE IF EXISTS  `gbd_oauth20_extra`;
 CREATE TABLE `gbd_oauth20_extra` (
     `client_srl` bigint(11) NOT NULL, 
     `company_name` varchar(64) NOT NULL, 
@@ -350,6 +358,7 @@ INSERT INTO `gbd_oauth20_extra` (
 );
 
 # create gbd_oauth20_code. authorization, access_token 발급을 관리하는 테이블
+DROP TABLE IF EXISTS  `gbd_oauth20_code`;
 CREATE TABLE `gbd_oauth20_code` (
     `client_srl` bigint(11) NOT NULL, 
     `authorization_code` char(32) DEFAULT NULL, 
@@ -363,3 +372,17 @@ CREATE TABLE `gbd_oauth20_code` (
     FOREIGN KEY( `client_srl`) REFERENCES `gbd_oauth20`(`client_srl`) ON DELETE CASCADE, 
     PRIMARY KEY(`authorization_code`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+
+# create gbd_sessions. session table. PHP 기본 세션을 사용하지 않고 table 을 사용한다.
+DROP TABLE IF EXISTS  `gbd_sessions`;
+CREATE TABLE `gbd_sessions` (
+    `session_id` varchar(40) DEFAULT '0' NOT NULL,
+    `ip_address` varchar(16) DEFAULT '0' NOT NULL,
+    `user_agent` varchar(120) NOT NULL,
+    `last_activity` int(10) unsigned DEFAULT 0 NOT NULL,
+    `user_data` text NOT NULL,
+    PRIMARY KEY (`session_id`),
+    KEY `last_activity_idx` (`last_activity`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+

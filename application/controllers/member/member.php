@@ -16,6 +16,7 @@ class Member extends CI_Controller {
 		$this->load->library('myutil');
 		
 		$this->load->model('common/common_model', 'cmodel');
+		$this->load->model('member/member_model', 'model');
 		
 		$this->success_code = $this->config->item('common_success', 'error_code/common');
 	}
@@ -32,8 +33,7 @@ class Member extends CI_Controller {
 	 * 1. social 로 가입 했다면 social 에서 받은 social user id 를 uesr_id 로 사용해야 한다.
 	 *
 	 */
-	public function joina() {
-		$this->load->model('member/member_model', 'model');
+	public function join() {
 		$result = $this->model->join();
 		
 		// TODO 가입을 했으니, 로그인 까지 시켜 줘야 하는데, email confirm 때문에 로그인 대기를 타야 한다.
@@ -50,8 +50,13 @@ class Member extends CI_Controller {
 			);
 	}
 	
+	/**
+	 * 로그인 할때 사용하는 API
+	 * 로그인이 완료 되면 호출 할 URL 주소를 넘긴다.
+	 */
 	public function login() {
-		$result = $this->cmodel->getAuthorization();
+		// access_token 체크
+		$result = $this->cmodel->validAuthorization();
 		if($result != $this->success_code) {
 			$this->load->view(
 				'common/output_view', 
@@ -63,28 +68,33 @@ class Member extends CI_Controller {
 			);
 			return;
 		}
-	
-	
-/*
-	
-	
-		$this->load->model('member/member_model', 'model');
-		$result = $this->model->login();
-*/
-	
-		echo "login";
-	}
-	
-	
-	public function hello() {
-		$this->load->model('member_group/member_group_model', 'model');
 		
-		// TODO oauth 이후에 진행한다.
+		$user_id = trim($this->input->post2('user_id', TRUE));
+		$password = trim($this->input->post2('password', TRUE));
 		
+		$ret = array();
 		
-		echo $this->model->dhkim();
-		
-		//echo "hello group";
+		$result = $this->model->login($ret, $user_id, $password);
+		if($result != $this->success_code) {
+			$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'member'
+				)
+			);
+		} else {
+			$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'member',
+						'other' => $ret
+				)
+			);
+		}
 	}
 }
 ?>

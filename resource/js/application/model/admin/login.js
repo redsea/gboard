@@ -37,50 +37,12 @@ en : {
 
 
 //--------------------------------------------------
-// Custom binding
-//--------------------------------------------------
-// 로그인 버튼 텍스트 변경(언어 때문에...)
-ko.bindingHandlers.button = {
-	//init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {},
-	update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-		var value = valueAccessor();
-		var valueUnwrapped = ko.utils.unwrapObservable(value); 
-		$(element).button({label:valueUnwrapped});
-	}
-}
-
-ko.bindingHandlers.enabled = {
-	//init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {},
-	update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-		var value = valueAccessor();
-		var valueUnwrapped = ko.utils.unwrapObservable(value); 
-		$(element).button({disabled:'yes'?false:true});
-		
-		
-	}
-}
-
-// 로그인 시도 안내창 보여주기, 숨기기
-ko.bindingHandlers.fvisible = {
-	init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-		var value = valueAccessor();
-		var valueUnwrapped = ko.utils.unwrapObservable(value);
-		$(element).hide();
-	},
-	update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-		var value = valueAccessor();
-		var valueUnwrapped = ko.utils.unwrapObservable(value);
-		
-		if(valueUnwrapped) { $(element).stop(true).fadeIn('slow'); }
-		else { $(element).stop(true).fadeOut('slow'); }
-	}
-}
-
-
-//--------------------------------------------------
 // Login 에서의 actions
 //--------------------------------------------------
 if(!gboard.admin.login.model){gboard.admin.login.action={
+
+user_id: null,
+user_password: null,
 
 // 로그인시 animation setInterval 의 id
 interval: null,
@@ -108,7 +70,9 @@ valid_error: function(result, data) {
 	
 		gboard.admin.login.model.data.try_login(
 			gboard.admin.login.lang[gboard.admin.login.model.language].error_message);
+			
 		gboard.admin.login.model.data.button_enable('yes');
+		gboard.admin.login.model.data.input_enable('yes');
 		return false;
 	}
 	
@@ -118,7 +82,9 @@ valid_error: function(result, data) {
 		gboard.admin.login.action.interval = null;
 	
 		gboard.admin.login.model.data.try_login(data.message);
+		
 		gboard.admin.login.model.data.button_enable('yes');
+		gboard.admin.login.model.data.input_enable('yes');
 		return false;
 	}
 	
@@ -130,15 +96,20 @@ valid_error: function(result, data) {
 cb_login: function(result, jqXHR, data, textStatus, errorThrown) {
 	if(!gboard.admin.login.action.valid_error(result, data)) { return; }
 	
-	// TODO 여기 부터는 login API 를 만들고 다시 진행 해야 한다.
-
-	//console.log('> end login');
-
-		// 안내창을 가리고
-	//gboard.admin.login.model.data.try_login(
-	//	gboard.admin.login.lang[gboard.admin.login.model.language].end_login);
-	//gboard.admin.login.model.data.vis_login_process(false);
-
+	if(!data.request_url) {
+		clearInterval(gboard.admin.login.action.interval);
+		gboard.admin.login.action.interval = null;
+		
+		gboard.admin.login.model.data.try_login(
+			gboard.admin.login.lang[gboard.admin.login.model.language].error_message);
+			
+		gboard.admin.login.model.data.button_enable('yes');
+		gboard.admin.login.model.data.input_enable('yes');
+		return;
+	}
+	
+	// request_url 로 redirect 한다.
+	window.location = data.request_url;
 },
 
 // access_token 결과 받는 callback function
@@ -152,12 +123,16 @@ cb_access_token: function(result, jqXHR, data, textStatus, errorThrown) {
 		
 		gboard.admin.login.model.data.try_login(
 			gboard.admin.login.lang[gboard.admin.login.model.language].error_message);
+			
 		gboard.admin.login.model.data.button_enable('yes');
+		gboard.admin.login.model.data.input_enable('yes');
 		return;
 	}
 	
 	// login 시도
-	gboard.ajax.login(gboard.admin.login.action.cb_login, data.access_token);
+	gboard.ajax.login(gboard.admin.login.action.cb_login, data.access_token,
+			gboard.admin.login.action.user_id,
+			gboard.admin.login.action.user_password);
 },
 
 // authorize 결과 받는 callback function
@@ -171,7 +146,9 @@ cb_authorize: function(result, jqXHR, data, textStatus, errorThrown) {
 		
 		gboard.admin.login.model.data.try_login(
 			gboard.admin.login.lang[gboard.admin.login.model.language].error_message);
+			
 		gboard.admin.login.model.data.button_enable('yes');
+		gboard.admin.login.model.data.input_enable('yes');
 		return;
 	}
 	
@@ -182,16 +159,12 @@ cb_authorize: function(result, jqXHR, data, textStatus, errorThrown) {
 // gboard 에 로그인 시도
 // XXX 왠만하면 이벤트로 빼고 싶은데, 그냥 하자 ㅜㅜ
 login: function(user_id, user_password) {
-	// 버튼을 disabled 시킨다.
-	gboard.admin.login.model.data.button_enable('no');
-
 	// user_id 체크
 	if(!user_id) {
 		gboard.admin.login.model.data.try_login(
 			gboard.admin.login.lang[gboard.admin.login.model.language].no_user_id);
 		gboard.admin.login.model.data.vis_login_process(true);
-		gboard.admin.login.model.data.button_enable('yes');
-		$('#user_id').focus();
+		gboard.admin.login.model.data.user_id_focus(true);
 		return;
 	}
 	
@@ -199,16 +172,22 @@ login: function(user_id, user_password) {
 		gboard.admin.login.model.data.try_login(
 			gboard.admin.login.lang[gboard.admin.login.model.language].no_user_password);
 		gboard.admin.login.model.data.vis_login_process(true);
-		gboard.admin.login.model.data.button_enable('yes');
-		$('#password').focus();
+		gboard.admin.login.model.data.user_password_focus(true);
 		return;
 	}
+
+	// 버튼을 disabled 시킨다.
+	gboard.admin.login.model.data.button_enable('no');
+	gboard.admin.login.model.data.input_enable('no');
 
 
 	gboard.admin.login.model.data.try_login(
 		gboard.admin.login.lang[gboard.admin.login.model.language].try_login);
 	gboard.admin.login.model.data.vis_login_process(true);
 	gboard.admin.login.action.interval = setInterval(this.progress, 200);
+	
+	gboard.admin.login.action.user_id = user_id;
+	gboard.admin.login.action.user_password = user_password;
 	
 	gboard.ajax.authorize(gboard.admin.login.action.cb_authorize);
 }
@@ -224,13 +203,20 @@ if(!gboard.admin.login.model){gboard.admin.login.model={
 language: 'ko',
 
 data : {
-	type_user_id: ko.observable(gboard.admin.login.lang.type_user_id),
-	type_user_password: ko.observable(gboard.admin.login.lang.type_user_password),
-	button_login: ko.observable(gboard.admin.login.lang.button_login),
-	button_enable: ko.observable('yes'),
-	vis_login_process: ko.observable(false),
-	try_login: ko.observable(gboard.admin.login.lang.try_login),
-	progress: ko.observable(gboard.admin.login.lang.progress)
+	// text 변경
+	type_user_id: ko.observable(gboard.admin.login.lang.type_user_id),				// 아이디 입력 안내 문구
+	type_user_password: ko.observable(gboard.admin.login.lang.type_user_password),	// 패스워드 입력 안내 무구
+	button_login: ko.observable(gboard.admin.login.lang.button_login),				// 버튼 텍스트
+	try_login: ko.observable(gboard.admin.login.lang.try_login),					// 로그인 진행 안내 문구
+	progress: ko.observable(gboard.admin.login.lang.progress),						// 로그인 진행 animation 문구(dot 증가 하는 것)
+	
+	// 형태 변경
+	user_id_focus: ko.observable(true),			// user id 입력창 focus
+	user_password_focus: ko.observable(false),	// user password 입력창 focus
+	input_enable: ko.observable('yes'),			// input box enable, disable
+	button_enable: ko.observable('yes'),		// button enable, disable
+	vis_login_process: ko.observable(false)		// login 안내창 visible, envisible
+	
 },
 
 init: function(clang) {
@@ -248,3 +234,56 @@ init: function(clang) {
 };}
 
 
+//--------------------------------------------------
+// Custom binding
+//--------------------------------------------------
+// 로그인 버튼 텍스트 변경 binding
+ko.bindingHandlers.m_button = {
+	//init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {},
+	update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+		var value = valueAccessor();
+		var valueUnwrapped = ko.utils.unwrapObservable(value);
+		
+		$(element).button({label:valueUnwrapped});
+	}
+};
+
+// 로그인 버튼 enable, disable binding
+ko.bindingHandlers.m_button_enabled = {
+	//init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {},
+	update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+		var value = valueAccessor();
+		var valueUnwrapped = ko.utils.unwrapObservable(value);
+		
+		$(element).button({disabled:(valueUnwrapped=='yes'?false:true)});
+	}
+};
+
+// 로그인 시도 안내창 보여주기, 숨기기 binding
+ko.bindingHandlers.m_visible = {
+	init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+		var value = valueAccessor();
+		var valueUnwrapped = ko.utils.unwrapObservable(value);
+		
+		$(element).hide();
+	},
+	update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+		var value = valueAccessor();
+		var valueUnwrapped = ko.utils.unwrapObservable(value);
+		
+		if(valueUnwrapped) { $(element).stop(true).fadeIn('slow'); }
+		else { $(element).stop(true).fadeOut('slow'); }
+	}
+};
+
+// 아이디, 패스워드 입력 input box enable, disable binding
+ko.bindingHandlers.m_input_enabled = {
+	//init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {},
+	update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+		var value = valueAccessor();
+		var valueUnwrapped = ko.utils.unwrapObservable(value); 
+		
+		if(valueUnwrapped == 'yes') { $(element).removeAttr('disabled'); }
+		else						{ $(element).attr('disabled', 'disabled'); }
+	}
+};

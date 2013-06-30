@@ -57,11 +57,15 @@ access_token: function(cb, code) {
 		});
 },
 
-login: function(cb, access_token) {
+login: function(cb, access_token, user_id, user_passowrd) {
 	$.ajax({
 			type: 'POST',
 			url: gboard.ajax.url.login,
 			headers: {'X-authorization':access_token},
+			data: {
+				user_id: user_id,
+				password: user_passowrd
+			},
 			success: function(data, textStatus, jqXHR) {
 				try {
 					if(typeof data == 'string') { data = eval('('+data+')'); }
@@ -102,7 +106,7 @@ access_token: function(input) {
 },
 
 // member login adapter
-login: function(intput) {
+login: function(input) {
 	// XXX 현재는 adapter 로직이 필요 없음.
 	// XXX 추후 필요하면 input 에 구겨 넣자.
 	return input;

@@ -341,7 +341,7 @@ class Mfile_model extends CI_Model {
 				'thumbnail_width' => $thumbnail_info ? $thumbnail_info['image_width'] : 0,
 				'thumbnail_height' => $thumbnail_info ? $thumbnail_info['image_height'] : 0,
 				'ipaddress' => $this->input->ip_address(),
-				'c_date' => mdate('%Y%m%d%h%i%s')
+				'c_date' => mdate('%Y%m%d%H%i%s')
 			);
 		
 		$result = $this->master_db->insert($this->table_prefix.'files', $data);

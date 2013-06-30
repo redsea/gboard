@@ -30,7 +30,7 @@ $config['base_url']	= '';
 | path to your installation.
 |
 */
-$config['my_image_server_url']	= 'img.gboard.org';
+$config['my_image_server_url']	= 'gboard.org';
 
 /*
 |--------------------------------------------------------------------------
@@ -270,12 +270,12 @@ $config['encryption_key'] = 'dhkim';
 | 'sess_time_to_update'		= how many seconds between CI refreshing Session Information
 |
 */
-$config['sess_cookie_name']		= 'ci_session';
-$config['sess_expiration']		= 7200;
+$config['sess_cookie_name']		= '_gbd_sess_';
+$config['sess_expiration']		= 7200;		// 2시간 유지
 $config['sess_expire_on_close']	= FALSE;
-$config['sess_encrypt_cookie']	= FALSE;
-$config['sess_use_database']	= FALSE;
-$config['sess_table_name']		= 'ci_sessions';
+$config['sess_encrypt_cookie']	= TRUE;
+$config['sess_use_database']	= TRUE;
+$config['sess_table_name']		= 'gbd_sessions';
 $config['sess_match_ip']		= FALSE;
 $config['sess_match_useragent']	= TRUE;
 $config['sess_time_to_update']	= 300;

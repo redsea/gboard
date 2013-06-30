@@ -19,7 +19,7 @@
 	width: 9px;
 	height: 16px;
 	background-position-x: -85px;
-	background-image: url(images/icons_16x16.png);
+	background-image: url("/resource/images/icons_16x16.png");
 	display: inline-block;
 }
 
@@ -30,7 +30,7 @@
 	width: 9px;
 	height: 16px;
 	background-position-x: -68px;
-	background-image: url(images/icons_16x16.png);
+	background-image: url("/resource/images/icons_16x16.png");
 	display: inline-block;
 }
 
@@ -52,7 +52,7 @@
 	width: 16px;
 	height: 16px;
 	background-position-x: -52px;
-	background-image: url(images/icons_16x16.png);
+	background-image: url("/resource/images/icons_16x16.png");
 	display: inline-block;
 }
 
@@ -63,7 +63,7 @@
 	width: 16px;
 	height: 16px;
 	background-position-x: -34px;
-	background-image: url(images/icons_16x16.png);
+	background-image: url("/resource/images/icons_16x16.png");
 	display: inline-block;
 }
 

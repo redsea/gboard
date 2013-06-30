@@ -14,15 +14,15 @@
 				<div class="view-port-login-body">
 					<div class="login-input-box">
 						<label for="user_id" data-bind="text:type_user_id">사용자 아이디</label>
-						<input class="login-body-input" type="text" id="user_id" maxlength="64" tabindex="1" autofocus />
+						<input class="login-body-input" data-bind="m_input_enabled:input_enable, hasfocus:user_id_focus" type="text" id="user_id" maxlength="64" tabindex="1" />
 					</div>
 					<div class="login-input-box">
 						<label for="password" data-bind="text:type_user_password">암호</label>
-						<input class="login-body-input" type="password" id="password" maxlength="64" tabindex="2" />
+						<input class="login-body-input" data-bind="m_input_enabled:input_enable, hasfocus:user_password_focus" type="password" id="password" maxlength="64" tabindex="2" />
 					</div>
 					
-					<button id="login-btn" data-bind="button:button_login, enabled:button_enable">로그인</button>
-					<div class="login-result" data-bind="fvisible:vis_login_process">
+					<button id="login-btn" data-bind="m_button:button_login, m_button_enabled:button_enable">로그인</button>
+					<div class="login-result" data-bind="m_visible:vis_login_process">
 						<div class="login-result-txt" data-bind="text:try_login"></div>
 						<div class="login-result-txt" data-bind="text:progress"></div>
 					</div>

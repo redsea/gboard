@@ -11,6 +11,7 @@ ul {
 	list-style: none;
 }
 
+/* input form 설정 */
 input {
 	width: 378px;
 	height: 30px;
@@ -26,6 +27,12 @@ input {
 	font-size: 12px;
 	padding-left: 6px;
 	padding-right: 6px;
+}
+
+/* input text, input passsword 창 disable 설정 */
+input[type="text"]:disabled, input[type="password"]:disabled {
+	background-color: #f1f1f1;
+	color: #dcdcdc;
 }
 
 @font-face {

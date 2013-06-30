@@ -1,28 +1,16 @@
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<link rel="stylesheet" href="css/jquery/smoothness/jquery-ui-1.10.2.custom.min.css" type="text/css" />
-	
-	<link rel="stylesheet" href="css/view/common.css" type="text/css" />
-	<link rel="stylesheet" href="css/view/ui-component.css" type="text/css" />
-	
-	<!--style type="text/css"></style-->
-	
-	<script type="text/javascript" src="js/lib/jquery/core/jquery-1.9.1.min.js"></script>
-	<script type="text/javascript" src="js/lib/jquery/ui/jquery-ui-1.10.2.custom.min.js"></script>
-	<script type="text/javascript" src="js/lib/knockout/knockout-2.2.1.js"></script>
-	
-	<!--script type="text/javascript"></script-->
-	
-	<title>Gamma Board</title>
+	<!--link rel="stylesheet" href="/resource/css/application/admin/login.css" type="text/css" /-->
+	<link rel="stylesheet" href="/resource/css/application/component/tree.css" type="text/css" />
+	<script type="text/javascript" src="/resource/js/lib/jquery/plugin/jquery.cookie.js"></script>
+	<!--script type="text/javascript" src="/resource/js/application/model/admin/login.js"></script-->
+	<!--script type="text/javascript" src="/resource/js/application/view/admin/login.js"></script-->
 </head>
 <body>
-
 <div class="window-container">
 	<div class="window-content">
 		<div class="window-menu-navigator">
 			<div class="view-port-menu-navigator">
-			
 			
 				<ul class="navigator-tree">
 					<li class="navigator-tree-row">
@@ -46,10 +34,10 @@
 						<span class="navigator-tree-row-label">DIR3</span>
 					</li>
 				</ul>
-				
-				
+			
 			</div>
 		</div>
+	
 		<div class="window-content-display">
 			<div class="view-port-depth-indicator"></div>
 			<div class="view-port-content-display">
@@ -67,13 +55,14 @@
 	<div class="window-top-quick-bar">
 		<div class="view-port-top-quick-bar"></div>
 	</div>
+	
 	<div class="window-bottom-status-bar">
 		<div class="view-port-bottom-status-bar-left"></div>
 		<div class="view-port-bottom-status-bar-right">
 			<div class="button-close-navigator"></div>
 		</div>
 	</div>
+	
 </div>
-
 </body>
 </html>
