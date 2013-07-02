@@ -7,12 +7,16 @@ class Common_model extends CI_Model {
 	function __construct() {
 		parent::__construct();
 		
+		$this->load->helper('date');
+		
 		$this->config->load('my_conf/common', TRUE);
+		$this->config->load('my_conf/oauth20', TRUE);
 		$this->config->load('error_code/common', TRUE);
 		
 		$this->table_prefix = $this->config->item('table_prefix', 'my_conf/common');
 		$this->success_code = $this->config->item('common_success', 'error_code/common');
 		
+		$this->master_db = FALSE;
 		$this->slave_db = FALSE;
 	}
 	
@@ -21,12 +25,18 @@ class Common_model extends CI_Model {
 	 * 만일 접속 할때 마다 access_token expire 시간을 연장하고 싶다면, 여기에서 하면 된다.
 	 * session 값 업데이트 및 table column update 해야 한다.
 	 * 
-	 * @return 성공하면 성공 코드를 리턴하고, 실패라면 정의 된 에러 코드를 리턴한다.
+	 * @param access_token {string} 체크할 access_token. 만일 FALSE 이면 http request header 에서 가져온다.
+	 * @param auto_update_expire {boolean} access token expire time 을 자동으로 업데이트 할지 여부
+	 *									TRUE 라면 본 함수를 호출 할때 마다 expire time 은 최초 상태로 초기화 됨.
+	 *									FALSE 라면 초기화 되지 않음
+	 * @return {string} 성공하면 성공 코드를 리턴하고, 실패라면 정의 된 에러 코드를 리턴한다.
 	 */
-	public function validAuthorization() {
+	public function validAuthorization($access_token=FALSE, $auto_update_expire=FALSE) {
 		$this->load->helper('date');
 		
-		$access_token = $this->input->get_request_header(_OAUTH_KEY, TRUE);
+		if(!$access_token) {
+			$access_token = $this->input->get_request_header(_OAUTH_KEY, TRUE);
+		}
 		if(!$access_token) {
 			$err_code = $this->config->item('common_no_auth', 'error_code/common');
 			log_message('warn', "getAuthorization E[$err_code] no header "._OAUTH_KEY."[$access_token]");
@@ -46,6 +56,31 @@ class Common_model extends CI_Model {
 						"access_token_expire[$access_token_expire_in_session]");
 				return $err_code;
 			}
+			
+			// 자동 유지 조건을 주면 access_token 확인을 하면 expire_time 이 늘어 나도록 한다.
+			// 웹 페이지에서 사용할때 요청 시마다 접속 시간 늘이기 위해서 추가 함.
+			// 이런 경우는 access_token 값은 바꾸지 않고 expire_time 만 업데이트 한다.
+			if($auto_update_expire) {
+				$expire_tm = time() + $this->config->item('access_token_expire_sec', 'my_conf/oauth20');
+				$expire_date = mdate('%Y%m%d%H%i%s', $expire_tm);
+		
+				$data_oauth = array(
+					'access_token_expire' => $expire_date,
+					'u_date' => mdate('%Y%m%d%H%i%s')
+				);
+		
+				if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
+				$this->master_db->where('access_token', $access_token);
+				$result = $this->master_db->update($this->table_prefix.'oauth20_code', $data_oauth);
+				if(!$result) {
+					$err_code = $this->config->item('common_au_expire_access_token_', 'error_code/common');
+					log_message('error', "validAuthorization E[$err_code] auto update access_token[$access_token] expire time failed");
+					return $err_code;
+				}
+			
+				$this->saveSessionDataByArray(array('access_token_expire' => $expire_date));
+			}
+			
 			return $this->success_code;
 		}
 		
@@ -67,6 +102,31 @@ class Common_model extends CI_Model {
 		
 		$row = $query->row_array();
 		$query->free_result();
+		
+		// 자동 유지 조건을 주면 access_token 확인을 하면 expire_time 이 늘어 나도록 한다.
+		// 웹 페이지에서 사용할때 요청 시마다 접속 시간 늘이기 위해서 추가 함.
+		// 이런 경우는 access_token 값은 바꾸지 않고 expire_time 만 업데이트 한다.
+		if($auto_update_expire) {
+			$expire_tm = time() + $this->config->item('access_token_expire_sec', 'my_conf/oauth20');
+			$expire_date = mdate('%Y%m%d%H%i%s', $expire_tm);
+		
+			$data_oauth = array(
+				'access_token_expire' => $expire_date,
+				'u_date' => mdate('%Y%m%d%H%i%s')
+			);
+		
+			if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
+			$this->master_db->where('access_token', $access_token);
+			$result = $this->master_db->update($this->table_prefix.'oauth20_code', $data_oauth);
+			if(!$result) {
+				$err_code = $this->config->item('common_au_expire_access_token_', 'error_code/common');
+				log_message('error', "validAuthorization E[$err_code] auto update access_token[$access_token] expire time failed");
+				return $err_code;
+			}
+			
+			$this->saveSessionDataByArray(
+				array('access_token' => $access_token, 'access_token_expire' => $expire_date));
+		}
 		
 		return $this->success_code;
 	}
@@ -175,7 +235,7 @@ class Common_model extends CI_Model {
 	 *							is_root					- (o) member_group.is_root
 	 *							group_image_mark		- (x) member_group.image_mark
 	 *							index_module_srl		- (x) site.index_module_srl
-	 *							site_domain				- (x) site.domain
+	 *							site_domain				- (o) site.domain
 	 *							site_default_language	- (x) site.default_language
 	 *							site_image_mark			- (x) site.image_mark
 	 */
@@ -202,6 +262,7 @@ class Common_model extends CI_Model {
 			
 		$session_data['group_srl'] = $member_group_info['group_srl'];
 		$session_data['is_root'] = $member_group_info['is_root'];
+		$session_data['domain'] = $member_group_info['site_domain'];
 			
 		$this->session->set_userdata($session_data);
 		

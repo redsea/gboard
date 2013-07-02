@@ -56,7 +56,7 @@ class Member extends CI_Controller {
 	 */
 	public function login() {
 		// access_token 체크
-		$result = $this->cmodel->validAuthorization();
+		$result = $this->cmodel->validAuthorization(FALSE, TRUE);
 		if($result != $this->success_code) {
 			$this->load->view(
 				'common/output_view', 

@@ -271,7 +271,7 @@ $config['encryption_key'] = 'dhkim';
 |
 */
 $config['sess_cookie_name']		= '_gbd_sess_';
-$config['sess_expiration']		= 7200;		// 2시간 유지
+$config['sess_expiration']		= 3600;		// 1시간 유지
 $config['sess_expire_on_close']	= FALSE;
 $config['sess_encrypt_cookie']	= TRUE;
 $config['sess_use_database']	= TRUE;

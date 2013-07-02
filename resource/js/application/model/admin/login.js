@@ -39,7 +39,7 @@ en : {
 //--------------------------------------------------
 // Login 에서의 actions
 //--------------------------------------------------
-if(!gboard.admin.login.model){gboard.admin.login.action={
+if(!gboard.admin.login.action){gboard.admin.login.action={
 
 user_id: null,
 user_password: null,
@@ -235,7 +235,7 @@ init: function(clang) {
 
 
 //--------------------------------------------------
-// Custom binding
+// Login Custom binding
 //--------------------------------------------------
 // 로그인 버튼 텍스트 변경 binding
 ko.bindingHandlers.m_button = {
