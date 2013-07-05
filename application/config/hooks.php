@@ -12,7 +12,15 @@
 
 $hook['pre_controller'][] = array(
 		'class'    => 'Gboard_hook',
-		'function' => 'detect_language',
+		'function' => 'detectLanguage',
+		'filename' => 'gboard_hook.php',
+		'filepath' => 'hooks',
+		'params'   => array()
+	);
+	
+$hook['post_controller_constructor'][] = array(
+		'class'    => 'Gboard_hook',
+		'function' => 'preLoad',
 		'filename' => 'gboard_hook.php',
 		'filepath' => 'hooks',
 		'params'   => array()

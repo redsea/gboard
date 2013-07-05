@@ -50,6 +50,7 @@ input[type="text"]:disabled, input[type="password"]:disabled {
 	top: 0px;
 	bottom: 0px;
 	cursor: default;
+	overflow: hidden;
 	
 	font-family: Helvetica, Arial, sans-serif;
 /* 	font-family: 돋음, Dotum, Baekmuk Dotum, Undotum, Apple Gothic, Latin font, sans-serif; */
@@ -61,6 +62,9 @@ input[type="text"]:disabled, input[type="password"]:disabled {
 	user-select: none;
 }
 
+
+/*--- Buffer 나 임시 영역 설정 ---*/
+/* buffer 용으로 사용할 영역 */
 .window-buffer {
 	position: absolute;
 	left: -500px;
@@ -69,6 +73,10 @@ input[type="text"]:disabled, input[type="password"]:disabled {
 	height: 400px;
 	display: none;
 }
+.window-hidden {
+	display: none;
+}
+
 
 /*--- 화면 최상단 퀵바 설정 ---*/
 /* 화면 최상단 quick icon 들이 들어갈 영역 */

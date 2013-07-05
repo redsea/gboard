@@ -1,17 +1,29 @@
 (function($){$(document).ready(function(){
 
-$('#quick-home').click(function(evt){
-	console.log('> move to home');
-});
+var $profile_image = $('#window-hidden-profile-image'),
+	$session_expire_tm = $('#window-hidden-session-expire-time'),
+	$home_url = $('#window-hidden-home-url');
+	
+if($profile_image && $profile_image.length>0) {
+	$profile_image = eval('('+$.trim($profile_image.text())+')');
+} else {
+	$profile_image = false;
+}
 
+if($session_expire_tm && $session_expire_tm.length>0) {
+	$session_expire_tm = $.trim($session_expire_tm.text());
+} else {
+	$session_expire_tm = false;
+}
 
-// TODO quick bar 의 center 영역 overflow detect 해서 scroll bar 넣어 주는 것 진행 해야 한다.
-
-$('#quick-bar-part-center').bind('overflow', function(evt){
-	console.log('overflow');
-});
+if($home_url) {
+	$home_url = $.trim($home_url.text());
+} else {
+	$home_url = false;
+}
+$('#window-buffer').empty();
 
 gboard.admin.main.model.init($.cookie('_u_lang_'), 
-	$('body').attr('x-data-expire'), $('body').attr('x-data-home-url'));
+	$session_expire_tm, $home_url, $profile_image);
 
 });})(jQuery);

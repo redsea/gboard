@@ -1,6 +1,6 @@
 <?php
 /**
- * Service admin Controller
+ * Controller for admin
  *
  * @author	dhkim94@gmail.com
  */
@@ -11,18 +11,15 @@ class Admin extends CI_Controller {
 		//$this->config->load('error_code/member', TRUE);
 		//$this->load->library('myutil');
 		
-		// $this->load->get_var('h_lang'); 언어 설정값 가져오기
 		
 		
 		// 언어를 가져온다. hook 에서 언어 체크 로직에 따라 값을 미리 넣어 두었음.
 		//$this->load->get_var('h_lang');
-		
-		$this->config->load('error_code/common', TRUE);
-		
+				
 		$this->lang->load('default', $this->load->get_var('h_lang'));
 		
 		$this->load->model('common/common_model', 'cmodel');
-		$this->load->library('session');
+		//$this->load->model('admin/admin_model', 'model');
 		
 		$this->success_code = $this->config->item('common_success', 'error_code/common');
 	}
@@ -33,16 +30,17 @@ class Admin extends CI_Controller {
 		$this->load->view('admin/login');
 	}
 
+	/**
+	 * admin 웹페이지 기본 controller. 웹브라우저로 붙을때 여기로 붙는다.
+	 */
 	public function index() {
+		$this->benchmark->mark('start_admin_index');
+		
+		//$user_id = $this->session->userdata('member_srl');
+	
 		$member_srl = $this->session->userdata('member_srl');
 		$is_root = $this->session->userdata('is_root');
 		$access_token = $this->session->userdata('access_token');
-		
-		
-		log_message('debug', '----->member_srl['.$member_srl.']');
-		log_message('debug', '----->is_root['.$is_root.']');
-		log_message('debug', '----->access_token['.$access_token.']');
-		
 		
 		if($member_srl) {
 			if($is_root != 'Y') {
@@ -50,6 +48,9 @@ class Admin extends CI_Controller {
 				//      안내 페이지에는 로그아웃 버튼을 넣어야 한다.
 			
 				log_message('debug', '-----> this page connect only root group');
+				
+				$this->benchmark->mark('end_admin_index');
+				log_message('info', 'admin_index T['.$this->benchmark->elapsed_time('start_admin_index', 'end_admin_index').']');
 				return;
 			}
 			
@@ -57,6 +58,9 @@ class Admin extends CI_Controller {
 			if($result != $this->success_code) {
 				log_message('debug', "Admin index unauthorized access_token[$access_token] goto login");
 				$this->showLoginPage();
+				
+				$this->benchmark->mark('end_admin_index');
+				log_message('info', 'admin_index T['.$this->benchmark->elapsed_time('start_admin_index', 'end_admin_index').']');
 				return;
 			}
 				
@@ -70,23 +74,44 @@ class Admin extends CI_Controller {
 			
 			$session_expire_sec = $this->config->item('sess_expiration');
 			$auth_expire_sec = strtotime($this->session->userdata('access_token_expire')) - time();
-				
-			log_message('debug', '----->session exipre sec['.$session_expire_sec.']');
-			log_message('debug', '----->auth exipre sec['.$auth_expire_sec.']');
-				
-				
+
 			$data['title'] = $this->lang->line('page_title_gboard_admin');
 			// session 만료 기간, access_token 만료 기간 중 작은 값을 만료 기간으로 설정한다.
 			$data['session_expire_time'] = $session_expire_sec >= $auth_expire_sec ? 
 					$auth_expire_sec : $session_expire_sec;
-			$data['home_url'] = 'http://'.$this->session->userdata('site_domain').'/admin';
+			$data['home_url'] = 'http://'.$this->session->userdata('domain').'/admin';
+			$data['profile_image'] = $this->session->userdata('profile_image');
 						
 			$this->load->view('common/header', $data);
 			$this->load->view('admin/main', $data);
+			
+			$this->benchmark->mark('end_admin_index');
+			log_message('info', 'admin_index T['.$this->benchmark->elapsed_time('start_admin_index', 'end_admin_index').']');
 			return;
 		}
 	
 		$this->showLoginPage();
+		
+		$this->benchmark->mark('end_admin_index');
+		log_message('info', 'admin_index T['.$this->benchmark->elapsed_time('start_admin_index', 'end_admin_index').']');
+	}
+	
+	/**
+	 * Admin service 의 menu action 처리
+	 */
+	public function menu() {
+/*
+		$member_srl = $this->session->userdata('member_srl');
+		$is_root = $this->session->userdata('is_root');
+		
+		if(!$member_srl) {
+			
+		}
+*/
+		
+	
+		echo "admin/menu";
+		
 	}
 
 }

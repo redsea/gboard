@@ -11,7 +11,6 @@ class Oauth20 extends CI_Controller {
 		parent::__construct();
 		
 		$this->config->load('my_conf/oauth20', TRUE);
-		$this->config->load('error_code/common', TRUE);
 		
 		$this->load->library('myutil');
 		

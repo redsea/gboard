@@ -13,7 +13,7 @@ class Gboard_hook {//} extends CI_Hooks {
 	 * 2. 두번째 브라우저의 언어값에서 서비스 지원하는 언어가 있는지 체크
 	 * 3. 1,2 모두 체크 실패 하면 서비스 설정 기본 언어로 설정
 	 */
-	public function detect_language() {
+	public function detectLanguage() {
 		$loader = &load_class('Loader', 'core');
 		$config = &load_class('Config', 'core');
 		$input =  &load_class('Input', 'core');
@@ -64,6 +64,26 @@ class Gboard_hook {//} extends CI_Hooks {
 			$input->set_cookie($lang_cookie);
 			return;
 		}
+	}
+	
+	/**
+	 * 공통으로 쓰이는 환경을 로딩 한다. 다음의 역할을 한다.
+	 *
+	 * 1. session library 를 load
+	 * 2. error_code/common (공통 에러 코드 정의) 환경 파일을 로드
+	 * 3. my_conf/common (공통 설정) 환경 파일을 로드
+	 * 4. log key 설정
+	 */
+	public function preLoad() {
+		$CI = &get_instance();
+		
+		$CI->load->library('session');
+		
+		$CI->config->load('error_code/common', TRUE);
+		$CI->config->load('my_conf/common', TRUE);
+		
+		$user_id = $CI->session->userdata('user_id');
+		if($user_id) { set_log_key($user_id); }
 	}
 }
 ?>

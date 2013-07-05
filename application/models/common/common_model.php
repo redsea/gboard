@@ -9,15 +9,40 @@ class Common_model extends CI_Model {
 		
 		$this->load->helper('date');
 		
-		$this->config->load('my_conf/common', TRUE);
 		$this->config->load('my_conf/oauth20', TRUE);
-		$this->config->load('error_code/common', TRUE);
+		
+		$this->yes = $this->config->item('yes', 'my_conf/common');
 		
 		$this->table_prefix = $this->config->item('table_prefix', 'my_conf/common');
 		$this->success_code = $this->config->item('common_success', 'error_code/common');
 		
 		$this->master_db = FALSE;
 		$this->slave_db = FALSE;
+	}
+	
+	/**
+	 * 접근한 유저가 root(admin) 인지 체크 한다.
+	 *
+	 * @param member_srl {string} FALSE 이면 자동으로 session 에서 값을 가져 온다
+	 * @param is_root {string} FALSE 이면 자동으로 session 에서 값을 가져 온다.
+	 * @return {string} error code
+	 */
+	public function isAdmin(&$member_srl=FALSE, $is_root=FALSE) {
+		if(!$member_srl) { $member_srl = $this->session->userdata('member_srl'); }
+		if(!$member_srl) {
+			$error_code = $this->config->item('common_not_logined', 'error_code/common');
+			log_message('warn', "getServiceMenu E[$err_code] not logined");
+			return $error_code;
+		}
+		
+		if(!$is_root) { $is_root = $this->session->userdata('is_root'); }
+		if(!$is_root || strtoupper($is_root) != $this->yes) {
+			$error_code = $this->config->item('common_use_only_root', 'error_code/common');
+			log_message('warn', "getServiceMenu E[$err_code] have no right. member_srl[$member_srl] is not admin");
+			return $error_code;
+		}
+		
+		return $this->success_code;
 	}
 	
 	/**
@@ -32,20 +57,20 @@ class Common_model extends CI_Model {
 	 * @return {string} 성공하면 성공 코드를 리턴하고, 실패라면 정의 된 에러 코드를 리턴한다.
 	 */
 	public function validAuthorization($access_token=FALSE, $auto_update_expire=FALSE) {
-		$this->load->helper('date');
-		
 		if(!$access_token) {
 			$access_token = $this->input->get_request_header(_OAUTH_KEY, TRUE);
 		}
 		if(!$access_token) {
+			$access_token = $this->session->userdata('access_token');
+		}
+		if(!$access_token) {
 			$err_code = $this->config->item('common_no_auth', 'error_code/common');
-			log_message('warn', "getAuthorization E[$err_code] no header "._OAUTH_KEY."[$access_token]");
+			log_message('warn', "getAuthorization E[$err_code] no access_token in header or session "._OAUTH_KEY);
 			return $err_code;
 		}
 		
 		// 1. access_token session 이 존재하면 
 		//    넘겨 받은 access_token 값을 비교하여, 같으면 유효 기간을 체크 해서 인증 성공 여부를 리턴한다.
-		$this->load->library('session');
 		$access_token_in_session = $this->session->userdata('access_token');
 		$access_token_expire_in_session = $this->session->userdata('access_token_expire');
 		
@@ -73,7 +98,7 @@ class Common_model extends CI_Model {
 				$this->master_db->where('access_token', $access_token);
 				$result = $this->master_db->update($this->table_prefix.'oauth20_code', $data_oauth);
 				if(!$result) {
-					$err_code = $this->config->item('common_au_expire_access_token_', 'error_code/common');
+					$err_code = $this->config->item('common_au_expire_access_token', 'error_code/common');
 					log_message('error', "validAuthorization E[$err_code] auto update access_token[$access_token] expire time failed");
 					return $err_code;
 				}
@@ -119,7 +144,7 @@ class Common_model extends CI_Model {
 			$this->master_db->where('access_token', $access_token);
 			$result = $this->master_db->update($this->table_prefix.'oauth20_code', $data_oauth);
 			if(!$result) {
-				$err_code = $this->config->item('common_au_expire_access_token_', 'error_code/common');
+				$err_code = $this->config->item('common_au_expire_access_token', 'error_code/common');
 				log_message('error', "validAuthorization E[$err_code] auto update access_token[$access_token] expire time failed");
 				return $err_code;
 			}
@@ -191,8 +216,12 @@ class Common_model extends CI_Model {
 		return FALSE;
 	}
 	
+	/**
+	 * 세션에 원하는 데이터를 저장한다.
+	 *
+	 * @param values {array} session 에 저장할 데이터를 포함한 array
+	 */
 	public function saveSessionDataByArray($values) {
-		$this->load->library('session');
 		$this->session->set_userdata($values);
 		
 		log_message('info', 'saveSessionDataByArray save session['.json_encode($values).']');
@@ -210,7 +239,7 @@ class Common_model extends CI_Model {
 	 *							nick_name				- (o) member.nick_name
 	 *							allow_mailing			- (x) member.allow_mailing
 	 *							allow_message			- (x) member.allow_message
-	 *							image_mark				- (x) member.image_mark
+	 *							image_mark				- (o) member.image_mark
 	 *							block					- (x) member.block
 	 *							email_confirm			- (o) member.email_confirm
 	 *							limit_date				- (x) member.limit_date
@@ -240,25 +269,22 @@ class Common_model extends CI_Model {
 	 *							site_image_mark			- (x) site.image_mark
 	 */
 	public function setMemberInfoSession($member_info, $member_group_info) {
-		$this->load->library('session');
-		
 		$session_data = array(
 				'member_srl'	=> $member_info['member_srl'],
 				'user_id'		=> $member_info['user_id'],
 				'email_address'	=> $member_info['email_address'],
 				'user_name'		=> $member_info['user_name'],
 				'nick_name'		=> $member_info['nick_name'],
-				'email_confirm'	=> $member_info['email_confirm'],
+				'email_confirm'	=> $member_info['email_confirm']
 			);
 		
-		// XXX 프로필 이미지를 세션에 넣을 필요 없어 보임.
 		// 프로필 이미지가 없으면 session 에 넣지 않는다.
-		//if($member_info['image_mark']) {
-		//	$profile_image = $this->getFileImageURL(unserialize($member_info['image_mark']));
-		//	if($profile_image) {
-		//		$session_data['profile_image'] = $profile_image;
-		//	}
-		//}
+		if($member_info['image_mark']) {
+			$profile_image = $this->getFileImageURL(unserialize($member_info['image_mark']));
+			if($profile_image) {
+				$session_data['profile_image'] = $profile_image;
+			}
+		}
 			
 		$session_data['group_srl'] = $member_group_info['group_srl'];
 		$session_data['is_root'] = $member_group_info['is_root'];

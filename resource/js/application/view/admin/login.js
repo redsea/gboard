@@ -9,7 +9,8 @@ $('#login-btn').button().addClass('login_btn').click(function(evt){
 
 $('#user_id').keyup(function(evt){
 	evt.stopPropagation();
-	if(evt.which == 13) { $('#login-btn').trigger('click'); }
+	//if(evt.which == 13) { $('#login-btn').trigger('click'); }
+	if(evt.which == 13) { $('#password').focus(); }
 });
 $('#password').keyup(function(evt){
 	evt.stopPropagation();

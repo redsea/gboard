@@ -1,18 +1,49 @@
 <html>
 <head>
 	<link rel="stylesheet" href="/resource/css/application/admin/main.css" type="text/css" />
+	<link rel="stylesheet" href="/resource/css/application/component/quick-bar.css" type="text/css" />
 	<link rel="stylesheet" href="/resource/css/application/component/tree.css" type="text/css" />
+	
 	<script type="text/javascript" src="/resource/js/lib/jquery/plugin/jquery.cookie.js"></script>
-	<script type="text/javascript" src="/resource/js/application/model/admin/main.js"></script>
+	<script type="text/javascript" src="/resource/js/application/component/quick-bar.js"></script>
 	<script type="text/javascript" src="/resource/js/application/view/admin/main.js"></script>
+	<script type="text/javascript" src="/resource/js/application/model/admin/main.js"></script>
+	
+	<script type="text/html" id="tpl-quick-bar-items">
+		<div class="quick-element" 
+				data-bind="click:clickThis, attr:{id:id}, style:{left:pos}">
+			<div data-bind="attr:{title:title, class:className}, css:{'quick-icon-custom':is_image_custom}, style:{'background-image':image}"></div>
+			<div class="quick-icon-name" data-bind="text: title"></div>
+		</div>
+	</script>
 </head>
-<body x-data-expire="<?=$session_expire_time?>" x-data-home-url="<?=$home_url?>">
+<body>
+<div id="window-buffer" class="window-buffer">
+	<?php if($profile_image): ?>
+	<div id="window-hidden-profile-image" class="window-hidden">
+		<?=json_encode($profile_image)?>
+	</div>
+	<?php endif; ?>
+	<?php if($session_expire_time): ?>
+	<div id="window-hidden-session-expire-time" class="window-hidden">
+		<?=$session_expire_time?>
+	</div>
+	<?php endif; ?>
+	<?php if($home_url): ?>
+	<div id="window-hidden-home-url" class="window-hidden">
+		<?=$home_url?>
+	</div>
+	<?php endif; ?>
+</div>
+
 <div class="window-container">
-	<div id="window-buffer" class="window-buffer"></div>
-	<div class="window-content">
-		<div class="window-menu-navigator">
+	<div id="window-content" class="window-content">
+		<div class="window-menu">
+			<div class="window-menu-line"></div>
+			<div class="view-port-menu-tab"></div>
+		
+			<!--
 			<div class="view-port-menu-navigator">
-			
 				<ul class="navigator-tree">
 					<li class="navigator-tree-row">
 						<span class="navigator-tree-row-folder-arrow"></span>
@@ -37,86 +68,46 @@
 				</ul>
 			
 			</div>
+			-->
+			
 		</div>
 		
+		
+		<!--
 		<div class="window-content-display">
-			<div id="view-port-depth-indicator" class="view-port-depth-indicator" data-bind="m_depth_ind:content_depth"></div>
+			<div id="view-port-depth-indicator" class="view-port-depth-indicator" data-bind="m_depth_ind:indicator"></div>
 			<div class="view-port-content-display">
 			</div>
 		</div>
-		
+		-->
 	</div>
 	
-	<div class="window-top-quick-bar">
+	<div id="window-top-quick-bar" class="window-top-quick-bar">
 		<div class="view-port-top-quick-bar">
-			<div id="quick-bar-part-left" class="quick-bar-part-left">
-				<div class="quick-element" style="left:10px;" data-bind="click: quickItemClick" id="quick-menu-0">
-					<div class="quick-icon-home" data-bind="attr:{title:go_home}"></div>
-					<div class="quick-icon-name" data-bind="text:go_home"></div>
-				</div>
-				<div class="quick-element" style="left:60px;" data-bind="click: quickItemClick" id="quick-menu-1">
-					<div class="quick-icon-profile" data-bind="attr:{title:my_profile}"></div>
-					<div class="quick-icon-name" data-bind="text:my_profile"></div>
-				</div>
-				<div id="quick-element-cursor" class="quick-element-cursor" data-bind="m_quick_cursor:quick_cursor_pos"></div>
-			</div>
-			<div class="quick-bark-part-left-shadow">
-			</div>
-			
-			<div class="quick-bar-part-right">
-				<!-- 테스트로 일단 하나 넣어 본 것임. 여기에 들어갈 것 생각 해 봐야 한다 -->
-				<!-- 여기는 커서가 오면 안된다 -->
-				<div class="quick-element" style="right:10px;">
-					<div class="quick-icon-profile" data-bind="attr:{title:my_profile}"></div>
-					<div class="quick-icon-name" data-bind="text:my_profile"></div>
-				</div>
-			</div>
-			
 			<div id="quick-bar-part-center" class="quick-bar-part-center">
-				<!-- 테스트로 일단 하나 넣어 본 것임. 여기에 들어갈 것 생각 해 봐야 한다 -->
-				<div class="quick-element" style="left:5px;" data-bind="click: quickItemClick" id="quick-menu-2">
-					<div class="quick-icon-profile" data-bind="attr:{title:my_profile}"></div>
-					<div class="quick-icon-name" data-bind="text:my_profile"></div>
-				</div>
-				
-				<div class="quick-element" style="left:55px;" data-bind="click: quickItemClick" id="quick-menu-2">
-					<div class="quick-icon-profile" data-bind="attr:{title:my_profile}"></div>
-					<div class="quick-icon-name" data-bind="text:my_profile"></div>
-				</div>
-				
-				<div class="quick-element" style="left:105px;" data-bind="click: quickItemClick" id="quick-menu-2">
-					<div class="quick-icon-profile" data-bind="attr:{title:my_profile}"></div>
-					<div class="quick-icon-name" data-bind="text:my_profile"></div>
-				</div>
-				
-				<div class="quick-element" style="left:155px;" data-bind="click: quickItemClick" id="quick-menu-2">
-					<div class="quick-icon-profile" data-bind="attr:{title:my_profile}"></div>
-					<div class="quick-icon-name" data-bind="text:my_profile"></div>
-				</div>
-				
-				<div class="quick-element" style="left:205px;" data-bind="click: quickItemClick" id="quick-menu-2">
-					<div class="quick-icon-profile" data-bind="attr:{title:my_profile}"></div>
-					<div class="quick-icon-name" data-bind="text:my_profile"></div>
-				</div>
-				
-				<div class="quick-element" style="left:255px;" data-bind="click: quickItemClick" id="quick-menu-2">
-					<div class="quick-icon-profile" data-bind="attr:{title:my_profile}"></div>
-					<div class="quick-icon-name" data-bind="text:my_profile"></div>
-				</div>
+				<div id="quick-bark-part-center-content" class="quick-bark-part-center-content" 
+					data-bind="style:{width:center_width, left:center_x}, template:{name:'tpl-quick-bar-items', foreach:center_items}"></div>
+			</div>
+			<div id="quick-bar-part-left" class="quick-bar-part-left" 
+				data-bind="css:{'quick-bar-part-left-shadow':center_left_shadow()>0}, template:{name:'tpl-quick-bar-items', foreach:left_items}">
 			</div>
 			
-<!--
-			<div class="quick-element" data-bind="click: quickItemClick" id="quick-menu-2">
-				<div class="quick-icon-profile" data-bind="attr:{title:my_profile}"></div>
-				<div class="quick-icon-name" data-bind="text:my_profile"></div>
+			<div id="quick-bar-part-right" class="quick-bar-part-right" 
+					data-bind="css:{'quick-bar-part-right-shadow':center_right_shadow()>0}">
+				<div class="quick-element" style="right:10px;" data-bind="style:{display:right_item()[0]}">
+					<div data-bind="attr:{title:right_item()[1], class:right_item()[2]}"></div>
+					<div class="quick-icon-name" data-bind="text:right_item()[1]"></div>
+				</div>
 			</div>
--->
-			
-			
+			<div id="quick-element-cursor" class="quick-element-cursor" data-bind="m_quick_cursor:cursor_pos"></div>
+		</div>
+		<div id="view-port-quick-bar-scroll" class="view-port-quick-bar-scroll">
+			<div id="quick-bar-scroll-bar" class="quick-bar-scroll-bar" 
+					data-bind="style:{width:scroll_indicator_width}"></div>
 		</div>
 	</div>
 	
-	<div class="window-bottom-status-bar">
+	<div id="window-bottom-status-bar" class="window-bottom-status-bar">
 		<div class="view-port-bottom-status-bar-left"></div>
 		<div class="view-port-bottom-status-bar-right">
 			<div class="button-close-navigator"></div>

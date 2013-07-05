@@ -10,9 +10,7 @@ class Member_model extends CI_Model {
 		
 		$this->load->helper('date');
 		
-		$this->config->load('my_conf/common', TRUE);
 		$this->config->load('my_conf/member', TRUE);
-		$this->config->load('error_code/common', TRUE);
 		$this->config->load('error_code/member', TRUE);
 		
 		$this->yes = $this->config->item('yes', 'my_conf/common');

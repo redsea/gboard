@@ -14,13 +14,14 @@
 	<title>1. gboard uploadi API</title>
 </head>
 <body>
-uploadi API :<br/><br/>
-<form method="post" action="http://gboard.org/file/uploadi" enctype="multipart/form-data">
+upload API :<br/><br/>
+<form method="post" action="http://gboard.org/file/upload" enctype="multipart/form-data">
 	<!-- thumbnail 생성 여부 -->
 	<input type="hidden" name="thumbnail" value="Y" />
+	<input type="hidden" name="type" value="profile" />
 	
 	<input type="hidden" name="tid" value="10" />
-	<input type="file" name="gboard_file" /><br/>
+	<input type="file" name="gboard_profile" /><br/>
 	<input type="submit">
 </form>
 

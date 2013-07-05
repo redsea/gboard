@@ -234,14 +234,14 @@ CREATE TABLE `gbd_files` (
     `download_count` bigint(11) DEFAULT '0', 
     `file_type` varchar(128) NOT NULL, 
     `orig_name` varchar(256) DEFAULT NULL, 
-    `local_path` varchar(128) DEFAULT NULL, 
+    `local_path` varchar(256) DEFAULT NULL, 
     `local_url` varchar(256) DEFAULT NULL, 
     `network_url` varchar(256) DEFAULT NULL, 
     `width` int(8) DEFAULT '0', 
     `height` int(8) DEFAULT '0', 
     `file_size` bigint(11) DEFAULT '0', 
     `comment` varchar(256) DEFAULT NULL, 
-    `thumbnail_local_path` varchar(128) DEFAULT NULL, 
+    `thumbnail_local_path` varchar(256) DEFAULT NULL, 
     `thumbnail_local_url` varchar(256) DEFAULT NULL, 
     `thumbnail_network_url` varchar(256) DEFAULT NULL, 
     `thumbnail_width` int(8) DEFAULT '0', 
@@ -333,7 +333,7 @@ CREATE TABLE `gbd_oauth20_extra` (
     `manager_email` varchar(128) NOT NULL, 
     `company_address` varchar(256) DEFAULT NULL, 
     `country` varchar(8) DEFAULT NULL, 
-    `country_phone_number` varchar(8) DEFAULT NULL, 
+    `country_call_code` varchar(8) DEFAULT NULL, 
     `mobile_phone_number` varchar(16) DEFAULT NULL, 
     `phone_number` varchar(16) DEFAULT NULL, 
     `c_date` char(14) NOT NULL, 
@@ -385,4 +385,104 @@ CREATE TABLE `gbd_sessions` (
     PRIMARY KEY (`session_id`),
     KEY `last_activity_idx` (`last_activity`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+
+# create gbd_service. 지원하는 서비스를 관리하는 테이블
+DROP TABLE IF EXISTS  `gbd_service`;
+CREATE TABLE `gbd_service` (
+    `service_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+    `service_name` varchar(32) NOT NULL, 
+    `controller` varchar(32) NOT NULL, 
+    `controller_action` varchar(32) NOT NULL, 
+    `image_mark` TEXT NULL, 
+    `is_active` char(1) DEFAULT 'N', 
+    `description` varchar(128) DEFAULT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    PRIMARY KEY(`service_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+# admin menu service 추가
+INSERT INTO  `gbd_service` (
+    `service_name`, 
+    `controller`, 
+    `controller_action`, 
+    `is_active`,
+    `description`,
+    `c_date`
+) VALUES (
+    'Admin',  
+    'admin', 
+    'menu', 
+    'Y', 
+    'Admin menu tree', 
+    NOW( ) +0
+);
+
+# member activity history service 추가
+INSERT INTO  `gbd_service` (
+    `service_name`, 
+    `controller`, 
+    `controller_action`, 
+    `is_active`,
+    `description`,
+    `c_date`
+) VALUES (
+    'Activity',  
+    'activity', 
+    'index', 
+    'Y', 
+    'Member acitivity history', 
+    NOW( ) +0
+);
+
+
+
+# create gbd_service_group_service. member 그룹별로 service 매핑 테이블
+DROP TABLE IF EXISTS  `gbd_service_group_service`;
+CREATE TABLE `gbd_service_group_service` (
+    `group_srl` bigint(11) NOT NULL, 
+    `service_srl` bigint(11) NOT NULL, 
+    `site_srl` bigint(11) NOT NULL, 
+    `list_order` bigint(11) NOT NULL DEFAULT '-1', 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    INDEX( `service_srl` ), 
+    INDEX( `site_srl` ), 
+    INDEX (  `list_order` ), 
+    FOREIGN KEY( `group_srl`) REFERENCES `gbd_member_group`(`group_srl`) ON DELETE CASCADE, 
+    FOREIGN KEY( `service_srl`) REFERENCES `gbd_service`(`service_srl`) ON DELETE CASCADE, 
+    FOREIGN KEY( `site_srl`) REFERENCES `gbd_sites`(`site_srl`) ON DELETE CASCADE, 
+    PRIMARY KEY(`group_srl`, `service_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+# admin menu service 와 admin group 매핑
+INSERT INTO `gbd_service_group_service` (
+    `group_srl`, 
+    `service_srl`, 
+    `site_srl`, 
+    `list_order`, 
+    `c_date` 
+) VALUES (
+    1, 
+    1, 
+    1, 
+    1, 
+    NOW( ) +0
+);
+
+# member acitivity history service 와 admin group 매핑
+INSERT INTO `gbd_service_group_service` (
+    `group_srl`, 
+    `service_srl`, 
+    `site_srl`, 
+    `list_order`, 
+    `c_date` 
+) VALUES (
+    1, 
+    2, 
+    1, 
+    2, 
+    NOW( ) +0
+);
 

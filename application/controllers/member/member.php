@@ -10,7 +10,6 @@ class Member extends CI_Controller {
 	function __construct() {
 		parent::__construct();
 		
-		$this->config->load('error_code/common', TRUE);
 		$this->config->load('error_code/member', TRUE);
 		
 		$this->load->library('myutil');
@@ -55,6 +54,8 @@ class Member extends CI_Controller {
 	 * 로그인이 완료 되면 호출 할 URL 주소를 넘긴다.
 	 */
 	public function login() {
+		$this->benchmark->mark('start_login');
+	
 		// access_token 체크
 		$result = $this->cmodel->validAuthorization(FALSE, TRUE);
 		if($result != $this->success_code) {
@@ -66,6 +67,8 @@ class Member extends CI_Controller {
 						'controller' => 'member'
 				)
 			);
+			$this->benchmark->mark('end_login');
+			log_message('info', 'login T['.$this->benchmark->elapsed_time('start_login', 'end_login').']');
 			return;
 		}
 		
@@ -95,6 +98,9 @@ class Member extends CI_Controller {
 				)
 			);
 		}
+		
+		$this->benchmark->mark('end_login');
+		log_message('info', 'login T['.$this->benchmark->elapsed_time('start_login', 'end_login').']');
 	}
 }
 ?>

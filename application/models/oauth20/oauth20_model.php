@@ -11,9 +11,7 @@ class Oauth20_model extends CI_Model {
 		$this->load->helper('string');
 		$this->load->helper('date');
 		
-		$this->config->load('my_conf/common', TRUE);
 		$this->config->load('my_conf/oauth20', TRUE);
-		$this->config->load('error_code/common', TRUE);
 		$this->config->load('error_code/oauth20', TRUE);
 		
 		$this->yes = $this->config->item('yes', 'my_conf/common');
@@ -39,8 +37,6 @@ class Oauth20_model extends CI_Model {
 	 *    모두 access_token 을 발급 해 주어야 한다.(안전빵으로...)
 	 */
 	public function authorizationRequest(&$ret, $api_key=FALSE) {
-		$this->load->library('session');
-	
 		if(!$api_key) { $api_key = trim($this->input->post2('api_key', TRUE)); }
 		if(!$api_key) {
 			$err_code = $this->config->item('oauth20_no_api_key', 'error_code/oauth20');
@@ -280,7 +276,6 @@ class Oauth20_model extends CI_Model {
 		$ret['expire_in'] = $this->config->item('access_token_expire_sec', 'my_conf/oauth20').'';
 		
 		// autorization_code 를 세션에서 삭제 한다.
-		$this->load->library('session');
 		$this->session->unset_userdata('authorization_code');
 		
 		// 발급 된 access_token 을 세션에 저장한다.

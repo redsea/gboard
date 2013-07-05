@@ -4,7 +4,7 @@
 //-------------------------------------------------------
 $lang['E020001'] = '파일 업로드를 실패 했습니다';						// 파일 업로드 실패
 $lang['E020002'] = '파일 업로드를 실패 했습니다';						// 파일 테이블에 insert 실패
-$lang['E020003'] = '파일 업로드를 실패 했습니다';						// network disk 에 업로드 실패
+$lang['E020003'] = '파일 업로드를 실패 했습니다';						// 네트워크 디스크에 업로드 실패(수정으로 발생하지 않음. 그래도 둔다)
 $lang['E020004'] = 'You did not select a file to upload';
 $lang['E020005'] = 'The uploaded file exceeds the maximum allowed size in your PHP configuration file';
 $lang['E020006'] = 'The uploaded file exceeds the maximum size allowed by the submission form';
@@ -19,4 +19,8 @@ $lang['E020014'] = 'A problem was encountered while attempting to move the uploa
 $lang['E020015'] = '파일 업로드를 실패 했습니다';						// my_conf/file.php 에  upload_path 설정이 없음
 $lang['E020016'] = '파일 업로드를 실패 했습니다';						// local 서버에 파일 저장하기 위해 디렉토리 생성 실패
 $lang['E020017'] = '섬네일 생성을 실패 했습니다';						// thumbnail 생성 요청이 있으나 thumbnail 생성 실패
+$lang['E020018'] = '지원하는 파일 타입(서비스용)이 아닙니다';				// 지원 하는 서비스 파일 타입이 아님(support_data_type 에 정의 안됨 타입)
+$lang['E020019'] = '지원하는 파일 타입(서비스용)이 아닙니다';				// 지원 하는 서비스 파일 타입 설정이 미완료 되었음
+$lang['E020020'] = 'Amazon S3 region 전환을 실패 했습니다';			// amazon s3 region 전환 실패
+$lang['E020021'] = 'Amazon S3 에 업로드 실패 했습니다';				// amazon s3 에 업로드 실패
 ?>
