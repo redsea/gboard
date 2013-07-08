@@ -13,6 +13,8 @@ class Service extends CI_Controller {
 		$this->load->model('common/common_model', 'cmodel');
 		$this->load->model('service/service_model', 'model');
 		
+		$this->config->load('error_code/common', TRUE);
+		
 		$this->success_code = $this->config->item('common_success', 'error_code/common');
 	}
 	

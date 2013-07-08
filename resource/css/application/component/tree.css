@@ -74,4 +74,6 @@
 	/* 이것도 계산 해서 맞추어야 한다 */
 	margin-left: 5px;
 	padding:0;
+	white-space: nowrap;
+	word-break: break-all;
 }

@@ -77,11 +77,8 @@ class Gboard_hook {//} extends CI_Hooks {
 	public function preLoad() {
 		$CI = &get_instance();
 		
-		$CI->load->library('session');
-		
-		$CI->config->load('error_code/common', TRUE);
-		$CI->config->load('my_conf/common', TRUE);
-		
+		//$CI->load->library('session');
+				
 		$user_id = $CI->session->userdata('user_id');
 		if($user_id) { set_log_key($user_id); }
 	}

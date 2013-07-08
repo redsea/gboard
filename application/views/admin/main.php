@@ -2,10 +2,12 @@
 <head>
 	<link rel="stylesheet" href="/resource/css/application/admin/main.css" type="text/css" />
 	<link rel="stylesheet" href="/resource/css/application/component/quick-bar.css" type="text/css" />
+	<link rel="stylesheet" href="/resource/css/application/component/tab-menu.css" type="text/css" />
 	<link rel="stylesheet" href="/resource/css/application/component/tree.css" type="text/css" />
 	
 	<script type="text/javascript" src="/resource/js/lib/jquery/plugin/jquery.cookie.js"></script>
 	<script type="text/javascript" src="/resource/js/application/component/quick-bar.js"></script>
+	<script type="text/javascript" src="/resource/js/application/component/tab-menu.js"></script>
 	<script type="text/javascript" src="/resource/js/application/view/admin/main.js"></script>
 	<script type="text/javascript" src="/resource/js/application/model/admin/main.js"></script>
 	
@@ -34,16 +36,21 @@
 		<?=$home_url?>
 	</div>
 	<?php endif; ?>
+	<?php if($service_list): ?>
+	<div id="window-hidden-service-list" class="window-hidden">
+	    <?=json_encode($service_list)?>
+	</div>
+    <?php endif; ?>
 </div>
 
 <div class="window-container">
 	<div id="window-content" class="window-content">
-		<div class="window-menu">
+		<div id="window-menu" class="window-menu">
 			<div class="window-menu-line"></div>
-			<div class="view-port-menu-tab"></div>
+			<div id="view-port-menu-tab" class="view-port-menu-tab"></div>
 		
-			<!--
 			<div class="view-port-menu-navigator">
+			
 				<ul class="navigator-tree">
 					<li class="navigator-tree-row">
 						<span class="navigator-tree-row-folder-arrow"></span>
@@ -66,20 +73,28 @@
 						<span class="navigator-tree-row-label">DIR3</span>
 					</li>
 				</ul>
-			
+
 			</div>
-			-->
 			
+			<div class="view-port-bottom-status-bar-left">
+				<div class="window-bottom-status-bar-line"></div>
+			</div>
 		</div>
 		
-		
-		<!--
-		<div class="window-content-display">
+		<div id="window-content-display" class="window-content-display">
 			<div id="view-port-depth-indicator" class="view-port-depth-indicator" data-bind="m_depth_ind:indicator"></div>
 			<div class="view-port-content-display">
 			</div>
+			
+			<div class="view-port-bottom-status-bar-right">
+				<div class="window-bottom-status-bar-line"></div>
+				<div class="label-connect-keep-time">
+					<span data-bind="text:keep_connect"></span>
+					<span data-bind="text:keep_time"></span>
+				</div>
+				<div class="button-close-navigator"></div>
+			</div>
 		</div>
-		-->
 	</div>
 	
 	<div id="window-top-quick-bar" class="window-top-quick-bar">
@@ -106,18 +121,6 @@
 					data-bind="style:{width:scroll_indicator_width}"></div>
 		</div>
 	</div>
-	
-	<div id="window-bottom-status-bar" class="window-bottom-status-bar">
-		<div class="view-port-bottom-status-bar-left"></div>
-		<div class="view-port-bottom-status-bar-right">
-			<div class="button-close-navigator"></div>
-			<div class="label-connect-keep-time">
-				<span data-bind="text:keep_connect"></span>
-				<span data-bind="text:keep_time"></span>
-			</div>
-		</div>
-	</div>
-	
 </div>
 </body>
 </html>

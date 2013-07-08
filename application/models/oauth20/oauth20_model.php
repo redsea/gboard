@@ -11,7 +11,9 @@ class Oauth20_model extends CI_Model {
 		$this->load->helper('string');
 		$this->load->helper('date');
 		
+		$this->config->load('my_conf/common', TRUE);
 		$this->config->load('my_conf/oauth20', TRUE);
+		$this->config->load('error_code/common', TRUE);
 		$this->config->load('error_code/oauth20', TRUE);
 		
 		$this->yes = $this->config->item('yes', 'my_conf/common');
@@ -43,7 +45,7 @@ class Oauth20_model extends CI_Model {
 			log_message('warn', "authorizationCodeGrant E[$err_code] no api_key[$api_key]");
 			return $err_code;
 		}
-		
+				
 		// 만일 authorization_code 가 session 에 들어 있다면 이 값을 그대로 사용한다.
 		$authorization_code = $this->session->userdata('authorization_code');
 		$client_api_version = $this->session->userdata('client_api_version');
@@ -57,6 +59,7 @@ class Oauth20_model extends CI_Model {
 		
 		if(!$this->slave_db) { $this->slave_db = $this->load->database('slave', TRUE); }
 		
+				
 		$this->slave_db->select('client_srl, api_version, is_using_root')->from($this->table_prefix.'oauth20')->where('api_key', $api_key);
 		$query = $this->slave_db->get();
 		
@@ -65,6 +68,7 @@ class Oauth20_model extends CI_Model {
 			log_message('warn', "authorizationCodeGrant E[$err_code] not found api_key[$api_key]");
 			return $err_code;
 		}
+		
 		
 		$row = $query->row_array();
 		$query->free_result();
@@ -159,6 +163,9 @@ class Oauth20_model extends CI_Model {
 						'client_api_version' => $ret['client_api_version']
 					)
 			);
+			
+			
+		log_message('debug', '----->here'.$this->success_code);
 		
 		return $this->success_code;
 	}

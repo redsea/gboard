@@ -13,6 +13,8 @@ class Service_model extends CI_Model {
 		$this->load->model('common/common_model', 'cmodel');
 		
 		//$this->config->load('my_conf/oauth20', TRUE);
+		$this->config->load('my_conf/common', TRUE);
+		$this->config->load('error_code/common', TRUE);
 		//$this->config->load('error_code/oauth20', TRUE);
 		
 		$this->yes = $this->config->item('yes', 'my_conf/common');
@@ -34,8 +36,8 @@ class Service_model extends CI_Model {
 	 * @return {string} error code
 	 */
 	public function getServiceMenu(&$service_list, $member_srl=FALSE, $is_root=FALSE) {
-		$result = $this->cmodel->isAdmin($member_srl, $is_root);
-		if($result != $this->success_code) { return $result; }
+		//$result = $this->cmodel->isAdmin($member_srl, $is_root);
+		//if($result != $this->success_code) { return $result; }
 		
 		$group_srl = $this->session->userdata('group_srl');
 		$domain = $this->session->userdata('domain');
@@ -68,8 +70,8 @@ class Service_model extends CI_Model {
 		foreach($query->result_array() as $row) {
 			$row['url'] = 'http://'.$domain.'/'.$row['controller'].DIRECTORY_SEPARATOR.$row['controller_action'];
 			
-			if(!$row['image_mark']) { $row['site_icon'] = ''; }
-			else { $row['site_icon'] = unserialize($row['image_mark']); }
+			if(!$row['image_mark']) { $row['service_icon'] = ''; }
+			else { $row['service_icon'] = unserialize($row['image_mark']); }
 			
 			unset($row['controller']);
 			unset($row['controller_action']);

@@ -12,6 +12,8 @@ class Oauth20 extends CI_Controller {
 		
 		$this->config->load('my_conf/oauth20', TRUE);
 		
+		$this->config->load('error_code/common', TRUE);
+		
 		$this->load->library('myutil');
 		
 		$this->success_code = $this->config->item('common_success', 'error_code/common');
@@ -39,9 +41,9 @@ class Oauth20 extends CI_Controller {
 		if(in_array($connected_ip, $this->config->item('system_api_key_using_ip', 'my_conf/oauth20'))) {
 			$api_key = $this->config->item('system_api_key', 'my_conf/oauth20');
 		}
-		
+				
 		$result = $this->model->authorizationRequest($ret, $api_key);
-		
+				
 		if($result == $this->success_code) {
 			$this->load->view(
 					'common/output_view', 
@@ -52,6 +54,7 @@ class Oauth20 extends CI_Controller {
 							'other' => $ret
 					)
 				);
+				
 		} else {
 			$this->load->view(
 					'common/output_view', 

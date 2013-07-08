@@ -10,6 +10,7 @@ class Member extends CI_Controller {
 	function __construct() {
 		parent::__construct();
 		
+		$this->config->load('error_code/common', TRUE);
 		$this->config->load('error_code/member', TRUE);
 		
 		$this->load->library('myutil');

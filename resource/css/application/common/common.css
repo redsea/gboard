@@ -116,49 +116,22 @@ input[type="text"]:disabled, input[type="password"]:disabled {
 	position: absolute;
 	width: 100%;
 	top: 78px;
-	bottom: 24px;
+	bottom: 0px;
 	background-color: white;
 }
 /* 컨텐츠 영역 window */
 .window-content-display {
-	position: relative;
-	float: left;
-	width: -moz-calc(100% - 250px);
-	width: -webkit-calc(100% - 250px);
-    width: calc(100% - 250px);
-	height: 100%;
+	position: absolute;
+	left: 250px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
 }
 /* content display 되는 view port */
 .view-port-content-display {
-	position: relative;
-	width: 100%;
-	height: -moz-calc(100% - 24px);
-	height: -webkit-calc(100% - 24px);
-    height: calc(100% - 24px);
-}
-
-/*--- 화면 하단의 상태바 설정 ---*/
-/* 화면 최하단의 상태바 영역 */
-.window-bottom-status-bar:before {
-	content: '';
 	position: absolute;
+	top: 24px;
 	left: 0px;
 	right: 0px;
-	top: 1px;
-	bottom: 0px;
-	border-top: 1px solid #CBCBCB;
-	background-color: #B9B9B9;
-	background: -webkit-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
-	background: -moz-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
-	background: -ms-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
-	background: -o-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
-	background: linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
-}
-.window-bottom-status-bar {
-	position: absolute;
-	bottom: 0px;
-	width: 100%;
-	left: 0px;
-	height: 24px;
-	background-color: #626262;
+	bottom: 25px;
 }

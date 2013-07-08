@@ -24,8 +24,9 @@ class Myutil {
 		
 		$ret = new stdClass();
 		$ret->error = $result_code;
-		
+				
 		$ret->message = $CI->lang->line($result_code);
+		
 		
 		// 에러 코드에 맞게 정의 된 메시지가 없다면 기본 실패 메시지로
 		if($ret->message == FALSE) {

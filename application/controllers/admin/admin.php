@@ -19,7 +19,10 @@ class Admin extends CI_Controller {
 		$this->lang->load('default', $this->load->get_var('h_lang'));
 		
 		$this->load->model('common/common_model', 'cmodel');
+		$this->load->model('service/service_model', 'service_model');
 		//$this->load->model('admin/admin_model', 'model');
+		
+		$this->config->load('error_code/common', TRUE);
 		
 		$this->success_code = $this->config->item('common_success', 'error_code/common');
 	}
@@ -81,7 +84,11 @@ class Admin extends CI_Controller {
 					$auth_expire_sec : $session_expire_sec;
 			$data['home_url'] = 'http://'.$this->session->userdata('domain').'/admin';
 			$data['profile_image'] = $this->session->userdata('profile_image');
-						
+			
+			$service_list = array();
+			$this->service_model->getServiceMenu($service_list);
+			$data['service_list'] = $service_list;
+			
 			$this->load->view('common/header', $data);
 			$this->load->view('admin/main', $data);
 			

@@ -10,7 +10,9 @@ class Mfile_model extends CI_Model {
 		
 		$this->load->helper('date');
 		
+		$this->config->load('my_conf/common', TRUE);
 		$this->config->load('my_conf/mfile', TRUE);
+		$this->config->load('error_code/common', TRUE);
 		$this->config->load('error_code/mfile', TRUE);
 		
 		$this->table_prefix = $this->config->item('table_prefix', 'my_conf/common');

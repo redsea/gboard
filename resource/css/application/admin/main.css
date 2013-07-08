@@ -1,17 +1,3 @@
-/* 컨텐츠 영역 좌측에 네비게이션 window */
-/*
-.window-menu-navigator:before {
-	content: '';
-	position: absolute;
-	left: 0px;
-	right: 1px;
-	top: 0px;
-	bottom: 0px;
-	border-right: 1px solid #E5E8EE;
-	background-color: #E0E5EB;
-}
-*/
-
 /* 컨텐츠 영역 좌측에 메뉴 window */
 .window-menu {
 	position: absolute;
@@ -32,6 +18,7 @@
 	background-color: #E5E8EE;
 }
 
+/* 화면 좌측 navigator 위에 등장할 tab menu */
 .view-port-menu-tab {
 	position: absolute;
 	top: 0px;
@@ -39,6 +26,7 @@
 	right: 0px;
 	height: 42px;
 	background-color: #4D5660;
+	overflow: hidden;
 	
 	background: -webkit-linear-gradient(#3B424C 0%, #5B656F 100%);
 	background: -moz-linear-gradient(#3B424C 0%, #5B656F 100%);
@@ -47,20 +35,66 @@
 	background: linear-gradient(#3B424C 0%, #5B656F 100%);
 }
 
+/* 화면 좌측 navigator 위에 등장할 tab menu 에 포함될 menu item 영역 */
+.menu-tab-item {
+	float: left;
+	height: 100%;
+	width: 36px;
+	margin-left: 2px;
+}
+
+/* tab menu 의 menu item 이 선택 되었을때 바탕 화면 반전 */
+.menu-tab-item-on {
+	width: 34px;
+	border-right: 1px solid #5D6670;
+	border-left: 1px solid #5D6670;
+	
+	background-color: #444A53;
+	background: -webkit-linear-gradient(#3A414A 0%, #3C4249 100%);
+	background: -moz-linear-gradient(#3A414A 0%, #3C4249 100%);
+	background: -ms-linear-gradient(#3A414A 0%, #3C4249 100%);
+	background: -o-linear-gradient(#3A414A 0%, #3C4249 100%);
+	background: linear-gradient(#3A414A 0%, #3C4249 100%);
+	
+	-moz-box-shadow: 0px 0px 3px #5D6670;
+	-webkit-box-shadow: 0px 0px 3px #5D6670;
+	-ms-box-shadow: 0px 0px 3px #5D6670;
+	-o-box-shadow: 0px 0px 3px #5D6670;
+	box-shadow: 0px 0px 3px #5D6670;
+}
+
+/* tab menu 의 menu item 의 icon 이 없으면 기본으로 보여줄 아이콘 */
+.menu-tab-item-default-icon-off {
+	width: 22px;
+	height: 22px;
+	background-image: url("/resource/images/icons_menu_tab.png");
+	margin-top: 9px;
+	margin-left: 7px;
+}
+
+/* tab menu 의 menu item 의 icon 이 없으면 기본으로 보여줄 아이콘(menu item 이 선택 되었을 때) */
+.menu-tab-item-default-icon-on {
+	background-position-x: -23px;
+	margin-left: 6px;
+}
 
 /* 컨텐츠 영역 좌측에 네비게이션 view port */
 .view-port-menu-navigator {
 	position: absolute;
-	width: -moz-calc(100% - 1px);
-	width: -webkit-calc(100% - 1px);
-    width: calc(100% - 1px);
-    height: 100%;
+	top: 42px;
+	bottom: 25px;
+	left: 0px;
+	right: 1px;
+	overflow: hidden;
+	
+/* 	background-color: red; */
 }
 
 /* content display 의 현재 보여주고 있는 Content 의 depth 표시하는 view port */
 .view-port-depth-indicator {
-	position: relative;
-	width: 100%;
+	position: absolute;
+	left: 0px;
+	right: 0px;
 	height: 23px;
 	border-bottom: 1px solid #A3A3A3;
 	background-color: #EDEDED;
@@ -73,30 +107,52 @@
 }
 
 /* 화면 최하단 상태바 영역중, 네비게이션 영역 하단에 존재하는 영역의 view port */
-.view-port-bottom-status-bar-left:before {
-	content: '';
+.view-port-bottom-status-bar-left {
 	position: absolute;
 	left: 0px;
-	top: 0px;
 	bottom: 0px;
+	height: 24px;
 	right: 0px;
-	border-right: 1px solid #7D7D7D;
+	border-top: 1px solid #626262;
+/* 	border-right: 1px solid #7D7D7D; */
+	
+	background-color: #B9B9B9;
+	background: -webkit-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
+	background: -moz-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
+	background: -ms-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
+	background: -o-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
+	background: linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
 }
-.view-port-bottom-status-bar-left {
-	position: relative;
-	width: 250px;
-	height: 100%;
-	float: left;
-}
+
 /* 화면 최하단 상태바 영역중, 컨텐츠 영역 하단에 존재하는 영역의 view port */
 .view-port-bottom-status-bar-right {
-	position: relative;
-	width: -moz-calc(100% - 250px);
-	width: -webkit-calc(100% - 250px);
-    width: calc(100% - 250px);
-    height: 100%;
-	float: left;
+	position: absolute;
+	left: -1px;
+	right: 0px;
+	bottom: 0px;
+	height: 24px;
+	border-top: 1px solid #626262;
+	border-left: 1px solid #7D7D7D;
+	overflow: hidden;
+	
+	background-color: #B9B9B9;
+	background: -webkit-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
+	background: -moz-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
+	background: -ms-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
+	background: -o-linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
+	background: linear-gradient(#C1C1C1 0%, #9E9E9E 100%);
 }
+
+/* 화면 최하단 상태바 영역 view port 의 line 구분선 추가 */
+.window-bottom-status-bar-line {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	height: 1px;
+	background-color: #CBCBCB;
+}
+
 
 /* 최하단 상태바에 포함된 navigator 닫기 버튼 */
 .button-close-navigator {
@@ -111,7 +167,12 @@
 
 /* 최하단 상태바에 포함된 접속 유지 시간 */
 .label-connect-keep-time {
-	text-align: right;
+	position: absolute;
+	right: 0px;
+	white-space: nowrap;
+	word-break: break-all;
+
+/* 	text-align: right; */
 	text-shadow: 0px 1px #D0D0D0;
 	font-size: 11px;
 	color: #2F2F2F;

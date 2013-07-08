@@ -2,7 +2,8 @@
 
 var $profile_image = $('#window-hidden-profile-image'),
 	$session_expire_tm = $('#window-hidden-session-expire-time'),
-	$home_url = $('#window-hidden-home-url');
+	$home_url = $('#window-hidden-home-url'),
+	$service_list = $('#window-hidden-service-list');
 	
 if($profile_image && $profile_image.length>0) {
 	$profile_image = eval('('+$.trim($profile_image.text())+')');
@@ -21,9 +22,15 @@ if($home_url) {
 } else {
 	$home_url = false;
 }
+
+if($service_list && $service_list.length>0) {
+	$service_list = eval('('+$.trim($service_list.text())+')');
+} else {
+	$service_list = false;
+}
 $('#window-buffer').empty();
 
 gboard.admin.main.model.init($.cookie('_u_lang_'), 
-	$session_expire_tm, $home_url, $profile_image);
+	$session_expire_tm, $home_url, $profile_image, $service_list);
 
 });})(jQuery);

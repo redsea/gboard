@@ -11,6 +11,7 @@ class Mfile extends CI_Controller {
 		parent::__construct();
 		
 		$this->config->load('my_conf/mfile', TRUE);
+		$this->config->load('error_code/common', TRUE);
 		$this->config->load('error_code/mfile', TRUE);
 		
 		$this->load->library('myutil');

@@ -8,7 +8,7 @@
 <body>
 <div class="window-container">
 	<div class="window-content">
-		<div class="view-port-content-display">
+		<div class="view-port-content-display" style="top:0px;">
 			<div class="window-login">
 				<div class="view-port-login-header"><span class="login-header-text">Login</span></div>
 				<div class="view-port-login-body">

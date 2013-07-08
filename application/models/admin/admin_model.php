@@ -7,6 +7,9 @@ class Admin_model extends CI_Model {
 	function __construct() {
 		parent::__construct();
 		
+		$this->config->load('my_conf/common', TRUE);
+		$this->config->load('error_code/common', TRUE);
+		
 		$this->table_prefix = $this->config->item('table_prefix', 'my_conf/common');
 		$this->success_code = $this->config->item('common_success', 'error_code/common');
 		

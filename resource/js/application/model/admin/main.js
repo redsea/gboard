@@ -40,7 +40,7 @@ updateKeepTime: function() {
 		if(gboard.admin.main.action.keepTimeLoopId) {
 			clearTimeout(gboard.admin.main.action.keepTimeLoopId);
 		}
-		gboard.admin.main.model.data_bottom.keep_time(
+		gboard.admin.main.model.data_body.keep_time(
 			gboard.admin.main.lang[gboard.admin.main.model.language].keep_connect_end);
 		return;
 	}
@@ -53,7 +53,7 @@ updateKeepTime: function() {
 	if(min.length == 1)  { min  = '0'+min; }
 	if(sec.length == 1)  { sec  = '0'+sec; }
 	
-	gboard.admin.main.model.data_bottom.keep_time(hour+':'+min+':'+sec);
+	gboard.admin.main.model.data_body.keep_time(hour+':'+min+':'+sec);
 	gboard.admin.main.action.triggerKeepTime();
 },
 
@@ -87,6 +87,81 @@ cb_quick_cursor_move_end: function(depth) {
 	gboard.admin.main.model.data_body.indicator(new_indicator);
 },
 
+/**
+ * 좌측 상단의 service tab 을 초기화 한다.
+ *
+ * @param service_list service tab menu list
+ * @return service tab menu 의 최소 너비
+ */
+initServiceTab: function(service_list) {
+	console.log(service_list);
+	
+/* 	service_list.push(1); */
+/* 	service_list.push(1); */
+	
+	// service tab menu 의 갯수에 따라 구성요소 사이즈 재조정
+	var min_width = service_list.length*38+2;
+	var $window_menu = $('#window-menu');
+	
+	if(min_width > $window_menu.width()) {
+		var $window_content_display = $('#window-content-display');
+		$window_menu.width(min_width);
+		$window_content_display.css('left', min_width+1);
+	}
+	
+	var x_pos = 0;
+	var view_port_menu_width = $window_menu.width();
+	
+	if(service_list%2) {
+		// service tab 의 갯수가 홀수 일때
+		x_pos = -19 -38*((service_list.length-1)/2);
+	} else {
+		// service tab 의 갯수가 짝수 일때
+		x_pos = -37 -38*((service_list.length-2)/2);
+	}
+	
+	for(var i=0 ; i<service_list.length ; i++) {
+		var $element = $('<div>')
+			.attr({
+					'id': 'menu-tab-item-index'+i,
+					'data-bind': 'click:clickMenuTabItem',
+					'x-data-url': service_list[i].url
+				})
+			.addClass('menu-tab-item');
+		if(i== 0) {
+			$element.css('margin-left', 'calc(50% + '+x_pos+'px)');
+			$element.css('margin-left', '-moz-calc(50% + '+x_pos+'px)');
+			$element.css('margin-left', '-webkit-calc(50% + '+x_pos+'px)');
+		}
+		
+		// menu tab icon 을 추가 한다.
+		var $icon = $('<div>').addClass('menu-tab-item-default-icon-off')
+				.attr('title', service_list[i].service_name);
+		
+		// 만일 사용할 이미지가 있다면 이미지를 사용한다.
+		// XXX 아이콘의 규격은 위키 "[API] service index" 를 참조
+		if(service_list[i].service_icon) {
+			$icon.css('background-image', 'url("'+service_list[i].service_icon+'")');
+		}
+				
+		$element.append($icon);
+		
+		$('#view-port-menu-tab').append($element);
+	}
+	
+	// 첫번째 요소에 커서를 위치 시킨다.
+	var $current = $('#menu-tab-item-index0').addClass('menu-tab-item-on');
+	$current.children().first().addClass('menu-tab-item-default-icon-on');
+	
+	// TODO 첫번째 요소의 내용을 ajax 로 가져와야 한다.
+	console.log('> request ['+service_list[0].url+']');
+	
+	
+/* 	$('#menu-tab-item-index0').addClass('menu-tab-item-on'); */
+
+	return min_width;
+},
+
 };}
 
 
@@ -102,14 +177,27 @@ initialized: false,			// init 함수가 호출 되었는지 여부
 // 중간 content 의 data model
 data_body : {
 	// 컨텐츠 영역의 depth indicator 관련
-	indicator: ko.observableArray()		// content 영역 indicator bar 에서 보여줄 view 의 depth 처리
-},
-
-// 하단 status bar 의 data model
-data_bottom: {
-	// text 변경
+	indicator: ko.observableArray(),		// content 영역 indicator bar 에서 보여줄 view 의 depth 처리
 	keep_connect: ko.observable(gboard.admin.main.lang.en.keep_connect),	// 접속 유지 시간
 	keep_time: ko.observable('Wait...'),									// 접쇽 유지 시간의 실제 시간 표시
+	
+	clickMenuTabItem: function(obj, evt) {
+		var $this = $(evt.target);
+		var $index = null;
+		
+		if($this.attr('id')){ $index = $this; }
+		else				{ $index = $this.parent(); }
+		
+		// 만일 커서 위치에 있는 것을 클릭 했다면 무시
+		if($index.hasClass('menu-tab-item-on')) { return; }
+		
+		var $onItem = $('#view-port-menu-tab').children('.menu-tab-item-on');
+		$onItem.removeClass('menu-tab-item-on').children().first().removeClass('menu-tab-item-default-icon-on');
+		$index.addClass('menu-tab-item-on').children().first().addClass('menu-tab-item-default-icon-on');
+		
+		// TODO navigator 영역에 보여줄 것을 처리 한다.
+		console.log('> request ['+$onItem.attr('x-data-url')+']');
+	}
 },
 
 /**
@@ -120,9 +208,26 @@ data_bottom: {
  * @param home_url {string} home page 의 URL 
  * @param profile_image {array} 유저의 프로필 이미지
  */
-init: function(clang, expire_second, home_url, profile_image) {
+init: function(clang, expire_second, home_url, profile_image, service_list) {
 	if(gboard.admin.main.model.initialized) { return; }
 
+	// menu tab 을 넣는다.
+	var menu_tab_min_width = gboard.admin.main.action.initServiceTab(service_list);
+	
+	
+
+	// menu 영역 resize 대응
+	$('#window-menu').resizable({
+		handles: 'e', 
+		containment: 'parent',
+		minWidth: menu_tab_min_width,
+		resize: function(evt, ui) {
+			$('#window-content-display').css('left', ui.size.width+1);
+		}
+	});
+
+
+/* 	console.log(service_list); */
 
 
 /* 	$('#quick-bar-part-center').perfectScrollbar(); */
@@ -154,17 +259,16 @@ init: function(clang, expire_second, home_url, profile_image) {
 			depth: [gboard.admin.main.lang[clang].my_profile],
 			url: '',
 			type: 'profile',
-			image: profile_image[0].thumb
+			image: (profile_image&&profile_image[0]&&profile_image[0].thumb)?profile_image[0].thumb:''
 		});
 	
 	// 최초 메뉴가 home 이기 때문에 indicator 를 home 으로 표시
 	gboard.admin.main.model.data_body.indicator.push(gboard.admin.main.lang[clang].go_home);
-	gboard.admin.main.model.data_bottom.keep_connect(gboard.admin.main.lang[clang].keep_connect);
+	gboard.admin.main.model.data_body.keep_connect(gboard.admin.main.lang[clang].keep_connect);
 	gboard.admin.main.action.updateKeepTime();
 	
 	// window-content 에 data binding
 	ko.applyBindings(gboard.admin.main.model.data_body, $('#window-content').get(0));
-	ko.applyBindings(gboard.admin.main.model.data_bottom, $('#window-bottom-status-bar').get(0));
 	
 	
 	
@@ -214,20 +318,6 @@ init: function(clang, expire_second, home_url, profile_image) {
 	
 	// 화면 크기를 계산 해서 퀵바 하단에 스크롤바를 붙일 건지 판단한다.
 	gboard.component.quickbar.quickBarResize();
-	
-	
-	console.log(profile_image);
-	console.log(profile_image[0].thumb);
-	
-/*
-	setTimeout(function(){
-			console.log( $('.quick-icon-profile') );
-			
-			$('.quick-icon-profile').css('background-image', 'url("'+profile_image[0].thumb+'")');
-			
-		}, 2000);
-*/
-	
 	
 	// main init 완료
 	gboard.admin.main.model.initialized = true;
