@@ -4,9 +4,12 @@
 //-------------------------------------------------------
 $lang['S000001'] = '성공';
 $lang['E000001'] = '실패';
-$lang['E000002'] = '인증을 하지 않았습니다';		// access_token 체크 실패(access_token 이 없음)
-$lang['E000003'] = '인증키가 만료 되었습니다';		// access_token 체크 실패(table 에 access_token 이 없거나 이미 폐기 되었음)
-$lang['E000004'] = '인증키 연장을 실패 했습니다';	// access_token 만료 기간 자동 연장 실패
-$lang['E000005'] = '로그인을 하지 않았습니다';		// session 에 login 정보 없음. login 하지 않았거나, 세션 만료 되었음
-$lang['E000006'] = '사용 권한이 없습니다';		// 사용 권한 없음
+$lang['E000002'] = '인증을 하지 않았습니다';			// access_token 체크 실패(access_token 이 없음)
+$lang['E000003'] = '인증키가 만료 되었습니다';			// access_token 체크 실패(table 에 access_token 이 없거나 이미 폐기 되었음)
+$lang['E000004'] = '인증키 연장을 실패 했습니다';		// access_token 만료 기간 자동 연장 실패
+$lang['E000005'] = '로그인을 하지 않았습니다';			// session 에 login 정보 없음. login 하지 않았거나, 세션 만료 되었음
+$lang['E000006'] = '사용 권한이 없습니다';			// 사용 권한 없음
+$lang['E000007'] = '서비스 아이디가 올바르지 않습니다';	// service id 파라미터가 없음(gbd_service 의 service_id 임)
+$lang['E000008'] = '서비스 아이디가 올바르지 않습니다';	// service id 에 해당하는 menu 값들이 없음(menu tree 가 없음)
+$lang['E000009'] = '존재하지 않는 메뉴 요소 입니다';	// 서비스 tree 에 존재하지 않는 tree parent element srl
 ?>

@@ -14,7 +14,7 @@ url: {
 },
 
 // oauth authorize
-authorize: function(cb) {
+authorize: function(cb, userdata) {
 	$.ajax({
 			type: 'POST',
 			url: gboard.ajax.url.authorize,
@@ -22,20 +22,20 @@ authorize: function(cb) {
 				try {
 					if(typeof data == 'string') { data = eval('('+data+')'); }
 				} catch(exception) {
-					(cb)(false, jqXHR, null, 'error', exception);
+					(cb)(false, jqXHR, null, 'error', exception, userdata);
 					return;
 				}
 				gboard.ajax_adapter.authorize(data);
-				(cb)(true, jqXHR, data, textStatus);
+				(cb)(true, jqXHR, data, textStatus, null, userdata);
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
-				(cb)(false, jqXHR, null, textStatus, errorThrown);
+				(cb)(false, jqXHR, null, textStatus, errorThrown, userdata);
 			}
 		});
 },
 
 // oauth access_token
-access_token: function(cb, code) {
+access_token: function(cb, code, userdata) {
 	$.ajax({
 			type: 'POST',
 			url: gboard.ajax.url.access_token,
@@ -45,19 +45,19 @@ access_token: function(cb, code) {
 				try {
 					if(typeof data == 'string') { data = eval('('+data+')'); }
 				} catch(exception) {
-					(cb)(false, jqXHR, null, 'error', exception);
+					(cb)(false, jqXHR, null, 'error', exception, userdata);
 					return;
 				}
 				gboard.ajax_adapter.access_token(data);
-				(cb)(true, jqXHR, data, textStatus);
+				(cb)(true, jqXHR, data, textStatus, null, userdata);
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
-				(cb)(false, jqXHR, null, textStatus, errorThrown);
+				(cb)(false, jqXHR, null, textStatus, errorThrown, null, userdata);
 			}
 		});
 },
 
-login: function(cb, access_token, user_id, user_passowrd) {
+login: function(cb, access_token, user_id, user_passowrd, userdata) {
 	$.ajax({
 			type: 'POST',
 			url: gboard.ajax.url.login,
@@ -70,14 +70,36 @@ login: function(cb, access_token, user_id, user_passowrd) {
 				try {
 					if(typeof data == 'string') { data = eval('('+data+')'); }
 				} catch(exception) {
-					(cb)(false, jqXHR, null, 'error', exception);
+					(cb)(false, jqXHR, null, 'error', exception, userdata);
 					return;
 				}
 				gboard.ajax_adapter.login(data);
-				(cb)(true, jqXHR, data, textStatus);
+				(cb)(true, jqXHR, data, textStatus, null, userdata);
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
-				(cb)(false, jqXHR, null, textStatus, errorThrown);
+				(cb)(false, jqXHR, null, textStatus, errorThrown, userdata);
+			}
+		});
+},
+
+admin_menu_tree: function(cb, url, userdata) {
+	console.log(url);
+
+	$.ajax({
+			type: 'POST',
+			url: url,
+			success: function(data, textStatus, jqXHR) {
+				try {
+					if(typeof data == 'string') { data = eval('('+data+')'); }
+				} catch(exception) {
+					(cb)(false, jqXHR, null, 'error', exception, userdata);
+					return;
+				}
+				gboard.ajax_adapter.admin_tree(data);
+				(cb)(true, jqXHR, data, textStatus, null, userdata);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				(cb)(false, jqXHR, null, textStatus, errorThrown, userdata);
 			}
 		});
 }
@@ -107,6 +129,13 @@ access_token: function(input) {
 
 // member login adapter
 login: function(input) {
+	// XXX 현재는 adapter 로직이 필요 없음.
+	// XXX 추후 필요하면 input 에 구겨 넣자.
+	return input;
+},
+
+// admin menu tree adapter
+admin_tree: function(input) {
 	// XXX 현재는 adapter 로직이 필요 없음.
 	// XXX 추후 필요하면 input 에 구겨 넣자.
 	return input;

@@ -22,7 +22,7 @@ input {
 	-ms-border-radius: 4px;
 	-o-border-radius: 4px;
 	border-radius: 4px;
-	font-family: Helvetica, Arial, sans-serif;
+	font-family: Arial, sans-serif, Helvetica;
 	color: #696969;
 	font-size: 12px;
 	padding-left: 6px;
@@ -75,6 +75,19 @@ input[type="text"]:disabled, input[type="password"]:disabled {
 }
 .window-hidden {
 	display: none;
+}
+
+/*-- 화면 전체의 block --*/
+.window-block-all {
+	display: none;
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	z-index: 998;
+	background-color: black;
+	opacity: 0.3;
 }
 
 

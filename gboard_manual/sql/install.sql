@@ -391,6 +391,7 @@ CREATE TABLE `gbd_sessions` (
 DROP TABLE IF EXISTS  `gbd_service`;
 CREATE TABLE `gbd_service` (
     `service_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+    `service_id` char(32) NOT NULL, 
     `service_name` varchar(32) NOT NULL, 
     `controller` varchar(32) NOT NULL, 
     `controller_action` varchar(32) NOT NULL, 
@@ -399,11 +400,13 @@ CREATE TABLE `gbd_service` (
     `description` varchar(128) DEFAULT NULL, 
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
+    INDEX(`service_id`),
     PRIMARY KEY(`service_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
 # admin menu service 추가
 INSERT INTO  `gbd_service` (
+    `service_id`, 
     `service_name`, 
     `controller`, 
     `controller_action`, 
@@ -411,6 +414,7 @@ INSERT INTO  `gbd_service` (
     `description`,
     `c_date`
 ) VALUES (
+    '0a3a6699a06b4d52adcf2951e73bc68f',
     'Admin',  
     'admin', 
     'menu', 
@@ -421,6 +425,7 @@ INSERT INTO  `gbd_service` (
 
 # member activity history service 추가
 INSERT INTO  `gbd_service` (
+    `service_id`, 
     `service_name`, 
     `controller`, 
     `controller_action`, 
@@ -428,6 +433,7 @@ INSERT INTO  `gbd_service` (
     `description`,
     `c_date`
 ) VALUES (
+    '729dee41711a01515177ab1c8100b431', 
     'Activity',  
     'activity', 
     'index', 
@@ -485,4 +491,137 @@ INSERT INTO `gbd_service_group_service` (
     2, 
     NOW( ) +0
 );
+
+
+# create gbd_menus. service 를 구성하는 menu 관리 테이블
+DROP TABLE IF EXISTS  `gbd_menus`;
+CREATE TABLE `gbd_menus` (
+    `menu_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+    `menu_id` char(32) NOT NULL, 
+    `menu_name` varchar(32) NOT NULL, 
+    `menu_type` varchar(16) NOT NULL, 
+    `description` TEXT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    INDEX(`menu_id`),
+    PRIMARY KEY(`menu_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+# admin menu page insert
+INSERT INTO `gbd_menus` (
+    `menu_id`,
+    `menu_name`,
+    `menu_type`,
+    `description`,
+    `c_date`
+) VALUES (
+    '8dd0fd5aed4e932840f019a00a4ae70a',
+    '인증',
+    'folder',
+    'oauth 인증 관리',
+    NOW( ) +0
+);
+
+# admin menu page insert
+INSERT INTO `gbd_menus` (
+    `menu_id`,
+    `menu_name`,
+    `menu_type`,
+    `description`,
+    `c_date`
+) VALUES (
+    '1de9e6281f2dde770b845300b3614315',
+    '애플리케이션',
+    'static',
+    'oauth 사용을 위해 등록한 애플리케이션 리스트',
+    NOW( ) +0
+);
+
+# admin menu page insert
+INSERT INTO `gbd_menus` (
+    `menu_id`,
+    `menu_name`,
+    `menu_type`,
+    `description`,
+    `c_date`
+) VALUES (
+    '31ac57e0c0e2b3e236dc39eec1f99c2b',
+    '발급 코드',
+    'static',
+    'oauth 를 위해 발급된 코드 리스트',
+    NOW( ) +0
+);
+
+
+# create gbd_menus_action. menu 가 dynamic, static 일때 호출되어야 하는 controller, action
+DROP TABLE IF EXISTS  `gbd_menus_action`;
+CREATE TABLE `gbd_menus_action` (
+    `menu_srl` bigint(11) NOT NULL, 
+    `controller` varchar(16) NOT NULL, 
+    `menu_action` varchar(32) NOT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    FOREIGN KEY( `menu_srl`) REFERENCES `gbd_menus`(`menu_srl`) ON DELETE CASCADE, 
+    PRIMARY KEY(`menu_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+
+# create gbd_menu_tree. menu 를 보여주기 위해 menu 로 만든 tree 구조
+DROP TABLE IF EXISTS  `gbd_menus_tree`;
+CREATE TABLE `gbd_menus_tree` (
+    `element_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+    `menu_srl` bigint(11) NOT NULL, 
+    `service_srl` bigint(11) NOT NULL, 
+    `parent_element_srl` bigint(11) NOT NULL, 
+    `list_order` BIGINT( 11 ) NOT NULL DEFAULT  '1',
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    INDEX(`menu_srl`),
+    INDEX(`service_srl`),
+    FOREIGN KEY( `menu_srl`) REFERENCES `gbd_menus`(`menu_srl`) ON DELETE CASCADE, 
+    FOREIGN KEY( `service_srl`) REFERENCES `gbd_service`(`service_srl`) ON DELETE CASCADE, 
+    PRIMARY KEY(`element_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+# admin menu item insert in tree
+INSERT INTO `gbd_menus_tree` (
+    `menu_srl`, 
+    `service_srl`, 
+    `parent_element_srl`, 
+    `c_date`
+) VALUES (
+    1,
+    1,
+    0,
+    NOW()+0
+);
+
+# admin menu item insert in tree
+INSERT INTO `gbd_menus_tree` (
+    `menu_srl`, 
+    `service_srl`, 
+    `parent_element_srl`, 
+    `c_date`
+) VALUES (
+    2,
+    1,
+    1,
+    NOW()+0
+);
+
+# admin menu item insert in tree
+INSERT INTO `gbd_menus_tree` (
+    `menu_srl`, 
+    `service_srl`, 
+    `parent_element_srl`, 
+    `list_order`, 
+    `c_date`
+) VALUES (
+    3,
+    1,
+    1,
+    2, 
+    NOW()+0
+);
+
 

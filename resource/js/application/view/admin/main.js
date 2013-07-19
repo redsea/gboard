@@ -30,7 +30,7 @@ if($service_list && $service_list.length>0) {
 }
 $('#window-buffer').empty();
 
-gboard.admin.main.model.init($.cookie('_u_lang_'), 
+gboard.admin.main.action.init($.cookie('_u_lang_'), 
 	$session_expire_tm, $home_url, $profile_image, $service_list);
 
 });})(jQuery);

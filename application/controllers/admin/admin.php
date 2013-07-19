@@ -9,7 +9,7 @@ class Admin extends CI_Controller {
 		parent::__construct();
 		
 		//$this->config->load('error_code/member', TRUE);
-		//$this->load->library('myutil');
+		$this->load->library('myutil');
 		
 		
 		
@@ -23,6 +23,8 @@ class Admin extends CI_Controller {
 		//$this->load->model('admin/admin_model', 'model');
 		
 		$this->config->load('error_code/common', TRUE);
+		
+		$this->config->load('my_conf/service', TRUE);
 		
 		$this->success_code = $this->config->item('common_success', 'error_code/common');
 	}
@@ -87,6 +89,7 @@ class Admin extends CI_Controller {
 			
 			$service_list = array();
 			$this->service_model->getServiceMenu($service_list);
+			
 			$data['service_list'] = $service_list;
 			
 			$this->load->view('common/header', $data);
@@ -104,21 +107,80 @@ class Admin extends CI_Controller {
 	}
 	
 	/**
-	 * Admin service 의 menu action 처리
+	 * Admin service 의 menu action 처리(admin tree 를 가져온다)
+	 * service controller 에서 처리 할 수 있지만, admin menu 는 admin 만 접근 할수 있도록
+	 * 하기 위해서 admin controller 안에서 처리 한다.
+	 *
+	 * @param service_id {string} admin tree 의 service id
+	 * @param leaf_id {string} 가져올 leaf 의 id. 값이 없으면 root 부터 가져온다.
+	 * @param depth {number} 가져올 depth. 값이 없으면 2 (자신과 children 까지) 로 설정 한다. -1 이면 max tree depth 인 10으로 설정 한다.
 	 */
-	public function menu() {
-/*
-		$member_srl = $this->session->userdata('member_srl');
-		$is_root = $this->session->userdata('is_root');
+	public function menu($service_id, $leaf_id=0, $depth=2) {
+		$this->benchmark->mark('start_admin_menu');
 		
-		if(!$member_srl) {
-			
+		$result = $this->cmodel->isAdmin();
+		if($result != $this->success_code) {
+			$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'common'
+				)
+			);
+			$this->benchmark->mark('end_admin_menu');
+			log_message('info', 'admin_menu T['.$this->benchmark->elapsed_time('start_admin_menu', 'end_admin_menu').']');
+			return;
 		}
-*/
 		
-	
-		echo "admin/menu";
+		// access_token 체크
+		$result = $this->cmodel->validAuthorization(FALSE, TRUE);
+		if($result != $this->success_code) {
+			$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'common'
+				)
+			);
+			$this->benchmark->mark('end_admin_menu');
+			log_message('info', 'admin_menu T['.$this->benchmark->elapsed_time('start_admin_menu', 'end_admin_menu').']');
+			return;
+		}
 		
+		// 받은 depth 가 -1 이면 max tree depth 인 10으로 설정 한다.
+		if($depth == -1) {
+			$depth = $this->config->item('tree_max_depth', 'my_conf/service');
+		}
+		
+		$menu_tree = array();
+		$result = $this->service_model->getMenuTree($menu_tree, $service_id, $leaf_id, $depth);
+		
+		if($result == $this->success_code) {
+			$tree_part['data'] = $menu_tree[$leaf_id]['children'];
+			$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'service',
+						'other' => $tree_part
+				)
+			);
+		} else {
+			$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'service'
+				)
+			);
+		}
+		
+		$this->benchmark->mark('end_admin_menu');
+		log_message('info', 'admin_menu T['.$this->benchmark->elapsed_time('start_admin_menu', 'end_admin_menu').']');
 	}
 
 }

@@ -79,7 +79,7 @@
 }
 
 /* 컨텐츠 영역 좌측에 네비게이션 view port */
-.view-port-menu-navigator {
+.view-port-menu-content {
 	position: absolute;
 	top: 42px;
 	bottom: 25px;
@@ -88,6 +88,15 @@
 	overflow: hidden;
 	
 /* 	background-color: red; */
+}
+
+.menu-content-view {
+	display: none;
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
 }
 
 /* content display 의 현재 보여주고 있는 Content 의 depth 표시하는 view port */
