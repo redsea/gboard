@@ -61,6 +61,9 @@ $route['oauth/(:any)'] = 'oauth20/oauth20/$1';
 $route['service'] = 'service/service/index';
 $route['service/(:any)'] = 'service/service/$1';
 
+$route['lang'] = 'mlanguage/mlanguage/index';
+$route['lang/(:any)'] = 'mlanguage/mlanguage/$1';
+
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

@@ -215,6 +215,25 @@
 	border-radius: 6px 6px 5px 5px;
 }
 
+.quick-icon-close {
+	display: none;
+	position: absolute;
+	background-image: url("/resource/images/icon_17x17.png");
+	width: 17px;
+	height: 17px;
+	top: -5px;
+	left: -5px;
+	
+	-webkit-border-radius: 7px 7px 7px 7px;
+	-moz-border-radius: 7px 7px 7px 7px;
+	-ms-border-radius: 7px 7px 7px 7px;
+	-o-border-radius: 7px 7px 7px 7px;
+	border-radius: 7px 7px 7px 7px;
+	
+	box-shadow: 0px 2px 5px black;
+	z-index: 10;
+}
+
 
 /*--- quick bar item 의 이미지 설정(class name 의 가장 마지막 home, profile 이 quick item type 이 된다) ---*/
 /* quick-element 에 포함될 home quick icon. 이건 고정으로 포함 됨 */
@@ -233,7 +252,8 @@
 /* quick-element 에 포함될 profile quick icon. 이건 고정으로 포함 됨 */
 .quick-icon-profile {
 	background-image: url("/resource/images/icons_40x40.png");
-	background-position-x: -41px;
+/* 	background-position-x: -41px; */
+	background-position: -41px 0px;
 	width: 40px;
 	height: 40px;
 	
@@ -247,7 +267,8 @@
 /* quick-element 에 포함될 일반 quick icon */
 .quick-icon-normal {
 	background-image: url("/resource/images/icons_40x40.png");
-	background-position-x: -82px;
+/* 	background-position-x: -82px; */
+	background-position: -82px 0px;
 	width: 40px;
 	height: 40px;
 	
@@ -261,6 +282,7 @@
 /* quick icon 의 이미지를 사용자가 지정해 준 파일을 사용하기 위해서 */
 /* 파일의 사이즈는 40x40 이 되어야 한다. */
 .quick-icon-custom {
-	background-position-x: 0px;
+/* 	background-position-x: 0px; */
+	background-position: 0px 0px;
 	overflow: hidden;
 }

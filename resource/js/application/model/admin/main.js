@@ -347,6 +347,7 @@ init: function(clang, expire_second, home_url, profile_image, service_list) {
 	// quick bar 사용을 시작 한다.
 	gboard.component.quickbar.init(gboard.admin.main.action.cb_quick_cursor_move_end);
 	
+	/*
 	// home item 을 quick bar 에 넣는다.(고정)
 	gboard.component.quickbar.pushItem({
 			title: gboard.admin.main.lang[clang].go_home,
@@ -362,6 +363,26 @@ init: function(clang, expire_second, home_url, profile_image, service_list) {
 			type: 'profile',
 			image: (profile_image&&profile_image[0]&&profile_image[0].thumb)?profile_image[0].thumb:''
 		});
+	*/	
+	
+	
+	// home item 을 quick bar 에 넣는다.(고정)
+	gboard.component.quickbar.pushLeftItem({
+			title: gboard.admin.main.lang[clang].go_home,
+			depth: [gboard.admin.main.lang[clang].go_home],
+			url: home_url,
+			type: 'home'
+		});
+	// profile item 을 quick bar 에 넣는다.(고정)
+	gboard.component.quickbar.pushLeftItem({
+			title: gboard.admin.main.lang[clang].my_profile,
+			depth: [gboard.admin.main.lang[clang].my_profile],
+			url: '',
+			type: 'profile',
+			image: (profile_image&&profile_image[0]&&profile_image[0].thumb)?profile_image[0].thumb:''
+		});
+		
+		
 	
 	// 최초 메뉴가 home 이기 때문에 indicator 를 home 으로 표시
 	gboard.admin.main.data.body.indicator.push(gboard.admin.main.lang[clang].go_home);
@@ -378,45 +399,87 @@ init: function(clang, expire_second, home_url, profile_image, service_list) {
 	
 	
 	
-	
-	
-	gboard.component.quickbar.pushItem({
+	/*
+	gboard.component.quickbar.pushCenterItem({
 			title: 'start',
 			depth: [gboard.admin.main.lang[clang].my_profile],
 			url: '',
 			type: 'normal'
 		});
 
-	gboard.component.quickbar.pushItem({
+	gboard.component.quickbar.pushCenterItem({
 			title: 'longtitletestingalphabet',
 			depth: [gboard.admin.main.lang[clang].my_profile],
 			url: '',
 			type: 'normal'
 		});
 		
-	gboard.component.quickbar.pushItem({
+	gboard.component.quickbar.pushCenterItem({
 			title: '2',
 			depth: [gboard.admin.main.lang[clang].my_profile],
 			url: '',
 			type: 'normal'
 		});
 
-	gboard.component.quickbar.pushItem({
+	gboard.component.quickbar.pushCenterItem({
 			title: '3',
 			depth: [gboard.admin.main.lang[clang].my_profile],
 			url: '',
 			type: 'normal'
 		});
 		
-	gboard.component.quickbar.pushItem({
+	gboard.component.quickbar.pushCenterItem({
 			title: 'end',
 			depth: [gboard.admin.main.lang[clang].my_profile, 'dep2', 'dep3', 'dep4', 'dep5'],
 			url: '',
 			type: 'normal'
 		});
+		
+	gboard.component.quickbar.pushCenterItem({
+			title: 'end',
+			depth: [gboard.admin.main.lang[clang].my_profile, 'dep2', 'dep3', 'dep4', 'dep5'],
+			url: '',
+			type: 'normal'
+		});
+		
+	gboard.component.quickbar.pushCenterItem({
+			title: 'end',
+			depth: [gboard.admin.main.lang[clang].my_profile, 'dep2', 'dep3', 'dep4', 'dep5'],
+			url: '',
+			type: 'normal'
+		});
+		
+	gboard.component.quickbar.pushCenterItem({
+			title: 'end',
+			depth: [gboard.admin.main.lang[clang].my_profile, 'dep2', 'dep3', 'dep4', 'dep5'],
+			url: '',
+			type: 'normal'
+		});
+		
+	gboard.component.quickbar.pushCenterItem({
+			title: 'end',
+			depth: [gboard.admin.main.lang[clang].my_profile, 'dep2', 'dep3', 'dep4', 'dep5'],
+			url: '',
+			type: 'normal'
+		});
+		
+	gboard.component.quickbar.pushCenterItem({
+			title: 'end',
+			depth: [gboard.admin.main.lang[clang].my_profile, 'dep2', 'dep3', 'dep4', 'dep5'],
+			url: '',
+			type: 'normal'
+		});
+		
+	gboard.component.quickbar.pushCenterItem({
+			title: 'end',
+			depth: [gboard.admin.main.lang[clang].my_profile, 'dep2', 'dep3', 'dep4', 'dep5'],
+			url: '',
+			type: 'normal'
+		});
+	*/
 	
 	// quick bar right 에 menu 를 설정 한다.
-	//gboard.component.quickbar.setStaticItem({
+	//gboard.component.quickbar.setRightItem({
 	//		title: '고정메뉴',
 	//		type: 'profile'
 	//	});
@@ -424,7 +487,7 @@ init: function(clang, expire_second, home_url, profile_image, service_list) {
 	
 	
 	// 화면 크기를 계산 해서 퀵바 하단에 스크롤바를 붙일 건지 판단한다.
-	gboard.component.quickbar.quickBarResize();
+	//gboard.component.quickbar.quickBarResize();
 	
 	// 최초 화면을 채우기 위해서 ajax 로 데이터를 가져온다.
 	gboard.admin.main.action.initLoadPage(service_list[0]);

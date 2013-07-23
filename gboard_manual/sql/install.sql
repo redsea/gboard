@@ -497,40 +497,36 @@ INSERT INTO `gbd_service_group_service` (
 DROP TABLE IF EXISTS  `gbd_menus`;
 CREATE TABLE `gbd_menus` (
     `menu_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
-    `menu_id` char(32) NOT NULL, 
     `menu_name` varchar(32) NOT NULL, 
     `menu_type` varchar(16) NOT NULL, 
+    `menu_controller` varchar(16) DEFAULT '', 
+    `menu_action` varchar(32) DEFAULT '', 
     `description` TEXT NULL, 
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
-    INDEX(`menu_id`),
     PRIMARY KEY(`menu_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
 # admin menu page insert
 INSERT INTO `gbd_menus` (
-    `menu_id`,
     `menu_name`,
     `menu_type`,
     `description`,
     `c_date`
 ) VALUES (
-    '8dd0fd5aed4e932840f019a00a4ae70a',
-    '인증',
+    '애플리케이션',
     'folder',
-    'oauth 인증 관리',
+    '애플리케이션 관리',
     NOW( ) +0
 );
 
 # admin menu page insert
 INSERT INTO `gbd_menus` (
-    `menu_id`,
     `menu_name`,
     `menu_type`,
     `description`,
     `c_date`
 ) VALUES (
-    '1de9e6281f2dde770b845300b3614315',
     '애플리케이션',
     'static',
     'oauth 사용을 위해 등록한 애플리케이션 리스트',
@@ -539,31 +535,60 @@ INSERT INTO `gbd_menus` (
 
 # admin menu page insert
 INSERT INTO `gbd_menus` (
-    `menu_id`,
     `menu_name`,
     `menu_type`,
     `description`,
     `c_date`
 ) VALUES (
-    '31ac57e0c0e2b3e236dc39eec1f99c2b',
     '발급 코드',
     'static',
     'oauth 를 위해 발급된 코드 리스트',
     NOW( ) +0
 );
 
+# 다국어 폴더 생성
+INSERT INTO `gbd_menus` (
+    `menu_name`,
+    `menu_type`,
+    `description`,
+    `c_date`
+) VALUES (
+    '다국어',
+    'folder',
+    '다국어 관리',
+    NOW( ) +0
+);
 
-# create gbd_menus_action. menu 가 dynamic, static 일때 호출되어야 하는 controller, action
-DROP TABLE IF EXISTS  `gbd_menus_action`;
-CREATE TABLE `gbd_menus_action` (
-    `menu_srl` bigint(11) NOT NULL, 
-    `controller` varchar(16) NOT NULL, 
-    `menu_action` varchar(32) NOT NULL, 
-    `c_date` char(14) NOT NULL, 
-    `u_date` char(14) DEFAULT NULL, 
-    FOREIGN KEY( `menu_srl`) REFERENCES `gbd_menus`(`menu_srl`) ON DELETE CASCADE, 
-    PRIMARY KEY(`menu_srl`)
-) ENGINE = INNODB DEFAULT CHARSET = utf8;
+# 짧은 텍스트 다국어 관리 메뉴
+INSERT INTO `gbd_menus` (
+    `menu_name`,
+    `menu_type`,
+    `menu_controller`, 
+    `menu_action`, 
+    `description`,
+    `c_date`
+) VALUES (
+    '짧은 글',
+    'dynamic',
+    'lang', 
+    'index', 
+    '256 길이 이하의 다국어 텍스트',
+    NOW( ) +0
+);
+
+# 긴 텍스트 다국어 관리 메뉴
+INSERT INTO `gbd_menus` (
+    `menu_name`,
+    `menu_type`,
+    `description`,
+    `c_date`
+) VALUES (
+    '긴 글',
+    'static',
+    '256 길이 이상의 다국어 텍스트',
+    NOW( ) +0
+);
+
 
 
 # create gbd_menu_tree. menu 를 보여주기 위해 menu 로 만든 tree 구조
@@ -623,5 +648,84 @@ INSERT INTO `gbd_menus_tree` (
     2, 
     NOW()+0
 );
+
+# 다국어 관리 폴더 추가
+INSERT INTO `gbd_menus_tree` (
+    `menu_srl`, 
+    `service_srl`, 
+    `parent_element_srl`, 
+    `list_order`, 
+    `c_date`
+) VALUES (
+    4,
+    1,
+    0,
+    2,
+    NOW()+0
+);
+
+# 짧은 글 다국어 관리 메뉴 추가
+INSERT INTO `gbd_menus_tree` (
+    `menu_srl`, 
+    `service_srl`, 
+    `parent_element_srl`, 
+    `list_order`, 
+    `c_date`
+) VALUES (
+    5,
+    1,
+    4,
+    1,
+    NOW()+0
+);
+
+# 긴 글 다국어 관리 메뉴 추가
+INSERT INTO `gbd_menus_tree` (
+    `menu_srl`, 
+    `service_srl`, 
+    `parent_element_srl`, 
+    `list_order`, 
+    `c_date`
+) VALUES (
+    6,
+    1,
+    4,
+    2,
+    NOW()+0
+);
+
+
+# create gbd_short_text. 짧은 길이(varchar 256) 다국어 텍스트 테이블
+DROP TABLE IF EXISTS  `gbd_short_text`;
+CREATE TABLE `gbd_short_text` (
+    `text_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+    `name` char(37) NOT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    PRIMARY KEY(`text_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+# create gbd_short_text_ko. 실제 텍스트가 저장되는 테이블. 각 언어 마다 테이블이 분리 됨
+DROP TABLE IF EXISTS  `gbd_short_text_ko`;
+CREATE TABLE `gbd_short_text_ko` (
+    `text_srl` bigint(11) NOT NULL, 
+    `text` varchar(256) DEFAULT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    FOREIGN KEY( `text_srl`) REFERENCES `gbd_short_text`(`text_srl`) ON DELETE CASCADE, 
+    PRIMARY KEY(`text_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+
+
+# create gbd_short_text. 긴 길이(text)의 다국어 텍스트 테이블
+DROP TABLE IF EXISTS  `gbd_long_text`;
+CREATE TABLE `gbd_long_text` (
+    `text_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+    `name` char(37) NOT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    PRIMARY KEY(`text_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
 

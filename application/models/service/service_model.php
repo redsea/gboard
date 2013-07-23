@@ -13,8 +13,10 @@ class Service_model extends CI_Model {
 		$this->load->model('common/common_model', 'cmodel');
 		
 		$this->config->load('my_conf/common', TRUE);
+		$this->config->load('my_conf/service', TRUE);
+		
 		$this->config->load('error_code/common', TRUE);
-		//$this->config->load('error_code/oauth20', TRUE);
+		$this->config->load('error_code/service', TRUE);
 		
 		$this->yes = $this->config->item('yes', 'my_conf/common');
 		//$this->no = $this->config->item('no', 'my_conf/common');
@@ -39,8 +41,8 @@ class Service_model extends CI_Model {
 		
 		$sql = ' SELECT '.
 		       '     A.element_srl as element_srl, A.menu_srl as menu_srl, A.parent_element_srl as parent_element_srl, '.
-		       '     B.menu_id as menu_id, B.menu_name as menu_name, '.
-		       '     B.menu_type as menu_type, B.description as description '.
+		       '     B.menu_name as menu_name, B.menu_type as menu_type, B.menu_controller as menu_controller, '.
+		       '     B.menu_action as menu_action, B.description as description '.
 		       ' FROM '.
 		       '     ( '.
 		       '         SELECT '.
@@ -50,7 +52,7 @@ class Service_model extends CI_Model {
 		       '     ) A, '.
 		       '     ( '.
 		       '         SELECT '.
-		       '             menu_srl, menu_id, menu_name, menu_type, description '.
+		       '             menu_srl, menu_name, menu_type, menu_controller, menu_action, description '.
 		       '         FROM '.$this->slave_db->dbprefix('menus').
 		       '     ) B '.
 		       ' WHERE A.menu_srl = B.menu_srl ORDER BY A.parent_element_srl, A.list_order ASC ';
@@ -72,7 +74,7 @@ class Service_model extends CI_Model {
 	}
 	
 	/**
-	 * admin controller 의 service menu action 처리용 function
+	 * service menu action 처리용 function
 	 *
 	 * @param service_list {array} service list 가 저장될 장소
 	 * @param member_srl {string} FALSE 이면 자동으로 session 에서 값을 가져 온다
@@ -141,12 +143,18 @@ class Service_model extends CI_Model {
 	 * @param service_id {string} menu tree 와 매핑 되는 service id
 	 * @param parent_element_srl {string} parent element 의 srl. 값이 없으면 root(parent_srl 이 0) 로 디폴트 값을 가진다.
 	 * @param depth_count {number} 가져올 tree 의 depth. parent element 의 depth 로 부터 $depth_count 만큼 가져온다.
+	 *                             -1 이면 전체 depth 를 가져온다.
 	 */
 	public function getMenuTree(&$menu_tree, $service_id=FALSE, $parent_element_srl=FALSE, $depth_count=1) {
 		if(!$service_id) {
-			$err_code = $this->config->item('common_no_service_id', 'error_code/common');
+			$err_code = $this->config->item('service_no_service_id', 'error_code/service');
 			log_message('warn', "getMenuTree E[$err_code] no service_id value");
 			return $err_code;
+		}
+		
+		// 받은 depth_count 가 -1 이면 max tree depth 인 10으로 설정 한다.
+		if($depth_count == -1) {
+			$depth_count = $this->config->item('tree_max_depth', 'my_conf/service');
 		}
 		
 		$children = array();
@@ -171,7 +179,7 @@ class Service_model extends CI_Model {
 		$query = $this->slave_db->get();
 		
 		if($query->num_rows() <= 0) {
-			$err_code = $this->config->item('common_invalid_service_id', 'error_code/common');
+			$err_code = $this->config->item('service_invalid_service_id', 'error_code/service');
 			log_message('warn', "getMenuTree E[$err_code] invalid service_id[$access_token]");
 			return $err_code;
 		}
@@ -187,7 +195,7 @@ class Service_model extends CI_Model {
 			$parent_element_count = $this->slave_db->count_all_results();
 			
 			if($parent_element_count <= 0) {
-				$err_code = $this->config->item('common_no_tree_element', 'error_code/common');
+				$err_code = $this->config->item('service_no_tree_element', 'error_code/service');
 				log_message('warn', "getMenuTree E[$err_code] not exist parent_element_id[".$parent_element_srl[0]."]");
 				return $err_code;
 			}

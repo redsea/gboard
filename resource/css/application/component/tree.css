@@ -1,15 +1,39 @@
 /* tree 의 전체 스타일 */
 .navigator-tree {
 /* 	depth 에 따라서 margin-left 를 조정해 줘야 한다. */
-	margin-left: 6px;
+
+/* 	margin-left: 6px; */
 	margin-top: 5px;
+/* 	top: 5px; */
 /* 	height: 100%; */
 }
 
 /* tree row 의 스타일 */
 .navigator-tree-row {
-/* 	background-color: red; */
-/* 	height: 20px; */
+	text-shadow: 0px 1px 1px white;
+}
+
+/* row 에 커서가 위치 했을때 스타일 */
+.navigator-tree-row-select {
+	color: white;
+	text-shadow: 0px 1px 1px black;
+	
+	background-color: #519EDD;
+	background: -webkit-linear-gradient(#68B0E5 0%, #3587D3 100%);
+	background: -moz-linear-gradient(#68B0E5 0%, #3587D3 100%);
+	background: -ms-linear-gradient(#68B0E5 0%, #3587D3 100%);
+	background: -o-linear-gradient(#68B0E5 0%, #3587D3 100%);
+	background: linear-gradient(#68B0E5 0%, #3587D3 100%);
+	
+/* 	box 위, 아래에 line 이 없음. 이거 넣으려면 그냥 background-image 로 깔아주자 */
+/*  아래 위 색상은 다음과 같다 */
+/* 	border-top: 1px solid #5BA4DF; */
+/* 	border-bottom: 1px solid #317AC2; */
+}
+
+/* tree depth 표시를 위해서 row 의 왼쪽 공백. tag 가 많아 지지만 커서 때문에 추가 하였음 */
+.navigator-left-space {
+	display: inline-block;
 }
 
 /* tree row 가 폴딩되어 있는 표시(오른쪽으로 가는 화살표) */
@@ -17,9 +41,10 @@
 	padding: 0;
 	margin: 0;
 	margin-top: 2px;
-	width: 9px;
+	width: 16px;
 	height: 16px;
-	background-position-x: -85px;
+/* 	background-position-x: -85px; */
+	background-position: -85px 0px;
 	background-image: url("/resource/images/icons_16x16.png");
 	display: inline-block;
 }
@@ -29,9 +54,10 @@
 	padding: 0;
 	margin: 0;
 	margin-top: 1px;
-	width: 9px;
+	width: 16px;
 	height: 16px;
-	background-position-x: -68px;
+/* 	background-position-x: -68px; */
+	background-position: -68px 0px;
 	background-image: url("/resource/images/icons_16x16.png");
 	display: inline-block;
 }
@@ -41,7 +67,7 @@
 	padding: 0;
 	margin: 0;
 	margin-top: 1px;
-	width: 9px;
+	width: 16px;
 	height: 16px;
 	display: inline-block;
 }
@@ -50,10 +76,12 @@
 .navigator-tree-row-static-icon {
 	padding: 0;
 	margin: 0;
-	margin-left: 2px;
+	margin-top: 2px;
+/* 	margin-left: 2px; */
 	width: 16px;
 	height: 16px;
-	background-position-x: -51px;
+/* 	background-position-x: -51px; */
+	background-position: -51px 0px;
 	background-image: url("/resource/images/icons_16x16.png");
 	display: inline-block;
 }
@@ -63,10 +91,11 @@
 	padding: 0;
 	margin: 0;
 	margin-top: 2px;
-	margin-left: 2px;
+/* 	margin-left: 2px; */
 	width: 16px;
 	height: 16px;
-	background-position-x: -34px;
+/* 	background-position-x: -34px; */
+	background-position: -34px 0px;
 	background-image: url("/resource/images/icons_16x16.png");
 	display: inline-block;
 }

@@ -83,8 +83,6 @@ login: function(cb, access_token, user_id, user_passowrd, userdata) {
 },
 
 admin_menu_tree: function(cb, url, userdata) {
-	console.log(url);
-
 	$.ajax({
 			type: 'POST',
 			url: url,

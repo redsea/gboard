@@ -26,6 +26,7 @@ scroll:{
 },
 
 initialized: false,							// quick bar init 함수 호출 한번만 해 주기 위해서
+_ids: 0,									// quick item 에 id 발급을 위한 index
 
 data: {
 	// item 은 {title, depth, url, type} 로 구성 된다.
@@ -40,7 +41,7 @@ data: {
 														// 1 : title
 														// 2 : class name
 	
-	cursor_pos: ko.observable('quick-menu-0'),			// 상단 quick-bar 커서 위치(quick menu item 의 id 로 표시함)
+	cursor_pos: ko.observable('quick-menu-left-0'),		// 상단 quick-bar 커서 위치(quick menu item 의 id 로 표시함)
 	
 	// quick bar scroll 관련
 	center_x: ko.observable(0),							// quick center 영역의 left 위치(스크롤을 위해서)
@@ -59,16 +60,32 @@ data: {
  */
 quickItemClick: function(obj, evt) {			// 상단 quick-bar 아이템 click 했을 때의 반응
 	evt.stopPropagation();
+	evt.preventDefault();
+	
+	console.log(obj);
 	
 	var $this = $(evt.target);
 	var index = null;
 		
 	if($this.attr('id')){ index = $this.attr('id'); }
 	else				{ index = $this.parent().attr('id'); }
-	//index = index.replace('quick-menu-', '');
 	
 	// cursor 를 이동 시킨다.
 	gboard.component.quickbar.data.cursor_pos(index);
+},
+
+/**
+ * quick bar item close 를 click 했을 때의 반응
+ * @param obj {object} click 한 것의 값. center_items 에 포함된 하나의 요소 object 값임
+ * @param evt {Event object} jQuery event object
+ */
+quickItemClose: function(obj, evt) {
+	console.log('> click close button');
+	
+	evt.stopPropagation();
+	evt.preventDefault();
+	
+	console.log(obj);
 },
 
 /**
@@ -216,11 +233,14 @@ init: function(cb_cursor_move_end) {
 	
 	gboard.component.quickbar.cb_cursor_move_end = cb_cursor_move_end;
 	
+	var $cursor_element = $('#quick-element-cursor');
+	
 	$('#quick-bar-scroll-bar').draggable({
 			axis: 'x',
 			containment: 'parent',
 			drag: function(evt, ui) {
 				evt.stopPropagation();
+				//evt.preventDefault();	// 이거 넣으면 안됨. 이벤트 trigger 하는 것이 있는 듯함.
 				
 				var indicator_x = ui.position.left;
 				
@@ -245,6 +265,11 @@ init: function(cb_cursor_move_end) {
 				
 				gboard.component.quickbar.data.center_x(-content_x);
 				
+				if($cursor_element.parent().attr('id') == 'quick-bar-part-center') {
+					var opos = parseInt($cursor_element.attr('x-opos'), 10);
+					$cursor_element.css('left', opos-content_x);
+				}
+				
 				// scroll-bar indicator 의 움직임에 따라 원본 view port 의 좌, 우 shadow 를 on/off 한다.
 				if(content_x != 0) {
 					gboard.component.quickbar.data.center_left_shadow(1);
@@ -261,12 +286,41 @@ init: function(cb_cursor_move_end) {
 			}
 		});
 		
+	// 커서에 hover 반응(문서 닫기)를 건다. action 은 추가 해야 한다.
+	$cursor_element.hover(
+			function(evt) {
+				evt.stopPropagation();
+				evt.preventDefault();
+				var $this = $(this);
+				if($this.parent().attr('id') == 'quick-bar-part-center') {
+					$this.children().show();
+				}
+			},
+			function(evt) {
+				evt.stopPropagation();
+				evt.preventDefault();
+				var $this = $(this);
+				if($this.parent().attr('id') == 'quick-bar-part-center') {
+					$this.children().hide();
+				}
+			}
+		);
+	$cursor_element.children().first().click(function(evt){
+			evt.stopPropagation();
+			evt.preventDefault();
+			console.log('> click cursor close');
+			
+			// TODO cursor 의 닫기 버튼을 클릭 했을때, item 을 닫아 줘야 한다.
+		});
+		
+		
 	// XXX window resize event 처리.
 	//     30 milli-sec 마다 window-resize event 를 처리 하도록 한다.
 	//     만일 성능의 문제가 생기면 시간 간격을 늘이자
 	var wnd_resize_timer = 0;
 	$(window).bind('resize', function(evt){
 			evt.stopPropagation();
+			evt.preventDefault();
 			//if(wnd_resize_timer) { clearTimeout(wnd_resize_timer); }
 			if(!wnd_resize_timer) {
 				wnd_resize_timer = setTimeout(function(){
@@ -280,11 +334,11 @@ init: function(cb_cursor_move_end) {
 },
 
 /**
- * quick bar 에 quick item 을 추가 한다.(quick bar left, center 에 추가 한다)
+ * quick bar left 영역 에 quick item 을 추가 한다.
  *
- * @param obj 추가할 아이템 상세. obj 의 구조는 다음과 같다.{title, depth, url, type}
+ * @param obj {object} 추가할 아이템 상세. obj 의 구조는 다음과 같다.{title, depth, url, type}
  * 				title : icon 의 이름
- *				depth : 해당 메뉴의 depth. array 임
+ *				depth : 해당 메뉴의 depth(indicator 바에서 보여지는 텍스트 depth). array 임
  *				url : 해당 메뉴의 url
  *				type : 해당 메뉴의 type( 현재는 home, profile, normal 만 지원됨)
  *				image : 기본 이미지를 원하는 이미지로 바꿀때 이미지 URL 값
@@ -296,16 +350,19 @@ init: function(cb_cursor_move_end) {
  *				className : 사용할 css class
  *				is_image_custom : custom image 를 사용할지 여부(image 값이 있으면 true 가 된다. 아님 false)
  */
-pushItem: function(obj) {
-	var leftEdge = 10, posX=0;
-	var left_length = gboard.component.quickbar.data.left_items().length;
-	var center_length = gboard.component.quickbar.data.center_items().length;
+pushLeftItem: function(obj) {
+	var leftEdge = 10;
+	var length = gboard.component.quickbar.data.left_items().length;
+	// left item 은 2 개만 넣을 수 있음
+	if(length >= 2) { return; }
 	
 	obj.className = 'quick-icon-'+obj.type;
-	obj.id = 'quick-menu-'+(left_length+center_length);
+	obj.id = 'quick-menu-left-'+length;
 	obj.clickThis = gboard.component.quickbar.quickItemClick;
+	obj.clickClose = null;
+	obj.use_hover = false;
 	
-	if(obj.image)	{
+	if(obj.image) {
 		obj.is_image_custom = true;
 		obj.image = "url('"+obj.image+"')";
 	} else {
@@ -313,14 +370,59 @@ pushItem: function(obj) {
 		obj.image = '';
 	}
 	
-	if(left_length < 2) {
-		obj.pos = (left_length+1)*leftEdge + left_length*40;
-		gboard.component.quickbar.data.left_items.push(obj);
+	obj.pos = (length+1)*leftEdge + length*40;
+	gboard.component.quickbar.data.left_items.push(obj);
+},
+
+/**
+ * quick bar 에 quick item 을 추가 한다.(quick bar left, center 에 추가 한다)
+ *
+ * @param obj {object} 추가할 아이템 상세. obj 의 구조는 다음과 같다.{title, depth, url, type}
+ * 				title : icon 의 이름
+ *				depth : 해당 메뉴의 depth(indicator 바에서 보여지는 텍스트 depth). array 임
+ *				url : 해당 메뉴의 url
+ *				type : 해당 메뉴의 type( 현재는 home, profile, normal 만 지원됨)
+ *				image : 기본 이미지를 원하는 이미지로 바꿀때 이미지 URL 값
+ *
+ *				위의 항목 외의 내부에서 다음 값을 설정 한다.
+ *				clickThis : click 했을 때 호출 될 함수
+ *				id: DOM id attribute name
+ *				pos : css left 위치
+ *				className : 사용할 css class
+ *				is_image_custom : custom image 를 사용할지 여부(image 값이 있으면 true 가 된다. 아님 false)
+ * @param hasCursor {boolean} center list 에 item 을 insert 할때 insert 와 동시에 커서를 가질 것인지 여부
+ *                            true 이면 insert 와 동시에 커서를 가진다. 
+ */
+pushCenterItem: function(obj, hasCursor) {
+	var leftEdge = 10;
+	var center_length = gboard.component.quickbar.data.center_items().length;
+	
+	obj.className = 'quick-icon-'+obj.type;
+	obj.id = 'quick-menu-center'+(gboard.component.quickbar._ids++);
+	obj.clickThis = gboard.component.quickbar.quickItemClick;
+	obj.clickClose = gboard.component.quickbar.quickItemClose;
+	obj.use_hover = true;
+	
+	if(obj.image) {
+		obj.is_image_custom = true;
+		obj.image = "url('"+obj.image+"')";
 	} else {
-		obj.pos = 5 + center_length*leftEdge + center_length*40;
-		gboard.component.quickbar.data.center_width(obj.pos+45);
-		gboard.component.quickbar.data.center_items.push(obj);
+		obj.is_image_custom = false;
+		obj.image = '';
 	}
+	
+	obj.pos = 5 + center_length*leftEdge + center_length*40;
+	gboard.component.quickbar.data.center_width(obj.pos+45);
+	gboard.component.quickbar.data.center_items.push(obj);
+		
+	// cursor 를 이동 시킨다.
+	if(hasCursor) {
+		gboard.component.quickbar.data.cursor_pos(
+				'quick-menu-center'+(gboard.component.quickbar.data.center_items().length+1)
+			);
+	}
+	
+	gboard.component.quickbar.quickBarResize();
 },
 
 /**
@@ -332,7 +434,7 @@ pushItem: function(obj) {
  * 				title : icon 의 이름
  *				type : 해당 메뉴의 type( 현재는 home, profile, normal 만 지원됨)
  */
-setStaticItem: function(obj) {
+setRightItem: function(obj) {
 	var static_item = [];
 	static_item[1] = 'display';
 	static_item[1] = obj.title;
@@ -344,6 +446,7 @@ setStaticItem: function(obj) {
 removeItem: function() {
 	
 }
+
 	
 };}
 
@@ -357,7 +460,24 @@ ko.bindingHandlers.m_quick_cursor = {
 	update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 		var value = valueAccessor();
 		var valueUnwrapped = ko.utils.unwrapObservable(value);
-		var index = valueUnwrapped.replace('quick-menu-', '');
+		var items = null;
+		var is_center = false;
+		
+		if(valueUnwrapped.indexOf('quick-menu-left') == -1) {
+			items = gboard.component.quickbar.data.center_items();
+			is_center = true;
+		} else {
+			items = gboard.component.quickbar.data.left_items();
+		}
+		
+		var index = -1;
+		for(var i=0 ; i<items.length ; i++) {
+			if(items[i].id == valueUnwrapped) {
+				index = i;
+				break;
+			}
+		}
+		
 		var $item = $('#'+valueUnwrapped);
 		var $this = $(element);
 		var pos = $item.position();
@@ -365,9 +485,21 @@ ko.bindingHandlers.m_quick_cursor = {
 		if($item.length <= 0) { return; }
 		
 		// cursor 의 위치 변경
-		if(index < 2)	{ $('#quick-bar-part-left').append($this); }
-		else			{ $('#quick-bar-part-center').append($this); }
-		$this.css('left', pos.left-4);
+		if(is_center)	{
+			$('#quick-bar-part-center').append($this);
+			// center 일 경우 닫기 버튼을 hide 시킨다.
+			$item.children().last().hide();
+			// 커서가 이동 했으므로 커서 위에 닫기 버튼을 show 시킨다.
+			$this.children().show();
+			
+			var center_area_position = $item.parent().position();
+			
+			$this.attr('x-opos', pos.left-4)
+				.css('left', pos.left-4+center_area_position.left);
+		} else {
+			$('#quick-bar-part-left').append($this);
+			$this.attr('x-opos', '-1').css('left', pos.left-4);
+		}
 		
 		// tooltip 을 변경
 		var $child = $item.children().first();
@@ -376,14 +508,59 @@ ko.bindingHandlers.m_quick_cursor = {
 		
 		// 커서 이동 후, 해야 할 일이 있으면 호출 한다.
 		if(gboard.component.quickbar.cb_cursor_move_end) {
-			if(index < 2) {
+			if(is_center) {
 				(gboard.component.quickbar.cb_cursor_move_end)(
-					gboard.component.quickbar.data.left_items()[index].depth);
+					gboard.component.quickbar.data.center_items()[index].depth);
 			} else {
 				(gboard.component.quickbar.cb_cursor_move_end)(
-					gboard.component.quickbar.data.center_items()[index-2].depth);
+					gboard.component.quickbar.data.left_items()[index].depth);
 			}
 		}
 	}
 };
+
+// quick bar item 의 close button show/hide binding handler
+ko.bindingHandlers.m_quick_item_hover = {
+	//init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {},
+	update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+		var value = valueAccessor();
+		var valueUnwrapped = ko.utils.unwrapObservable(value);
+	
+		if(valueUnwrapped) {
+			var $element = $(element);
+			var is_close = $element.hasClass('quick-icon-close');
+			
+			if(is_close) {
+				$element.hover(
+						function(evt) {
+							evt.stopPropagation();
+							evt.preventDefault();
+							$element.show();
+						},
+						function(evt) {
+							evt.stopPropagation();
+							evt.preventDefault();
+							$element.hide();
+						}
+					);
+			} else {
+				var $close = $element.next().next();
+			
+				$element.hover(
+						function(evt){
+							evt.stopPropagation();
+							evt.preventDefault();
+							$close.show();
+						},
+						function(evt){
+							evt.stopPropagation();
+							evt.preventDefault();
+							$close.hide();
+						}
+					);
+			}
+		}
+	}
+};
+
 

@@ -65,7 +65,7 @@ class Member extends CI_Controller {
 				array(
 						'output'=>$this->myutil, 
 						'code'=>$result,
-						'controller' => 'member'
+						'controller' => 'common'
 				)
 			);
 			$this->benchmark->mark('end_login');

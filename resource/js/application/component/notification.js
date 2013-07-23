@@ -37,6 +37,7 @@ data: {
 		$close.button({icons:{primary:'ui-icon-closethick'},text:false})
 			.addClass('window-notification-close').width(15).click(function(evt){
 				evt.stopPropagation();
+				evt.preventDefault();
 				$(this).button({disabled:true});
 				gboard.component.notification.removeNotification(data.nid);
 			});

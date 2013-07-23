@@ -7,7 +7,7 @@
 $config['system_api_key'] = 'e44f11e891d4c8afdd6ffbf7a0c03bd3';		// 기본 웹서비스(local 웹페이지)에서 사용할 api key 
 $config['system_api_secret'] = '9c10a58811c6932fd388c0959b0ec112';	// 기본 웹서비스(local 웹페이지)에서 사용할 api secret
 
-$config['system_api_key_using_ip'] = ['127.0.0.1'];				// root 용 api key 를 사용할 수 있는 접속자 ip
+$config['system_api_key_using_ip'] = ['127.0.0.1', '192.168.0.52'];				// root 용 api key 를 사용할 수 있는 접속자 ip
 
 $config['system_api_version'] = '000.000.001';					// 현재 서비스 하는 api version
 $config['supported_api_version'] = ['000.000.001'];				// 지원 할 수 있는 api version. array 이기 때문에 여러개 들어갈 수 있다.
