@@ -324,7 +324,7 @@ INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_dat
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("", "iba", "이반어", "Iban", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("", "ijo", "이조어", "Ijo", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("", "egy", "이집트어 (고대)", "Ancient Egyptian", NOW()+0, "" );
-INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("it", "ita", "이탈리아어", "Italian", NOW()+0, "" );
+INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("it", "ita", "이탈리아어", "Italiano", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("", "art", "인공 언어 (기타)", "Artificial languages", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("", "inh", "인구시어", "Ingush", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("id", "ind", "인도네시아어", "Indonesian", NOW()+0, "" );
@@ -333,7 +333,7 @@ INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_dat
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("ia", "ina", "인테르링구아 (국제보조어협회)", "Interlingua (International Auxiliary Language Association)", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("ie", "ine", "인테르링구에; 옥시덴탈", "Interlingue", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("", "ilo", "일로코어; 일로카노어", "Iloko", NOW()+0, "" );
-INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("ja", "jpn", "일본어", "Japanese", NOW()+0, "" );
+INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("ja", "jpn", "일본어", "日本語", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("jv", "jav", "자바어", "Javanese", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("", "znd", "잔데어; 아잔데어", "Zande", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("", "nds", "저지 색슨어; 저지 독일어", "Low German; Low Saxon", NOW()+0, "" );
@@ -344,8 +344,8 @@ INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_dat
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("za", "zha", "좡어", "Zhuang; Chuang", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("", "zun", "주니어", "Zuni", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("zu", "zul", "줄루어", "Zulu", NOW()+0, "" );
-INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("zh", "chi", "중국어", "Chinese", NOW()+0, "" );
-INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("zh", "zho", "중국어", "Chinese", NOW()+0, "" );
+INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("zh", "chi", "중국어", "中文", NOW()+0, "" );
+INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("zh", "zho", "중국어", "中文", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("", "cai", "중앙아메리카 인디언 제어 (기타)", "Central American Indian languages", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("", "chg", "차가타이어", "Chagatai", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("ch", "cha", "차모로어", "Chamorro", NOW()+0, "" );
@@ -479,7 +479,7 @@ INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_dat
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("", "haw", "하와이어", "Hawaiian", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("ha", "hau", "하우사어", "Hausa", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("", "hai", "하이다어", "Haida", NOW()+0, "" );
-INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("ko", "kor", "한국어", "Korean", NOW()+0, "" );
+INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("ko", "kor", "한국어", "한국어", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("hu", "hun", "헝가리어", "Hungarian", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("hz", "her", "헤레로어", "Herero", NOW()+0, "" );
 INSERT INTO gbd_language_code (alpha2, alpha3, description1, description2, c_date, u_date) VALUES ("", "kho", "호탄어", "Khotanese", NOW()+0, "" );

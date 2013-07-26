@@ -75,6 +75,7 @@ class Admin extends CI_Controller {
 			// 이 페이지는 redirect 로 넘어 오기 때문에 authorization check 를 하지 않는다.
 			//$result = $this->cmodel->validAuthorization();
 			
+			
 			$session_expire_sec = $this->config->item('sess_expiration');
 			$auth_expire_sec = strtotime($this->session->userdata('access_token_expire')) - time();
 
@@ -83,7 +84,15 @@ class Admin extends CI_Controller {
 			$data['session_expire_time'] = $session_expire_sec >= $auth_expire_sec ? 
 					$auth_expire_sec : $session_expire_sec;
 			$data['home_url'] = 'http://'.$this->session->userdata('domain').'/admin';
-			$data['profile_image'] = $this->session->userdata('profile_image');
+			
+			$data['profile_image'] = '';
+			$profile_image = $this->session->userdata('profile_image');
+			foreach($profile_image as $key=>$value) {
+				if($key == '40x40') {
+					$data['profile_image'] = $value;
+					break;
+				}
+			}
 			
 			$service_list = array();
 			$this->service_model->getServiceMenu($service_list);

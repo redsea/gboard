@@ -7,17 +7,23 @@ if(!gboard) { gboard = {}; }
 //--------------------------------------------------
 if(!gboard.ajax) {gboard.ajax = {
 
+domain: 'gboard.org',
+
 url: {
-	authorize:		'http://gboard.org/oauth/authorize',
-	access_token:	'http://gboard.org/oauth/access_token',
-	login:			'http://gboard.org/member/login'
+	authorize:		'/oauth/authorize',
+	access_token:	'/oauth/access_token',
+	login:			'/member/login'
+},
+
+init: function(domain) {
+	gboard.ajax.domain = domain;
 },
 
 // oauth authorize
 authorize: function(cb, userdata) {
 	$.ajax({
 			type: 'POST',
-			url: gboard.ajax.url.authorize,
+			url: 'http://'+gboard.ajax.domain+gboard.ajax.url.authorize,
 			success: function(data, textStatus, jqXHR) {
 				try {
 					if(typeof data == 'string') { data = eval('('+data+')'); }
@@ -38,7 +44,7 @@ authorize: function(cb, userdata) {
 access_token: function(cb, code, userdata) {
 	$.ajax({
 			type: 'POST',
-			url: gboard.ajax.url.access_token,
+			url: 'http://'+gboard.ajax.domain+gboard.ajax.url.access_token,
 			data: {code:code},
 			//headers: {'X-authorization':code},
 			success: function(data, textStatus, jqXHR) {
@@ -60,7 +66,7 @@ access_token: function(cb, code, userdata) {
 login: function(cb, access_token, user_id, user_passowrd, userdata) {
 	$.ajax({
 			type: 'POST',
-			url: gboard.ajax.url.login,
+			url: 'http://'+gboard.ajax.domain+gboard.ajax.url.login,
 			headers: {'X-authorization':access_token},
 			data: {
 				user_id: user_id,
@@ -102,6 +108,7 @@ admin_menu_tree: function(cb, url, userdata) {
 		});
 }
 
+
 };}
 
 
@@ -136,6 +143,10 @@ login: function(input) {
 admin_tree: function(input) {
 	// XXX 현재는 adapter 로직이 필요 없음.
 	// XXX 추후 필요하면 input 에 구겨 넣자.
+	return input;
+},
+
+get_content: function(input) {
 	return input;
 }
 

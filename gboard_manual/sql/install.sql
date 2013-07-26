@@ -286,6 +286,7 @@ CREATE TABLE `gbd_language_code` (
     `name` varchar(32) DEFAULT NULL, 
     `description1` varchar(128) DEFAULT NULL, 
     `description2` varchar(128) DEFAULT NULL, 
+    `image_mark` TEXT NULL , 
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
     INDEX(`alpha2`), 
@@ -514,52 +515,13 @@ INSERT INTO `gbd_menus` (
     `description`,
     `c_date`
 ) VALUES (
-    '애플리케이션',
+    '인증',
     'folder',
-    '애플리케이션 관리',
+    'oauth 인증 관리',
     NOW( ) +0
 );
 
 # admin menu page insert
-INSERT INTO `gbd_menus` (
-    `menu_name`,
-    `menu_type`,
-    `description`,
-    `c_date`
-) VALUES (
-    '애플리케이션',
-    'static',
-    'oauth 사용을 위해 등록한 애플리케이션 리스트',
-    NOW( ) +0
-);
-
-# admin menu page insert
-INSERT INTO `gbd_menus` (
-    `menu_name`,
-    `menu_type`,
-    `description`,
-    `c_date`
-) VALUES (
-    '발급 코드',
-    'static',
-    'oauth 를 위해 발급된 코드 리스트',
-    NOW( ) +0
-);
-
-# 다국어 폴더 생성
-INSERT INTO `gbd_menus` (
-    `menu_name`,
-    `menu_type`,
-    `description`,
-    `c_date`
-) VALUES (
-    '다국어',
-    'folder',
-    '다국어 관리',
-    NOW( ) +0
-);
-
-# 짧은 텍스트 다국어 관리 메뉴
 INSERT INTO `gbd_menus` (
     `menu_name`,
     `menu_type`,
@@ -568,27 +530,47 @@ INSERT INTO `gbd_menus` (
     `description`,
     `c_date`
 ) VALUES (
-    '짧은 글',
+    '애플리케이션',
     'dynamic',
-    'lang', 
-    'index', 
-    '256 길이 이하의 다국어 텍스트',
+    'oauth', 
+    'application_list', 
+    'oauth 사용을 위해 등록한 애플리케이션 리스트',
     NOW( ) +0
 );
 
-# 긴 텍스트 다국어 관리 메뉴
+# admin menu page insert
 INSERT INTO `gbd_menus` (
     `menu_name`,
     `menu_type`,
+    `menu_controller`, 
+    `menu_action`, 
     `description`,
     `c_date`
 ) VALUES (
-    '긴 글',
-    'static',
-    '256 길이 이상의 다국어 텍스트',
+    '발급 코드',
+    'dynamic',
+    'oauth', 
+    'code_list', 
+    'oauth 를 위해 발급된 코드 리스트',
     NOW( ) +0
 );
 
+# 다국어 관리 메뉴 생성
+INSERT INTO `gbd_menus` (
+    `menu_name`,
+    `menu_type`,
+    `menu_controller`, 
+    `menu_action`, 
+    `description`,
+    `c_date`
+) VALUES (
+    '다국어',
+    'dynamic',
+    'lang', 
+    'index', 
+    '다국어 관리',
+    NOW( ) +0
+);
 
 
 # create gbd_menu_tree. menu 를 보여주기 위해 menu 로 만든 tree 구조
@@ -649,7 +631,7 @@ INSERT INTO `gbd_menus_tree` (
     NOW()+0
 );
 
-# 다국어 관리 폴더 추가
+# 다국어 관리 메뉴 추가
 INSERT INTO `gbd_menus_tree` (
     `menu_srl`, 
     `service_srl`, 
@@ -664,40 +646,9 @@ INSERT INTO `gbd_menus_tree` (
     NOW()+0
 );
 
-# 짧은 글 다국어 관리 메뉴 추가
-INSERT INTO `gbd_menus_tree` (
-    `menu_srl`, 
-    `service_srl`, 
-    `parent_element_srl`, 
-    `list_order`, 
-    `c_date`
-) VALUES (
-    5,
-    1,
-    4,
-    1,
-    NOW()+0
-);
-
-# 긴 글 다국어 관리 메뉴 추가
-INSERT INTO `gbd_menus_tree` (
-    `menu_srl`, 
-    `service_srl`, 
-    `parent_element_srl`, 
-    `list_order`, 
-    `c_date`
-) VALUES (
-    6,
-    1,
-    4,
-    2,
-    NOW()+0
-);
-
-
-# create gbd_short_text. 짧은 길이(varchar 256) 다국어 텍스트 테이블
-DROP TABLE IF EXISTS  `gbd_short_text`;
-CREATE TABLE `gbd_short_text` (
+# create gbd_text. 다국어 텍스트 테이블
+DROP TABLE IF EXISTS  `gbd_text`;
+CREATE TABLE `gbd_text` (
     `text_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
     `name` char(37) NOT NULL, 
     `c_date` char(14) NOT NULL, 
@@ -705,27 +656,27 @@ CREATE TABLE `gbd_short_text` (
     PRIMARY KEY(`text_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
-# create gbd_short_text_ko. 실제 텍스트가 저장되는 테이블. 각 언어 마다 테이블이 분리 됨
-DROP TABLE IF EXISTS  `gbd_short_text_ko`;
-CREATE TABLE `gbd_short_text_ko` (
+
+# create gbd_text_ko. 실제 텍스트가 저장되는 테이블. 각 언어 마다 테이블이 분리 됨
+DROP TABLE IF EXISTS  `gbd_text_ko`;
+CREATE TABLE `gbd_text_ko` (
     `text_srl` bigint(11) NOT NULL, 
     `text` varchar(256) DEFAULT NULL, 
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
-    FOREIGN KEY( `text_srl`) REFERENCES `gbd_short_text`(`text_srl`) ON DELETE CASCADE, 
+    FOREIGN KEY( `text_srl`) REFERENCES `gbd_text`(`text_srl`) ON DELETE CASCADE, 
     PRIMARY KEY(`text_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
 
-
-# create gbd_short_text. 긴 길이(text)의 다국어 텍스트 테이블
-DROP TABLE IF EXISTS  `gbd_long_text`;
-CREATE TABLE `gbd_long_text` (
-    `text_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
-    `name` char(37) NOT NULL, 
+# create gbd_text_ko. 실제 텍스트가 저장되는 테이블. 각 언어 마다 테이블이 분리 됨
+DROP TABLE IF EXISTS  `gbd_text_en`;
+CREATE TABLE `gbd_text_en` (
+    `text_srl` bigint(11) NOT NULL, 
+    `text` varchar(256) DEFAULT NULL, 
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
+    FOREIGN KEY( `text_srl`) REFERENCES `gbd_text`(`text_srl`) ON DELETE CASCADE, 
     PRIMARY KEY(`text_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
-
 

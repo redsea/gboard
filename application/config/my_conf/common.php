@@ -9,7 +9,7 @@ $config['no']  = 'N';	// no 값
 
 $config['table_prefix'] = 'gbd_';
 
-$config['support_language'] = ['ko', 'en'];	// 서비스에서 지원하는 언어
+$config['support_language'] = ['ko', 'en'];					// 서비스에서 지원하는 언어 코드
 
 $config['cookie_domain'] = 'gboard.org';		// 쿠키 도메인
 $config['cookie_path'] = '/';					// 쿠키 패스

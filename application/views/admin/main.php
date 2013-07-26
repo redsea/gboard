@@ -14,6 +14,7 @@
 	<script type="text/javascript" src="/resource/js/application/view/admin/main.js"></script>
 	<script type="text/javascript" src="/resource/js/application/model/admin/main.js"></script>
 	
+	<!-- quick menu item template -->
 	<script type="text/html" id="tpl-quick-bar-item">
 		<div class="quick-element" 
 				data-bind="click:clickThis, attr:{id:id}, style:{left:pos}">
@@ -23,6 +24,7 @@
 		</div>
 	</script>
 	
+	<!-- notification item template -->
 	<script type="text/html" id="tpl-notification-item">
 		<li class="window-notification-element-wrapper" data-bind="attr:{id:nid, title:desc}">
 			<div class="window-notification-element-space"></div>
@@ -37,6 +39,7 @@
 		</li>
 	</script>
 	
+	<!-- tree item template -->
 	<script type="text/html" id="tpl-tree-item">
 		<li class="navigator-tree-row" data-bind="attr:{title:description}">
 			<div data-bind="attr:{id:id}, m_tree_row_single_click:row_click_handler">
@@ -93,11 +96,23 @@
 		
 		<div id="window-content-display" class="window-content-display">
 			<div id="view-port-depth-indicator" class="view-port-depth-indicator" data-bind="m_depth_ind:indicator"></div>
-			<div class="view-port-content-display">
-				<div class="view-content-display"></div>
+			<!-- ko stopBinding: true -->
+			<div id="view-port-content-display" class="view-port-content-display">
+<!-- 				<iframe class="view-content-display" seamless="seamless"> -->
+<!-- 				</iframe> -->
+<!-- 				<div class="view-content-display"> -->
+					
+<!--
+					<div class="list-element-icon-simple-200-180">
+						<div class="list-element-icon-simple-200-180-image"></div>
+						<div class="list-element-icon-simple-200-180-text">한국어</div>
+					</div>
+-->
+					
+<!-- 				</div> -->
 			
 			</div>
-			
+			<!-- /ko -->
 			<div class="view-port-bottom-status-bar-right">
 				<div class="window-bottom-status-bar-line"></div>
 				<div class="label-connect-keep-time">

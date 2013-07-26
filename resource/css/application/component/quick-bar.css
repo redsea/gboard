@@ -100,7 +100,7 @@
 	height: 14px;
 	text-align: center;
 	font-size: 11px;
-	text-shadow: 0px 1px #D0D0D0;
+	text-shadow: 0px 1px 1px #D0D0D0;
 	color: #2F2F2F;
 	margin-top: 5px;
 	overflow: hidden;
@@ -268,6 +268,34 @@
 .quick-icon-normal {
 	background-image: url("/resource/images/icons_40x40.png");
 /* 	background-position-x: -82px; */
+	background-position: -82px 0px;
+	width: 40px;
+	height: 40px;
+	
+	-moz-box-shadow: 0px 1px 3px black;
+	-webkit-box-shadow: 0px 1px 3px black;
+	-ms-box-shadow: 0px 1px 3px black;
+	-o-box-shadow: 0px 1px 3px black;
+	box-shadow: 0px 1px 3px black;
+}
+
+/* quick-element 에 포함될 dynamic quick icon */
+.quick-icon-dynamic {
+	background-image: url("/resource/images/icons_40x40.png");
+	background-position: -82px 0px;
+	width: 40px;
+	height: 40px;
+	
+	-moz-box-shadow: 0px 1px 3px black;
+	-webkit-box-shadow: 0px 1px 3px black;
+	-ms-box-shadow: 0px 1px 3px black;
+	-o-box-shadow: 0px 1px 3px black;
+	box-shadow: 0px 1px 3px black;
+}
+
+/* quick-element 에 포함될 static quick icon */
+.quick-icon-static {
+	background-image: url("/resource/images/icons_40x40.png");
 	background-position: -82px 0px;
 	width: 40px;
 	height: 40px;

@@ -52,7 +52,8 @@ class Common_model extends CI_Model {
 	 * 만일 접속 할때 마다 access_token expire 시간을 연장하고 싶다면, 여기에서 하면 된다.
 	 * session 값 업데이트 및 table column update 해야 한다.
 	 * 
-	 * @param access_token {string} 체크할 access_token. 만일 FALSE 이면 http request header 에서 가져온다.
+	 * @param access_token {string} 체크할 access_token. 만일 FALSE 이면 http request header 에서 우선 가져온다.
+	 *								만일 request header 에 access_token 이 없으면 session 에서 access_token 을 찾는다.
 	 * @param auto_update_expire {boolean} access token expire time 을 자동으로 업데이트 할지 여부
 	 *									TRUE 라면 본 함수를 호출 할때 마다 expire time 은 최초 상태로 초기화 됨.
 	 *									FALSE 라면 초기화 되지 않음
@@ -173,7 +174,7 @@ class Common_model extends CI_Model {
 	public function getFileImageURL($file_srl) {
 		if(!$this->slave_db) { $this->slave_db = $this->load->database('slave', TRUE); }
 		
-		$this->slave_db->select('local_url, network_url, width, height, '.
+		$this->slave_db->select('file_srl, local_url, network_url, width, height, '.
 					'thumbnail_local_url, thumbnail_network_url, thumbnail_width, thumbnail_height')
 				->from($this->table_prefix.'files')->where_in('file_srl', $file_srl);
 		$query = $this->slave_db->get();
@@ -185,30 +186,30 @@ class Common_model extends CI_Model {
 		
 		$ret = array();
 		foreach($query->result_array() as $row) {
-			$element = array();
+			$element = new stdClass();
 			
 			if(isset($row['local_url']) && $row['local_url']) {
-				$element['img'] = $row['local_url'];
+				$element->img = $row['local_url'];
 			} else {
-				$element['img'] = $row['network_url'];
+				$element->img = $row['network_url'];
 			}
-			if($element['img']) {
-				$element['img_w'] = $row['width'];
-				$element['img_h'] = $row['height'];
+			if($element->img) {
+				$element->img_w = $row['width'];
+				$element->img_h = $row['height'];
 			}
 			
 			if(isset($row['thumbnail_local_url']) && $row['thumbnail_local_url']) {
-				$element['thumb'] = $row['thumbnail_local_url'];
+				$element->thumb = $row['thumbnail_local_url'];
 			} else {
-				$element['thumb'] = $row['thumbnail_network_url'];
+				$element->thumb = $row['thumbnail_network_url'];
 			}
-			if($element['thumb']) {
-				$element['thumb_w'] = $row['thumbnail_width'];
-				$element['thumb_h'] = $row['thumbnail_height'];
+			if($element->thumb) {
+				$element->thumb_w = $row['thumbnail_width'];
+				$element->thumb_h = $row['thumbnail_height'];
 			}
 			
-			if($element['img'] || $element['thumb']) {
-				array_push($ret, $element);
+			if($element->img || $element->thumb) {
+				$ret[$row['file_srl']] = $element;
 			}
 		}
 		$query->free_result();
@@ -216,6 +217,34 @@ class Common_model extends CI_Model {
 		if(count($ret) > 0) { return $ret; }
 		
 		return FALSE;
+	}
+	
+	/**
+	 * getFileImageURL 으로 부터 얻은 file_srl 로 정렬된 array 를 사이즈 형태로 정렬된 것으로 변환 한다.
+	 * 만일 동일한 사이즈의 그림이 존재한다면 최초 설정된 값만 유효하고, 이후는 무시 된다.
+	 *
+	 * @param image_file_info {array} getFileImageURL 으로 부터 얻은 file_srl 로 정렬되어 있는 array
+	 * @return size 별로 정렬하여 리턴한다.
+	 */
+	public function sortImageURLBySize($image_file_info) {
+		$ret = array();
+		
+		foreach($image_file_info as $value) {
+			if($value->img) {
+				$key = $value->img_w.'x'.$value->img_h;
+				if(!array_key_exists($key, $ret)) {
+					$ret[$key] = $value->img;
+				}
+			}
+			if($value->thumb) {
+				$key = $value->thumb_w.'x'.$value->thumb_h;
+				if(!array_key_exists($key, $ret)) {
+					$ret[$key] = $value->thumb;
+				}
+			}
+		}
+		
+		return $ret;
 	}
 	
 	/**
@@ -284,6 +313,7 @@ class Common_model extends CI_Model {
 		if($member_info['image_mark']) {
 			$profile_image = $this->getFileImageURL(unserialize($member_info['image_mark']));
 			if($profile_image) {
+				$profile_image = $this->sortImageURLBySize($profile_image);
 				$session_data['profile_image'] = $profile_image;
 			}
 		}

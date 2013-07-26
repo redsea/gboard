@@ -1,0 +1,55 @@
+.list-element-simple-icon {
+	float: left;
+
+	margin-left: 25px;
+	margin-top: 25px;
+
+	width: 200px;
+	height: 180px;
+	border: 1px solid #D7D7D7;
+	background-color: white;
+	
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	-ms-border-radius: 6px;
+	-o-border-radius: 6px;
+	border-radius: 6px;
+	
+	-moz-box-shadow: 0px 0px 5px #E7E7E7;
+	-webkit-box-shadow: 0px 0px 5px #E7E7E7;
+	-ms-box-shadow: 0px 0px 5px #E7E7E7;
+	-o-box-shadow: 0px 0px 5px #E7E7E7;
+	box-shadow: 0px 0px 5px #E7E7E7;
+	
+}
+
+.list-element-simple-icon:hover {
+	-moz-box-shadow: 0px 0px 10px black;
+	-webkit-box-shadow: 0px 0px 10px black;
+	-ms-box-shadow: 0px 0px 10px black;
+	-o-box-shadow: 0px 0px 10px black;
+	box-shadow: 0px 0px 10px black;
+}
+
+.list-element-simple-icon-image {
+	width: 180px;
+	height: 130px;
+	margin-left: 10px;
+	margin-top: 10px;
+	background: #E7E7E7;
+	
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	-ms-border-radius: 3px;
+	-o-border-radius: 3px;
+	border-radius: 3px;
+}
+
+.list-element-simple-icon-text {
+	width: 180px;
+	margin-left: 10px;
+	margin-top: 15px;
+	text-align: center;
+	color: black;
+	text-shadow: 0px 1px 1px #D0D0D0;
+}

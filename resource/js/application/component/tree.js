@@ -75,7 +75,10 @@ actionTreeArrow: function(evt, udata) {
 							var $this = $(evt.target);
 							$('body').trigger(gboard.component.tree.event.folder, [$this]);
 						},
-						row_click_handler: {single_action: true, double_action: true}
+						row_click_handler: {
+							single_action: false, 
+							double_action: (js_element.children[i].menu_type=='folder'?false:true)
+						}
 					});
 			}
 		}
@@ -99,8 +102,12 @@ actionTreeArrow: function(evt, udata) {
 	}
 },
 
+/**
+ * tree 의 element 를 single click 했을 때의 반응.
+ * 현재 single click 했을 때의 반응이 없어서 구현 하지 않았음.
+ */
 actionRowSingleClick: function($element) {
-	console.log('-----> action row single click');
+	// TODO single click 반응이 필요하면 구현 해야 한다.
 },
 
 actionRowDoubleClick: function($element) {
@@ -120,18 +127,12 @@ actionRowDoubleClick: function($element) {
 		indicator_label.push(js_element.menu_name);
 	}
 	
-	// TODO 여기서 요청 하면 된다. 내일 와서 API 만들고 다시 하자.
-	
-	console.log(js_element.menu_controller);
-	console.log(js_element.menu_action);
-	
-	
 	if(gboard.component.quickbar) {
 		gboard.component.quickbar.pushCenterItem({
 			title: js_element.menu_name,
 			depth: indicator_label,
-			url: '',
-			type: 'normal'
+			url: '/'+js_element.menu_controller+'/'+js_element.menu_action,
+			type: js_element.menu_type
 		}, true);
 	}
 	
@@ -210,7 +211,10 @@ init: function(tag_id, data, show) {
 					var $this = $(evt.target);
 					$('body').trigger(gboard.component.tree.event.folder, [$this]);
 				},
-				row_click_handler: {single_action: true, double_action: true}
+				row_click_handler: {
+					single_action: false, 
+					double_action: (data[i].menu_type=='folder'?false:true)
+				}
 			});
 	}
 	

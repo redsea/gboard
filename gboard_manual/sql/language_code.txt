@@ -324,7 +324,7 @@ iro	-	이로쿼이어족	Iroquoian languages
 iba	-	이반어	Iban
 ijo	-	이조어	Ijo
 egy	-	이집트어 (고대)	Ancient Egyptian
-ita	it	이탈리아어	Italian
+ita	it	이탈리아어	Italiano
 art	-	인공 언어 (기타)	Artificial languages
 inh	-	인구시어	Ingush
 ind	id	인도네시아어	Indonesian
@@ -333,7 +333,7 @@ ine	-	인도유럽어족 (기타)	Indo-European languages
 ina	ia	인테르링구아 (국제보조어협회)	Interlingua (International Auxiliary Language Association)
 ine	ie	인테르링구에; 옥시덴탈	Interlingue
 ilo	-	일로코어; 일로카노어	Iloko
-jpn	ja	일본어	Japanese
+jpn	ja	일본어	日本語
 jav	jv	자바어	Javanese
 znd	-	잔데어; 아잔데어	Zande
 nds	-	저지 색슨어; 저지 독일어	Low German; Low Saxon
@@ -344,8 +344,8 @@ dzo	dz	종카어	Dzongkha
 zha	za	좡어	Zhuang; Chuang
 zun	-	주니어	Zuni
 zul	zu	줄루어	Zulu
-chi	zh	중국어	Chinese
-zho	zh	중국어	Chinese
+chi	zh	중국어	中文
+zho	zh	중국어	中文
 cai	-	중앙아메리카 인디언 제어 (기타)	Central American Indian languages
 chg	-	차가타이어	Chagatai
 cha	ch	차모로어	Chamorro
@@ -479,7 +479,7 @@ phi	-	필리핀 제어 (기타)	Philippine languages
 haw	-	하와이어	Hawaiian
 hau	ha	하우사어	Hausa
 hai	-	하이다어	Haida
-kor	ko	한국어	Korean
+kor	ko	한국어	한국어
 hun	hu	헝가리어	Hungarian
 her	hz	헤레로어	Herero
 kho	-	호탄어	Khotanese

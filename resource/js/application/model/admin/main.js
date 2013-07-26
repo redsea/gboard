@@ -133,8 +133,6 @@ cb_admin_menu_tree: function(result, jqXHR, data, textStatus, errorThrown, udata
 		gboard.component.notification.removeNotification(udata.id);
 	}
 	
-	
-	
 	//$('body').trigger(gboard.admin.main.data.event.ajax_concurrent, [udata]);
 },
 
@@ -345,7 +343,8 @@ init: function(clang, expire_second, home_url, profile_image, service_list) {
 	});
 	
 	// quick bar 사용을 시작 한다.
-	gboard.component.quickbar.init(gboard.admin.main.action.cb_quick_cursor_move_end);
+	gboard.component.quickbar.init($('#view-port-content-display'),
+			gboard.admin.main.action.cb_quick_cursor_move_end);
 	
 	/*
 	// home item 을 quick bar 에 넣는다.(고정)
@@ -370,16 +369,16 @@ init: function(clang, expire_second, home_url, profile_image, service_list) {
 	gboard.component.quickbar.pushLeftItem({
 			title: gboard.admin.main.lang[clang].go_home,
 			depth: [gboard.admin.main.lang[clang].go_home],
-			url: home_url,
+			url: home_url,		// TODO 이거 url 이 맞는지 체크 해 봐야 한다.
 			type: 'home'
 		});
 	// profile item 을 quick bar 에 넣는다.(고정)
 	gboard.component.quickbar.pushLeftItem({
 			title: gboard.admin.main.lang[clang].my_profile,
 			depth: [gboard.admin.main.lang[clang].my_profile],
-			url: '',
+			url: 'profile',		// TODO 이거 url 이 맞는지 체크 해 봐야 한다.
 			type: 'profile',
-			image: (profile_image&&profile_image[0]&&profile_image[0].thumb)?profile_image[0].thumb:''
+			image: profile_image
 		});
 		
 		

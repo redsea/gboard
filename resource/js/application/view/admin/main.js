@@ -30,6 +30,9 @@ if($service_list && $service_list.length>0) {
 }
 $('#window-buffer').empty();
 
+// ajax 호출할 domain name 설정
+gboard.ajax.init('gboard.org');
+// 페이지 시작
 gboard.admin.main.action.init($.cookie('_u_lang_'), 
 	$session_expire_tm, $home_url, $profile_image, $service_list);
 

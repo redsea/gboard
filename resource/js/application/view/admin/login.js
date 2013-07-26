@@ -17,6 +17,9 @@ $('#password').keyup(function(evt){
 	if(evt.which == 13) { $('#login-btn').trigger('click'); }
 });
 
+// ajax 호출할 domain name 설정
+gboard.ajax.init('gboard.org');
+// 페이지 시작
 gboard.admin.login.model.init($.cookie('_u_lang_'));
 
 });})(jQuery);

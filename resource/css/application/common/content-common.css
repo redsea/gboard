@@ -1,0 +1,49 @@
+html, body, ul, li {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background-color: #EFEFEF;
+}
+
+ul {
+	list-style: none;
+}
+
+/*--- 화면에 보여지는 모든 것을 포함하는 root 설정 ---*/
+.window-container {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	cursor: default;
+	overflow: hidden;
+	
+	font-family: Helvetica, Arial, sans-serif;
+/* 	font-family: 돋음, Dotum, Baekmuk Dotum, Undotum, Apple Gothic, Latin font, sans-serif; */
+	color: #696969;
+	font-size: 12px;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}
+
+
+/*--- Buffer 나 임시 영역 설정 ---*/
+/* buffer 용으로 사용할 영역 */
+.window-buffer {
+	position: absolute;
+	left: -500px;
+	right: -500px;
+	width: 400px;
+	height: 400px;
+	display: none;
+}
+.window-hidden {
+	display: none;
+}
