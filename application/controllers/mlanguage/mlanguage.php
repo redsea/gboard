@@ -13,7 +13,7 @@ class Mlanguage extends CI_Controller {
 		$this->config->load('my_conf/common', TRUE);
 		
 		$this->config->load('error_code/common', TRUE);
-		//$this->config->load('error_code/member', TRUE);
+		//$this->config->load('error_code/mlanguage', TRUE);
 		
 		$this->load->library('myutil');
 		
@@ -24,7 +24,7 @@ class Mlanguage extends CI_Controller {
 	}
 
 	/**
-	 * 지원 하는 언어 리스트를 출력 하는 html 페이지를 보여 준다.
+	 * 다국어로 설정되어 있는 텍스트 리스트를 출력 하는 html 페이지를 보여 준다.
 	 */	
 	public function index() {
 		$this->benchmark->mark('start_mlanguage_index');
@@ -48,10 +48,116 @@ class Mlanguage extends CI_Controller {
 	}
 	
 	/**
+	 * 다국어로 사용하려고 설정 해둔 텍스트를 수정 한다.
+	 * jQuery datatable + jeditable 을 사용하여 수정 하는 것을 지원하는 API 이다.
+	 */
+	public function text_change() {
+		$this->benchmark->mark('start_text_change');
+		
+		$result = $this->cmodel->validAuthorization(FALSE, TRUE);
+		if($result != $this->success_code) {
+			$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'common'
+				)
+			);
+			$this->benchmark->mark('end_text_change');
+			log_message('info', 'mlanguage_text_change T['.
+					$this->benchmark->elapsed_time('start_text_change', 'end_text_change').']');
+			return;
+		}
+		
+		$code = $this->input->post2('row_id');
+		$lang = $this->input->post2('lang');
+		$new_value = $this->input->post2('value');
+		
+		$result = $this->model->setText($code, $lang, $new_value);
+		if($result != $this->success_code) {
+			$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'mlanguage'
+				)
+			);
+			$this->benchmark->mark('end_text_change');
+			log_message('info', 'mlanguage_text_change T['.
+					$this->benchmark->elapsed_time('start_text_change', 'end_text_change').']');
+			return;
+		}
+		
+		$data = new stdClass();
+		$data->name = $code;
+		$data->code = $lang;
+		$data->text = $new_value;
+		
+		$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'mlanguage',
+						'other' => $data
+				)
+			);
+		
+		$this->benchmark->mark('end_text_change');
+		log_message('info', 'mlanguage_text_change T['.$this->benchmark->elapsed_time('start_text_change', 'end_text_change').']');
+	}
+	
+	/**
+	 * 다국어로 사용하려고 설정 해둔 텍스트 리스트를 구한다.(json 출력)
+	 * jQuery datatable 의 json 데이터 형식으로 출력 된다.
+	 */
+	public function text_list() {
+		$this->benchmark->mark('start_text_list');
+		
+		$result = $this->cmodel->validAuthorization(FALSE, TRUE);
+		if($result != $this->success_code) {
+			$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'common'
+				)
+			);
+			$this->benchmark->mark('end_text_list');
+			log_message('info', 'mlanguage_text_list T['.
+					$this->benchmark->elapsed_time('start_text_list', 'end_text_list').']');
+			return;
+		}
+		
+		$start_row = $this->input->post2('iDisplayStart');	// 보여줄 row 의 start index
+		$row_count = $this->input->post2('iDisplayLength');	// 한 페이지에 보여줄 row count
+		$search_value = $this->input->post2('sSearch');		// search value
+		
+		$data = array('sEcho'=>$this->input->post2('sEcho'));
+		$this->model->getTextList($data, $search_value, $start_row, $row_count);
+		
+		$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'common',
+						'other' => $data
+				)
+			);
+		
+		$this->benchmark->mark('end_text_list');
+		log_message('info', 'mlanguage_text_list T['.$this->benchmark->elapsed_time('start_text_list', 'end_text_list').']');
+	}
+	
+	/**
 	 * 지원하는 언어 리스트를 구한다.(json 출력)
 	 */
-	public function lang_list() {
-		$this->benchmark->mark('start_mlanguage_list');
+	public function support_lang() {
+		$this->benchmark->mark('start_mlanguage_support_lang');
 	
 		$result = $this->cmodel->validAuthorization(FALSE, TRUE);
 		if($result != $this->success_code) {
@@ -63,8 +169,9 @@ class Mlanguage extends CI_Controller {
 						'controller' => 'common'
 				)
 			);
-			$this->benchmark->mark('end_mlanguage_list');
-			log_message('info', 'mlanguage_list T['.$this->benchmark->elapsed_time('start_mlanguage_list', 'end_mlanguage_list').']');
+			$this->benchmark->mark('end_mlanguage_support_lang');
+			log_message('info', 'mlanguage_support_lang T['.
+					$this->benchmark->elapsed_time('start_mlanguage_support_lang', 'end_mlanguage_support_lang').']');
 			return;
 		}
 	
@@ -81,8 +188,9 @@ class Mlanguage extends CI_Controller {
 				)
 			);
 		
-		$this->benchmark->mark('end_mlanguage_list');
-		log_message('info', 'mlanguage_list T['.$this->benchmark->elapsed_time('start_mlanguage_list', 'end_mlanguage_list').']');
+		$this->benchmark->mark('end_mlanguage_support_lang');
+		log_message('info', 'mlanguage_support_lang T['.
+				$this->benchmark->elapsed_time('start_mlanguage_support_lang', 'end_mlanguage_support_lang').']');
 	}
 }
 ?>

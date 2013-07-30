@@ -23,6 +23,58 @@ class Common_model extends CI_Model {
 	}
 	
 	/**
+	 * 다국어 텍스트 name 값으로 실제 텍스트 값을 가져온다.
+	 * 하나씩 가져오는 것이 아니라 여러개를 한번에 가져 올때 사용한다.
+	 * 흠...설명하기가 좀 복잡한데....로직 간단 하니 그냥 보고 알도록 하자.
+	 * 
+	 * @param names {array} 다국어 텍스트 name array
+	 * @param lang_code {string} 만일 false 이면, hook 에서 설정된 언어 값을 사용한다
+	 * @return {array} 다국어 텍스트 name 값으로 변경한 실제 텍스트 값
+	 */
+	public function getTextByLanguage($names, $lang_code=FALSE) {
+		if(!$lang_code) {
+			$lang_code = $this->load->get_var('h_lang');
+		}
+		
+		$where_in = array();
+		$ret = array();
+		
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
+		
+		foreach($names as $value) {
+			if(strrpos($value, '__usrLang') === 0) {
+				array_push($where_in, "'".$this->slave_db->escape_str($value)."'");
+				//$ret[$value] = '';
+			} else {
+				$ret[$value] = $value;
+			}
+		}
+		
+		$sql = ' SELECT '.
+			   '     A.name as name, B.text_value as text_value '.
+			   ' FROM '.
+			   '     ( '.
+			   '         SELECT text_srl, name FROM '.$this->slave_db->dbprefix('text').
+			   "         WHERE name in (".implode(',', $where_in).") ".
+			   '     ) A, '.
+			   '     ( '.
+			   '         SELECT text_srl, text_value FROM '.$this->slave_db->dbprefix('text_list').
+			   "         WHERE lang_code = '".$this->slave_db->escape_str($lang_code)."'" .
+			   '     ) B '.
+			   ' WHERE A.text_srl = B.text_srl ';
+		$query = $this->slave_db->query($sql);
+		
+		foreach($query->result_array() as $row) {
+			$ret[$row['name']] = $row['text_value'];
+		}
+		
+		return $ret;
+	}
+	
+	/**
 	 * 접근한 유저가 root(admin) 인지 체크 한다.
 	 *
 	 * @param member_srl {string} FALSE 이면 자동으로 session 에서 값을 가져 온다
@@ -97,9 +149,12 @@ class Common_model extends CI_Model {
 					'u_date' => mdate('%Y%m%d%H%i%s')
 				);
 		
-				if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
+				if(!$this->master_db) {
+					$this->master_db = $this->load->database('master', TRUE);
+					$this->master_db->set_dbprefix($this->table_prefix);
+				}
 				$this->master_db->where('access_token', $access_token);
-				$result = $this->master_db->update($this->table_prefix.'oauth20_code', $data_oauth);
+				$result = $this->master_db->update($this->master_db->dbprefix('oauth20_code'), $data_oauth);
 				if(!$result) {
 					$err_code = $this->config->item('common_au_expire_access_token', 'error_code/common');
 					log_message('error', "validAuthorization E[$err_code] auto update access_token[$access_token] expire time failed");
@@ -113,13 +168,16 @@ class Common_model extends CI_Model {
 		}
 		
 		// 2. oauth_code table 에서 값을 체크 한다.
-		if(!$this->slave_db) { $this->slave_db = $this->load->database('slave', TRUE); }
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
 		
 		$data_where = array(
 				'access_token' => $access_token,
 				'access_token_expire >=' => mdate('%Y%m%d%H%i%s')
 			);
-		$this->slave_db->select('client_srl, access_token')->from($this->table_prefix.'oauth20_code')->where($data_where);
+		$this->slave_db->select('client_srl, access_token')->from($this->slave_db->dbprefix('oauth20_code'))->where($data_where);
 		$query = $this->slave_db->get();
 		
 		if($query->num_rows() <= 0) {
@@ -143,9 +201,12 @@ class Common_model extends CI_Model {
 				'u_date' => mdate('%Y%m%d%H%i%s')
 			);
 		
-			if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
+			if(!$this->master_db) {
+				$this->master_db = $this->load->database('master', TRUE);
+				$this->master_db->set_dbprefix($this->table_prefix);
+			}
 			$this->master_db->where('access_token', $access_token);
-			$result = $this->master_db->update($this->table_prefix.'oauth20_code', $data_oauth);
+			$result = $this->master_db->update($this->master_db->dbprefix('oauth20_code'), $data_oauth);
 			if(!$result) {
 				$err_code = $this->config->item('common_au_expire_access_token', 'error_code/common');
 				log_message('error', "validAuthorization E[$err_code] auto update access_token[$access_token] expire time failed");
@@ -172,11 +233,14 @@ class Common_model extends CI_Model {
 	 *				   img, thumb 둘 중 하나만 존재 할 수도 있다.
 	 */
 	public function getFileImageURL($file_srl) {
-		if(!$this->slave_db) { $this->slave_db = $this->load->database('slave', TRUE); }
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
 		
 		$this->slave_db->select('file_srl, local_url, network_url, width, height, '.
 					'thumbnail_local_url, thumbnail_network_url, thumbnail_width, thumbnail_height')
-				->from($this->table_prefix.'files')->where_in('file_srl', $file_srl);
+				->from($this->slave_db->dbprefix('files'))->where_in('file_srl', $file_srl);
 		$query = $this->slave_db->get();
 		if(!$query || $query->num_rows() <= 0) {
 			log_message('warn', "getFileImageURL no user profile image. file_srl[".json_encode($file_srl)."]");

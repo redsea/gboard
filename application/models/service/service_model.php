@@ -217,8 +217,18 @@ class Service_model extends CI_Model {
 			}
 		}
 		
+		// menu name 다국어 매핑
+		$menu_names = array();
+		foreach($tree_data as $value) {
+			array_push($menu_names, $value['menu_name']);
+		}
+		$menu_names = $this->cmodel->getTextByLanguage($menu_names);
+		
 		if(count($tree_data) > 0) {
 			foreach($tree_data as $value) {
+				// 다국어로 되어 있는 값을 실제 값으로 가져 온다.
+				$value['menu_name'] = $menu_names[$value['menu_name']];
+			
 				if(!array_key_exists($value['parent'], $children)) {
 					$children[$value['parent']] = &$value['children'];
 				} else {

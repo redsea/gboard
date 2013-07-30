@@ -515,7 +515,7 @@ INSERT INTO `gbd_menus` (
     `description`,
     `c_date`
 ) VALUES (
-    '인증',
+    '__usrLang1',
     'folder',
     'oauth 인증 관리',
     NOW( ) +0
@@ -530,7 +530,7 @@ INSERT INTO `gbd_menus` (
     `description`,
     `c_date`
 ) VALUES (
-    '애플리케이션',
+    '__usrLang2',
     'dynamic',
     'oauth', 
     'application_list', 
@@ -547,7 +547,7 @@ INSERT INTO `gbd_menus` (
     `description`,
     `c_date`
 ) VALUES (
-    '발급 코드',
+    '__usrLang3',
     'dynamic',
     'oauth', 
     'code_list', 
@@ -564,7 +564,7 @@ INSERT INTO `gbd_menus` (
     `description`,
     `c_date`
 ) VALUES (
-    '다국어',
+    '__usrLang4',
     'dynamic',
     'lang', 
     'index', 
@@ -651,32 +651,165 @@ DROP TABLE IF EXISTS  `gbd_text`;
 CREATE TABLE `gbd_text` (
     `text_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
     `name` char(37) NOT NULL, 
-    `c_date` char(14) NOT NULL, 
-    `u_date` char(14) DEFAULT NULL, 
+    `c_date` char(14) NOT NULL 
+    INDEX(`name`), 
     PRIMARY KEY(`text_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+# 인증(다국어)
+INSERT INTO `gbd_text` (
+    `name`,
+    `c_date`
+) VALUES (
+    '__usrLang1',
+    NOW()+0
+);
+
+# 애플리케이션(다국어)
+INSERT INTO `gbd_text` (
+    `name`,
+    `c_date`
+) VALUES (
+    '__usrLang2',
+    NOW()+0
+);
+
+# 발급 코드(다국어)
+INSERT INTO `gbd_text` (
+    `name`,
+    `c_date`
+) VALUES (
+    '__usrLang3',
+    NOW()+0
+);
+
+# 다국어(다국어)
+INSERT INTO `gbd_text` (
+    `name`,
+    `c_date`
+) VALUES (
+    '__usrLang4',
+    NOW()+0
+);
 
 
 # create gbd_text_ko. 실제 텍스트가 저장되는 테이블. 각 언어 마다 테이블이 분리 됨
-DROP TABLE IF EXISTS  `gbd_text_ko`;
-CREATE TABLE `gbd_text_ko` (
+DROP TABLE IF EXISTS  `gbd_text_list`;
+CREATE TABLE `gbd_text_list` (
+	`text_list_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
     `text_srl` bigint(11) NOT NULL, 
-    `text` varchar(256) DEFAULT NULL, 
+    `lang_code` varchar(4) NOT NULL, 
+    `text_value` varchar(128) DEFAULT NULL, 
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
+    INDEX(`text`),
+    INDEX(`text_srl`),
     FOREIGN KEY( `text_srl`) REFERENCES `gbd_text`(`text_srl`) ON DELETE CASCADE, 
-    PRIMARY KEY(`text_srl`)
+    PRIMARY KEY(`text_list_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
+# 인증(한글)
+INSERT INTO `gbd_text_list` (
+    `text_srl`,
+    `lang_code`, 
+    `text_value`,
+    `c_date`
+) VALUES (
+    1,
+    'ko',
+    '인증',
+    NOW()+0
+);
 
-# create gbd_text_ko. 실제 텍스트가 저장되는 테이블. 각 언어 마다 테이블이 분리 됨
-DROP TABLE IF EXISTS  `gbd_text_en`;
-CREATE TABLE `gbd_text_en` (
-    `text_srl` bigint(11) NOT NULL, 
-    `text` varchar(256) DEFAULT NULL, 
-    `c_date` char(14) NOT NULL, 
-    `u_date` char(14) DEFAULT NULL, 
-    FOREIGN KEY( `text_srl`) REFERENCES `gbd_text`(`text_srl`) ON DELETE CASCADE, 
-    PRIMARY KEY(`text_srl`)
-) ENGINE = INNODB DEFAULT CHARSET = utf8;
+# 인증(영어)
+INSERT INTO `gbd_text_list` (
+    `text_srl`,
+    `lang_code`, 
+    `text_value`,
+    `c_date`
+) VALUES (
+    1,
+    'en',
+    'Authorization',
+    NOW()+0
+);
+
+# 애플리케이션(한글)
+INSERT INTO `gbd_text_list` (
+    `text_srl`,
+    `lang_code`, 
+    `text_value`,
+    `c_date`
+) VALUES (
+    2,
+    'ko',
+    '애플리케이션',
+    NOW()+0
+);
+
+# 애플리케이션(영어)
+INSERT INTO `gbd_text_list` (
+    `text_srl`,
+    `lang_code`, 
+    `text_value`,
+    `c_date`
+) VALUES (
+    2,
+    'en',
+    'Application',
+    NOW()+0
+);
+
+# 발급 코드(한글)
+INSERT INTO `gbd_text_list` (
+    `text_srl`,
+    `lang_code`, 
+    `text_value`,
+    `c_date`
+) VALUES (
+    3,
+    'ko',
+    '발급 코드',
+    NOW()+0
+);
+
+# 발급 코드(영어)
+INSERT INTO `gbd_text_list` (
+    `text_srl`,
+    `lang_code`, 
+    `text_value`,
+    `c_date`
+) VALUES (
+    3,
+    'en',
+    'Authorization Code',
+    NOW()+0
+);
+
+# 다국어(한글)
+INSERT INTO `gbd_text_list` (
+    `text_srl`,
+    `lang_code`, 
+    `text_value`,
+    `c_date`
+) VALUES (
+    4,
+    'ko',
+    '다국어',
+    NOW()+0
+);
+
+# 다국어(영어)
+INSERT INTO `gbd_text_list` (
+    `text_srl`,
+    `lang_code`, 
+    `text_value`,
+    `c_date`
+) VALUES (
+    4,
+    'en',
+    'Multi Language',
+    NOW()+0
+);
+
 

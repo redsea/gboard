@@ -11,6 +11,14 @@ ul {
 	list-style: none;
 }
 
+input {
+	outline: none;
+	font-family: Helvetica, Arial, sans-serif;
+/* 	color: #696969; */
+	font-size: 12px;
+	font-weight: normal;
+}
+
 /*--- 화면에 보여지는 모든 것을 포함하는 root 설정 ---*/
 .window-container {
 	position: absolute;
@@ -21,7 +29,6 @@ ul {
 	top: 0px;
 	bottom: 0px;
 	cursor: default;
-	overflow: hidden;
 	
 	font-family: Helvetica, Arial, sans-serif;
 /* 	font-family: 돋음, Dotum, Baekmuk Dotum, Undotum, Apple Gothic, Latin font, sans-serif; */
@@ -46,4 +53,46 @@ ul {
 }
 .window-hidden {
 	display: none;
+}
+
+/* 페이지가 보여질 영역 */
+.view-port-page {
+	margin-left: 25px;
+	margin-top: 25px;
+	margin-right: 25px;
+	min-width: 770px;
+}
+
+/* 페이지에서 타이틀 1번 */
+.content-title1 {
+	font-weight: normal;
+	font-size: 18px;
+	line-height: 35px;
+	color: #4E6CA3;
+	border-bottom: 1px solid #B0BED9;
+}
+
+/* 도움말 박스 영역 */
+.content-helper {
+/* 	margin-left: 10px; */
+/* 	margin-right: 10px; */
+	border: 1px solid #D7D7D7;
+}
+
+/* 도움말 박스 영역에 들아갈 텍스트 스타일 */
+.content-helper-text {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.content-datatable {
+	font-size: 12px;
+	font-weight: normal;
+	width: 100%;
+	table-layout: fixed;
+}
+.content-datatable td {
+	white-space: nowrap; 
+	overflow: hidden; 
+	text-overflow: ellipsis;
 }
