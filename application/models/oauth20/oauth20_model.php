@@ -57,10 +57,12 @@ class Oauth20_model extends CI_Model {
 			return $this->success_code;
 		}
 		
-		if(!$this->slave_db) { $this->slave_db = $this->load->database('slave', TRUE); }
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
 		
-				
-		$this->slave_db->select('client_srl, api_version, is_using_root')->from($this->table_prefix.'oauth20')->where('api_key', $api_key);
+		$this->slave_db->select('client_srl, api_version, is_using_root')->from($this->slave_db->dbprefix('oauth20'))->where('api_key', $api_key);
 		$query = $this->slave_db->get();
 		
 		if($query->num_rows() <= 0) {
@@ -112,7 +114,7 @@ class Oauth20_model extends CI_Model {
 				'c_date <=' => $authorize_code_reuse_sec,
 				'u_date' => NULL
 			);
-		$this->slave_db->select('client_srl, authorization_code')->from($this->table_prefix.'oauth20_code')->where($data_where);
+		$this->slave_db->select('client_srl, authorization_code')->from($this->slave_db->dbprefix('oauth20_code'))->where($data_where);
 		$query = $this->slave_db->get();
 		
 		// 이러면 재활용 할 수 있는 authorization code 가 존재 한다.
@@ -121,12 +123,15 @@ class Oauth20_model extends CI_Model {
 		if(($row_count=$query->num_rows()) > 0) {
 			// 일단은 내가 사용한다고 찜 한다.
 			// 이렇게 하면 재활용 하다가 다시 생성하는데, 그래도 좀 적게 생성 하므로 이렇게 하도록 한다.
-			if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
+			if(!$this->master_db) {
+				$this->master_db = $this->load->database('master', TRUE);
+				$this->master_db->set_dbprefix($this->table_prefix);
+			}
 		
 			$row = $query->row_array(mt_rand(0, $row_count-1));
 			
 			$this->master_db->where(array('client_srl'=>$row['client_srl'], 'authorization_code'=>$row['authorization_code']));
-			$result = $this->master_db->update($this->table_prefix.'oauth20_code', array('c_date'=>mdate('%Y%m%d%H%i%s')));
+			$result = $this->master_db->update($this->master_db->dbprefix('oauth20_code'), array('c_date'=>mdate('%Y%m%d%H%i%s')));
 			if(!$result) {
 				// 이건 warn 로그만 찍고 넘어 간다.
 				log_message('error', "authorizationCodeGrant update c_date column in oauth20_code table for reuse authorization code failed");
@@ -146,9 +151,12 @@ class Oauth20_model extends CI_Model {
 				'c_date' => mdate('%Y%m%d%H%i%s')
 			);
 		
-		if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
+		if(!$this->master_db) {
+			$this->master_db = $this->load->database('master', TRUE);
+			$this->master_db->set_dbprefix($this->table_prefix);
+		}
 		
-		$result = $this->master_db->insert($this->table_prefix.'oauth20_code', $data_oauth_code);
+		$result = $this->master_db->insert($this->master_db->dbprefix('oauth20_code'), $data_oauth_code);
 		if(!$result) {
 			$error_code = $this->config->item('oauth20_create_auth_code', 'error_code/oauth20');
 			log_message('error', "authorizationCodeGrant E[$error_code] insert authorization_code in oauth20_code table failed");
@@ -163,9 +171,6 @@ class Oauth20_model extends CI_Model {
 						'client_api_version' => $ret['client_api_version']
 					)
 			);
-			
-			
-		log_message('debug', '----->here'.$this->success_code);
 		
 		return $this->success_code;
 	}
@@ -196,7 +201,10 @@ class Oauth20_model extends CI_Model {
 			return $err_code;
 		}
 		
-		if(!$this->slave_db) { $this->slave_db = $this->load->database('slave', TRUE); }
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
 		
 		$sql = ' SELECT '.
 			   '     A.client_srl as client_srl, A.api_key as api_key, A.api_secret as api_secret, '.
@@ -205,12 +213,12 @@ class Oauth20_model extends CI_Model {
 			   ' FROM '.
 			   '     ( '.
 			   '         SELECT client_srl, api_key, api_secret, api_version, is_using_root '.
-			   '         FROM '.$this->table_prefix.'oauth20 '.
+			   '         FROM '.$this->slave_db->dbprefix('oauth20').
 			   '         WHERE api_key = ? AND api_secret = ? '.
 			   '     ) A, '.
 			   '     ( '.
 			   '         SELECT client_srl, authorization_code, access_token, c_date '.
-			   '         FROM '.$this->table_prefix.'oauth20_code '.
+			   '         FROM '.$this->slave_db->dbprefix('oauth20_code').
 			   '         WHERE authorization_code = ? '.
 			   '     ) B '.
 			   ' WHERE A.client_srl = B.client_srl ';
@@ -269,10 +277,13 @@ class Oauth20_model extends CI_Model {
 				'u_date' => mdate('%Y%m%d%H%i%s')
 			);
 		
-		if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
+		if(!$this->master_db) {
+			$this->master_db = $this->load->database('master', TRUE);
+			$this->master_db->set_dbprefix($this->table_prefix);
+		}
 		
 		$this->master_db->where(array('client_srl'=>$row['client_srl'], 'authorization_code'=>$row['authorization_code']));
-		$result = $this->master_db->update($this->table_prefix.'oauth20_code', $data_oauth);
+		$result = $this->master_db->update($this->master_db->dbprefix('oauth20_code'), $data_oauth);
 		if(!$result) {
 			$err_code = $this->config->item('oauth20_create_access_token', 'error_code/oauth20');
 			log_message('error', "getAccessToken E[$err_code] create access_toke failed");
@@ -322,7 +333,10 @@ class Oauth20_model extends CI_Model {
 			return $err_code;
 		}
 		
-		if(!$this->slave_db) { $this->slave_db = $this->load->database('slave', TRUE); }
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
 		
 		$sql = ' SELECT '.
 			   '     A.client_srl as client_srl, A.is_using_root as is_using_root, '.
@@ -330,12 +344,12 @@ class Oauth20_model extends CI_Model {
 			   ' FROM '.
 			   '     ( '.
 			   '         SELECT client_srl, is_using_root '.
-			   '         FROM '.$this->table_prefix.'oauth20 '.
+			   '         FROM '.$this->slave_db->dbprefix('oauth20').
 			   '         WHERE api_key = ? AND api_secret = ? '.
 			   '     ) A, '.
 			   '     ( '.
 			   '         SELECT client_srl, access_token, access_token_expire '.
-			   '         FROM '.$this->table_prefix.'oauth20_code '.
+			   '         FROM '.$this->slave_db->dbprefix('oauth20_code').
 			   '         WHERE access_token = ? '.
 			   '     ) B '.
 			   ' WHERE A.client_srl = B.client_srl ';
@@ -383,10 +397,13 @@ class Oauth20_model extends CI_Model {
 				'u_date' => mdate('%Y%m%d%H%i%s', $curr_tm)
 			);
 		
-		if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
+		if(!$this->master_db) {
+			$this->master_db = $this->load->database('master', TRUE);
+			$this->master_db->set_dbprefix($this->table_prefix);
+		}
 		
 		$this->master_db->where(array('client_srl'=>$row['client_srl'], 'access_token'=>$row['access_token']));
-		$result = $this->master_db->update($this->table_prefix.'oauth20_code', $data_oauth);
+		$result = $this->master_db->update($this->master_db->dbprefix('oauth20_code'), $data_oauth);
 		if(!$result) {
 			$err_code = $this->config->item('oauth20_refresh_access_token', 'error_code/oauth20');
 			log_message('error', "refreshToken E[$err_code] refresh access_toke failed");
@@ -404,6 +421,102 @@ class Oauth20_model extends CI_Model {
 						'access_token_expire' => $expire_date
 					)
 			);
+		
+		return $this->success_code;
+	}
+	
+	/**
+	 * oauth 사용을 위해 등록된 application list 를 구한다.
+	 *
+	 * @param data {array} application list 가 저장될 array
+	 * @param search_value {string} 검색 할 value(회사명 에서 검색 한다)
+	 * @param start_row {string} limit 할 start row number
+	 * @param row_count {string} limt 할 row count
+	 * @param sSortCol {boolean} order by 할 column name kind.
+	 *							 TRUE 이면 c_date 로 order by 하고, FALSE 이면 company_name 으로 order by 한다.
+	 * @param sSortDir {string} order by 방향. asc, desc 값 중 하나.
+	 * @return 항상 success_code 를 리턴한다.(row 가 없으면 empty array 값이 사용되기 때문에 항상 성공임)
+	 */
+	public function getApplicationList(&$data, $search_value=FALSE, $start_row=FALSE, $row_count=FALSE,
+			$sSortCol=FALSE, $sSortDir=FALSE) {
+	
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
+	
+		$data['iTotalRecords'] = '0';
+		$data['iTotalDisplayRecords'] = '0';
+		$data['aaData'] = array();
+	
+		// iTotalRecords 값을 가져 온다
+		$all_application_count = $this->slave_db->count_all($this->slave_db->dbprefix('oauth20'));
+		if($all_application_count <= 0) {
+			// 데이터가 없으므로 바로 리턴한다.
+			return $this->success_code;
+		}
+		
+		$sLimit = '';
+		if($row_count !== FALSE && $start_row !== FALSE) {
+			$sLimit = ' LIMIT '.intval($start_row).', '.intval($row_count);
+		}
+		
+		$sWhere = '';
+		if($search_value) {
+			$sWhere = " WHERE company_name LIKE '%".$this->slave_db->escape_str($search_value)."%' ";
+		}
+		
+		$sOrder = '';
+		if($sSortCol !== FALSE && $sSortDir !== FALSE) {
+			$sOrder = ' ORDER BY ';
+			if($sSortCol)	{ $sOrder .= 'A.c_date '; }
+			else			{ $sOrder .= 'B.company_name '; }
+			$sOrder .= $sSortDir;
+		}
+		
+		$sql = ' SELECT '.
+			   '     A.client_srl as client_srl, B.company_name as company_name, A.api_key as api_key, '.
+			   '     A.api_secret as api_secret, A.api_version as api_version, A.c_date as c_date '.
+			   ' FROM '.
+			   '     '.$this->slave_db->dbprefix('oauth20').' A, '.
+			   '     ( '.
+			   '         SELECT client_srl, company_name '.
+			   '         FROM '.$this->slave_db->dbprefix('oauth20_extra').$sWhere.
+			   '     ) B '.
+			   ' WHERE A.client_srl = B.client_srl '.$sOrder.$sLimit;
+		$query = $this->slave_db->query($sql);
+		
+		if($query->num_rows() <= 0) {
+			// 데이터가 없으므로 바로 리턴한다.
+			return $this->success_code;
+		}
+		
+		foreach($query->result() as $row) {
+			$row->DT_RowId = 'client_'.$row->client_srl;
+			$row->c_date = mysql_to_unix($row->c_date);
+			$row->c_date = unix_to_human($row->c_date);
+			unset($row->client_srl);
+			
+			array_push($data['aaData'], $row);
+		}
+		$query->free_result();
+		
+		// filter row count 를 가져온다
+		$sql = ' SELECT COUNT(1) as count '.
+			   ' FROM '.
+			   '     '.$this->slave_db->dbprefix('oauth20').' A, '.
+			   '     ( '.
+			   '         SELECT client_srl, company_name '.
+			   '         FROM '.$this->slave_db->dbprefix('oauth20_extra').$sWhere.
+			   '     ) B '.
+			   ' WHERE A.client_srl = B.client_srl';
+		$query = $this->slave_db->query($sql);
+		
+		$row = $query->row_array();
+		$query->free_result();
+		
+		$data['iTotalRecords'] = $all_application_count.'';	// 총 row 갯수
+		$data['iTotalDisplayRecords'] = $row['count'].'';	// filter 된 row 갯수
 		
 		return $this->success_code;
 	}

@@ -14,6 +14,9 @@ class Mfile extends CI_Controller {
 		$this->config->load('error_code/common', TRUE);
 		$this->config->load('error_code/mfile', TRUE);
 		
+		$this->load->model('common/common_model', 'cmodel');
+		$this->load->model('mfile/mfile_model', 'model');
+		
 		$this->load->library('myutil');
 		
 		$this->success_code = $this->config->item('common_success', 'error_code/common');
@@ -21,6 +24,107 @@ class Mfile extends CI_Controller {
 	
 	public function index() {
 		echo "mfile index";
+	}
+	
+	/**
+	 * file_srl 로 서버에 올려진 file 의 detail 정보를 구한다.
+	 */
+	public function file_detail() {
+		$this->benchmark->mark('start_mfile_file_detail');
+		
+		$result = $this->cmodel->validAuthorization(FALSE, TRUE);
+		if($result != $this->success_code) {
+			$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'common'
+				)
+			);
+			$this->benchmark->mark('end_mfile_file_detail');
+			log_message('info', 'mfile_file_detail T['.$this->benchmark->elapsed_time(
+					'start_mfile_file_detail', 'end_mfile_file_detail').']');
+			return;
+		}
+		
+		$file_srl = $this->input->post2('file_id');
+		
+		$data = array();
+		$result = $this->model->getFileInfo($data, $file_srl);
+		if($result != $this->success_code) {
+			$this->load->view(
+					'common/output_view', 
+					array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'mfile'
+					)
+				);
+		} else {
+			$this->load->view(
+					'common/output_view', 
+					array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'mfile',
+						'other' => $data
+					)
+				);
+		}
+		
+		$this->benchmark->mark('end_mfile_file_detail');
+		log_message('info', 'mfile_file_detail T['.
+				$this->benchmark->elapsed_time('start_mfile_file_detail', 'end_mfile_file_detail').']');
+	}
+	
+	/**
+	 * 로컬 서버나 네트웍 서버에 저장된 파일 리스트를 구한다.
+	 */
+	public function file_list() {
+		$this->benchmark->mark('start_mfile_file_list');
+	
+		$result = $this->cmodel->validAuthorization(FALSE, TRUE);
+		if($result != $this->success_code) {
+			$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'common'
+				)
+			);
+			$this->benchmark->mark('end_mfile_file_list');
+			log_message('info', 'mfile_file_list T['.$this->benchmark->elapsed_time(
+					'start_mfile_file_list', 'end_mfile_file_list').']');
+			return;
+		}
+
+		$start_row = $this->input->post2('iDisplayStart');	// 보여줄 row 의 start index
+		$row_count = $this->input->post2('iDisplayLength');	// 한 페이지에 보여줄 row count
+		$search_value = $this->input->post2('sSearch');		// search value
+		
+		$iSortCol = $this->input->post2('iSortCol_0');		// sort 할 column number
+		$sSortDir = $this->input->post2('sSortDir_0');		// sort 방향(asc, desc)
+		
+		if($sSortDir === FALSE) { $sSortDir = 'desc'; }
+		
+		$data = array('sEcho'=>$this->input->post2('sEcho'));
+		$this->model->getFileList($data, $search_value, $start_row, $row_count,
+				intval($iSortCol), $sSortDir);
+
+		$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'mfile',
+						'other' => $data
+					)
+			);
+	
+		$this->benchmark->mark('end_mfile_file_list');
+		log_message('info', 'mfile_file_list T['.$this->benchmark->elapsed_time('start_mfile_file_list', 'end_mfile_file_list').']');
 	}
 	
 	/**
@@ -63,13 +167,12 @@ class Mfile extends CI_Controller {
 	 */
 	public function upload() {
 		$this->benchmark->mark('start_upload');
-		$this->load->model('mfile/mfile_model', 'model');
 		
 		$file_type = $this->input->post2('type', TRUE);
 		
 		// 로컬에 파일을 저장한다.
 		$file_info = array();
-		$result = $this->model->save_file_in_local($file_info, FALSE, $file_type);
+		$result = $this->model->saveFileInLocal($file_info, FALSE, $file_type);
 		if($result != $this->success_code) {
 			$this->load->view(
 					'common/output_view', 
@@ -88,7 +191,7 @@ class Mfile extends CI_Controller {
 		$is_make_thumbnail = $this->input->post2('thumbnail', TRUE);
 		$thumbnail_info = array();
 		if($is_make_thumbnail && strtoupper($is_make_thumbnail) == 'Y') {
-			$result = $this->model->save_thumbnail_file_in_local($thumbnail_info, $file_info, FALSE, $file_type);
+			$result = $this->model->saveThumbnailFileInLocal($thumbnail_info, $file_info, FALSE, $file_type);
 			if($result != $this->success_code) {
 				$this->load->view(
 						'common/output_view', 
@@ -107,7 +210,7 @@ class Mfile extends CI_Controller {
 		$file_config = $this->config->item($file_type, 'my_conf/mfile');
 		if(!$file_config['network_disk_use']) {
 			$result_insert = array();
-			$result = $this->model->save_file_in_db($result_insert, $file_info, $thumbnail_info, FALSE, $file_type);
+			$result = $this->model->saveFileInDB($result_insert, $file_info, $thumbnail_info, FALSE, $file_type);
 			if($result == $this->success_code) {
 				$this->load->view(
 						'common/output_view', 
@@ -156,10 +259,10 @@ class Mfile extends CI_Controller {
 		
 		// network disk 에 올리도록 설정 되어 있기 때문에 올린다.
 		$result_upload_network_disk = array();
-		$result = $this->model->save_file_to_network_disk($result_upload_network_disk, $file_info, 
+		$result = $this->model->saveFileToNetworkDisk($result_upload_network_disk, $file_info, 
 				$thumbnail_info, FALSE, $file_type);
 		if($result == $this->success_code) {
-			$result = $this->model->save_file_in_db($result_insert, $file_info, $thumbnail_info, FALSE, $file_type, 
+			$result = $this->model->saveFileInDB($result_insert, $file_info, $thumbnail_info, FALSE, $file_type, 
 					FALSE, $result_upload_network_disk);
 			if($result == $this->success_code) {
 				$this->load->view(

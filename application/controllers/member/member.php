@@ -55,7 +55,7 @@ class Member extends CI_Controller {
 	 * 로그인이 완료 되면 호출 할 URL 주소를 넘긴다.
 	 */
 	public function login() {
-		$this->benchmark->mark('start_login');
+		$this->benchmark->mark('start_member_login');
 	
 		// access_token 체크
 		$result = $this->cmodel->validAuthorization(FALSE, TRUE);
@@ -68,8 +68,8 @@ class Member extends CI_Controller {
 						'controller' => 'common'
 				)
 			);
-			$this->benchmark->mark('end_login');
-			log_message('info', 'login T['.$this->benchmark->elapsed_time('start_login', 'end_login').']');
+			$this->benchmark->mark('end_member_login');
+			log_message('info', 'member_login T['.$this->benchmark->elapsed_time('start_member_login', 'end_member_login').']');
 			return;
 		}
 		
@@ -100,8 +100,113 @@ class Member extends CI_Controller {
 			);
 		}
 		
-		$this->benchmark->mark('end_login');
-		log_message('info', 'login T['.$this->benchmark->elapsed_time('start_login', 'end_login').']');
+		$this->benchmark->mark('end_member_login');
+		log_message('info', 'member_login T['.$this->benchmark->elapsed_time('start_member_login', 'end_member_login').']');
+	}
+	
+	/**
+	 * member list 를 구한다.
+	 */
+	public function member_list() {
+		$this->benchmark->mark('start_member_member_list');
+	
+		// access_token 체크
+		$result = $this->cmodel->validAuthorization(FALSE, TRUE);
+		if($result != $this->success_code) {
+			$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'common'
+				)
+			);
+			$this->benchmark->mark('end_member_member_list');
+			log_message('info', 'member_member_list T['.
+					$this->benchmark->elapsed_time('start_member_member_list', 'end_member_member_list').']');
+			return;
+		}
+		
+		$start_row = $this->input->post2('iDisplayStart');	// 보여줄 row 의 start index
+		$row_count = $this->input->post2('iDisplayLength');	// 한 페이지에 보여줄 row count
+		$search_value = $this->input->post2('sSearch');		// search value
+		
+		$iSortCol = $this->input->post2('iSortCol_0');		// sort 할 column number
+		$sSortDir = $this->input->post2('sSortDir_0');		// sort 방향(asc, desc)
+		
+		if($sSortDir === FALSE) { $sSortDir = 'desc'; }
+		
+		$data = array('sEcho'=>$this->input->post2('sEcho'));
+		$result = $this->model->getMemberList($data, $search_value, $start_row,
+				$row_count, intval($iSortCol), $sSortDir);
+		
+		$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'member',
+						'other' => $data
+					)
+			);
+		
+		$this->benchmark->mark('end_member_member_list');
+		log_message('info', 'member_member_list T['.
+				$this->benchmark->elapsed_time('start_member_member_list', 'end_member_member_list').']');
+	}
+	
+	/**
+	 * member 의 상세 정보를 구한다.
+	 */
+	public function member_detail() {
+		$this->benchmark->mark('start_member_member_detail');
+		
+		// access_token 체크
+		$result = $this->cmodel->validAuthorization(FALSE, TRUE);
+		if($result != $this->success_code) {
+			$this->load->view(
+				'common/output_view', 
+				array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'common'
+				)
+			);
+			$this->benchmark->mark('end_member_member_detail');
+			log_message('info', 'member_member_detail T['.
+					$this->benchmark->elapsed_time('start_member_member_detail', 'end_member_member_detail').']');
+			return;
+		}
+		
+		$user_id = $this->input->post2('user_id');
+		
+		$data = array();
+		$result = $this->model->getUserInfo($data, $user_id);
+		
+		if($result != $this->success_code) {
+			$this->load->view(
+					'common/output_view', 
+					array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'member'
+					)
+				);
+		} else {
+			$this->load->view(
+					'common/output_view', 
+					array(
+						'output'=>$this->myutil, 
+						'code'=>$result,
+						'controller' => 'member',
+						'other' => $data
+					)
+				);
+		}
+		
+		$this->benchmark->mark('end_member_member_detail');
+		log_message('info', 'member_member_detail T['.
+				$this->benchmark->elapsed_time('start_member_member_detail', 'end_member_member_detail').']');
 	}
 }
 ?>

@@ -82,11 +82,12 @@ class Service_model extends CI_Model {
 	 * @return {string} error code
 	 */
 	public function getServiceMenu(&$service_list, $member_srl=FALSE, $is_root=FALSE) {
-		//$result = $this->cmodel->isAdmin($member_srl, $is_root);
-		//if($result != $this->success_code) { return $result; }
-		
-		$group_srl = $this->session->userdata('group_srl');
-		$domain = $this->session->userdata('domain');
+		$group_info = $this->session->userdata('group');
+		$group_srl = array();
+		foreach($group_info as $row) {
+			array_push($group_srl, $row['group_srl']);
+		}
+		$group_srl = implode(',', $group_srl);
 		
 		if(!$this->slave_db) {
 			$this->slave_db = $this->load->database('slave', TRUE);
@@ -95,11 +96,10 @@ class Service_model extends CI_Model {
 		
 		$sql = ' SELECT '.
 		       '     B.service_id as service_id, B.service_name as service_name, B.controller as controller, '.
-		       '     B.controller_action as controller_action, B.image_mark as image_mark, '.
-		       '     A.list_order '.
+		       '     B.controller_action as controller_action, B.image_mark as image_mark '.
 			   ' FROM '.
 			   '     ( '.
-			   '         SELECT service_srl, list_order '.
+			   '         SELECT service_srl '.
 			   '         FROM '.$this->slave_db->dbprefix('service_group_service').
 			   '         WHERE group_srl = ? '.
 			   '     ) A, '.
@@ -108,7 +108,7 @@ class Service_model extends CI_Model {
 			   '         FROM '.$this->slave_db->dbprefix('service').
 			   '         WHERE is_active = ? '.
 			   '     ) B '.
-			   ' WHERE A.service_srl = B.service_srl ORDER BY A.list_order ASC ';
+			   ' WHERE A.service_srl = B.service_srl ORDER BY B.service_id ASC ';
 		$query = $this->slave_db->query($sql, array($group_srl, $this->yes));
 		
 		if($query->num_rows() <= 0) {
@@ -116,21 +116,23 @@ class Service_model extends CI_Model {
 			return $this->success_code;
 		}
 		
+		$list_data = new stdClass();
 		foreach($query->result_array() as $row) {
-			$row['url'] = 'http://'.$domain.'/'.$row['controller'].'/'.
-					$row['controller_action'].'/'.$row['service_id'];
+			$row['action'] = $row['controller_action'];
 			
 			if(!$row['image_mark']) { $row['service_icon'] = ''; }
 			else { $row['service_icon'] = unserialize($row['image_mark']); }
 			
-			unset($row['controller']);
 			unset($row['controller_action']);
-			unset($row['list_order']);
 			unset($row['image_mark']);
 			
-			array_push($service_list, $row);
+			if(!isset($list_data->{$row['controller'].'_'.$row['action']})) {
+				$list_data->{$row['controller'].'_'.$row['action']} = $row;
+			}
 		}
 		$query->free_result();
+		
+		foreach($list_data as $row) { array_push($service_list, $row); }
 		
 		return $this->success_code;
 	}
@@ -217,17 +219,19 @@ class Service_model extends CI_Model {
 			}
 		}
 		
-		// menu name 다국어 매핑
+		// menu name, menu description 다국어 매핑
 		$menu_names = array();
 		foreach($tree_data as $value) {
 			array_push($menu_names, $value['menu_name']);
+			array_push($menu_names, $value['description']);
 		}
-		$menu_names = $this->cmodel->getTextByLanguage($menu_names);
+		$menu_names = $this->cmodel->getTextsByLanguage($menu_names);
 		
 		if(count($tree_data) > 0) {
 			foreach($tree_data as $value) {
 				// 다국어로 되어 있는 값을 실제 값으로 가져 온다.
 				$value['menu_name'] = $menu_names[$value['menu_name']];
+				$value['description'] = $menu_names[$value['description']];
 			
 				if(!array_key_exists($value['parent'], $children)) {
 					$children[$value['parent']] = &$value['children'];

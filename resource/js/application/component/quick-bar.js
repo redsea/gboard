@@ -27,6 +27,7 @@ scroll:{
 
 initialized: false,							// quick bar init 함수 호출 한번만 해 주기 위해서
 $view_target: null,							// quick item 선택 했을때 내용이 보여질 target(jQuery object)
+$current_view_content: null,				// view target 에 현재 보여지고 있는 view content
 _ids: 0,									// quick item 에 id 발급을 위한 index
 cursor_close_flag: true,					// 커서 이동시 quick item 닫기 버튼을 자동으로 show/hide 하기 위한 flag
 											// quick item 을 클릭해서 커서 이동일때는 닫기 버튼을 보여주지만, 
@@ -193,6 +194,12 @@ _showContentPage: function(item) {
 	
 	var $child = gboard.component.quickbar.$view_target.children('#'+url);
 	if($child.length >= 1) {
+		// 기존에 보여 주고 있는 것이 있다면 숨긴다.
+		if(gboard.component.quickbar.$current_view_content) {
+			gboard.component.quickbar.$current_view_content.hide();
+		}
+		gboard.component.quickbar.$current_view_content = $child;
+		$child.show();
 		
 	} else {
 		var nid = gboard.component.notification.addNotification(
@@ -208,6 +215,12 @@ _showContentPage: function(item) {
 			.ready(function(){
 				gboard.component.notification.removeNotification(nid);
 				gboard.component.quickbar.$view_target.append($child);
+				
+				// 기존에 보여 주고 있는 것이 있다면 숨긴다.
+				if(gboard.component.quickbar.$current_view_content) {
+					gboard.component.quickbar.$current_view_content.hide();
+				}
+				gboard.component.quickbar.$current_view_content = $child;
 			})
 			.attr('src', 'http://'+gboard.component.quickbar.domain+item.url);
 	}

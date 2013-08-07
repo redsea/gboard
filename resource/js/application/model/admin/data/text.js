@@ -1,0 +1,135 @@
+/**
+ * 다국어 지원을 위한 텍스트 데이터
+ */
+
+var gboard;
+if(!gboard) { gboard = {}; }
+if(!gboard.admin) { gboard.admin = {}; }
+if(!gboard.admin.text) { gboard.admin.text={
+	
+// 한글 텍스트
+ko: {
+	text_list:				'다국어 텍스트 리스트',
+	application_list:		'애플리케이션 리스트',
+	file_list:				'파일 리스트',
+	member_list:			'멤버 리스트',
+	
+	help_text_list:			'현재는 list view, column edit 기능만 지원한다. 추가를 하려면 SQL 로 직접 해야 한다.',
+	help_application_list:	'현재는 list view 기능만 지원한다. oAuth 애플리케이션 등록은 SQL 로 직접 해야 한다.',
+	help_file_list:			'현재는 list view, 파일 상세 기능만 지원한다.',
+	help_member_list:		'현재는 list view, 유저 상세 기능만 지원한다',
+	
+	title_detail_file:		'파일 상세',
+	title_detail_member:	'멤버 기본 정보',
+	title_detail_member2:	'멤버 기타 정보',
+	title_detail_member3:	'프로필 이미지',
+	
+	homepage:				'홈페이지',
+	blog:					'블로그',
+	birth:					'생년월일',
+	gender:					'성별',
+	country:				'국적',
+	country_call_number:	'국가전화번호',
+	mobile_phone_number:	'휴대폰번호',
+	phone_number:			'일번전화번호',
+	social_type:			'소셜 종류',
+	social_id:				'소셜 아이디',
+	login_count:			'로그인 횟수',
+	serial_login_count:		'연속로그인 횟수',
+	member_srl:				'멤버 넘버',
+	code:					'코드',
+	company_name:			'회사명',
+	user_id:				'아이디',
+	email_address:			'이메일 주소',
+	user_name:				'이름',
+	nick_name:				'별명',
+	allow_mailing:			'메일수신여부',
+	allow_message:			'메시지수신여부',
+	block:					'차단 여부',
+	cdate:					'등록일',
+	email_confirm:			'이메일 확인',
+	limit_date:				'유효제한일',
+	last_login_date:		'최종 로그인',
+	change_password_date:	'최종 암호변경',
+	group:					'그룹',
+	owner:					'소유자',
+	file_name:				'원본파일명',
+	preview:				'미리보기',
+	size:					'사이즈(Kb)',
+	resolution:				'사이즈',
+	file_srl:				'파일 아이디',
+	download_count:			'다운로드 횟수',
+	file_type:				'파일 타입',
+	udate:					'수정일',
+	comment:				'커맨트',
+	is_s3:					'저장소 위치',
+	orig_url:				'원본 파일',
+	thumbnail_url:			'섬네일',
+	orig_width:				'원본 너비',
+	orig_height:			'원본 높이',
+	thumbnail_width:		'섬네일 너비',
+	thumbnail_height:		'섬네일 높이',
+	close:					'닫기',
+	title_failed:			'실패',
+	error_message:			'서비스 점검중, 잠시 후 다시 시도 하세요'		// 기본 에러 메시지
+},
+
+// 영어 텍스트
+en: {
+	text_list:				'다국어 텍스트 리스트',
+	application_list:		'애플리케이션 리스트',
+	file_list:				'파일 리스트',
+	member_list:			'멤버 리스트',
+	
+	help_text_list:			'현재는 list view, column edit 기능만 지원한다. 추가를 하려면 SQL 로 직접 해야 한다.',
+	help_application_list:	'현재는 list view 기능만 지원한다. oAuth 애플리케이션 등록은 SQL 로 직접 해야 한다.',
+	help_file_list:			'현재는 list view, 파일 상세 기능만 지원한다.',
+	help_member_list:		'현재는 list view 기능만 지원한다',
+	
+	title_detail_file:		'파일 상세',
+	title_detail_member:	'멤버 상세(기본정보)',
+	title_detail_member2:	'멤버 상세(기타정보)',
+	
+	homepage:				'홈페이지',
+	blog:					'블로그',
+	birth:					'생년월일',
+	gender:					'성별',
+	member_srl:				'멤버 넘버',
+	code:					'코드',
+	company_name:			'회사명',
+	user_id:				'아이디',
+	email_address:			'이메일 주소',
+	user_name:				'이름',
+	nick_name:				'별명',
+	allow_mailing:			'메일수신여부',
+	allow_message:			'메시지수신여부',
+	block:					'차단 여부',
+	cdate:					'등록일',
+	email_confirm:			'이메일 확인',
+	limit_date:				'유효제한일',
+	last_login_date:		'최종 로그인',
+	change_password_date:	'최종 암호변경',
+	group:					'그룹',
+	owner:					'소유자',
+	file_name:				'원본파일명',
+	preview:				'미리보기',
+	size:					'사이즈(Kb)',
+	file_srl:				'파일 아이디',
+	download_count:			'다운로드 횟수',
+	file_type:				'파일 타입',
+	udate:					'수정일',
+	comment:				'커맨트',
+	is_s3:					'저장소 위치',
+	orig_url:				'원본 파일',
+	thumbnail_url:			'섬네일',
+	orig_width:				'원본 너비',
+	orig_height:			'원본 높이',
+	thumbnail_width:		'섬네일 너비',
+	thumbnail_height:		'섬네일 높이',
+	close:					'닫기',
+	title_failed:			'실패',
+	error_message:			'서비스 점검중, 잠시 후 다시 시도 하세요'		// 기본 에러 메시지
+}
+	
+};}
+

@@ -24,6 +24,47 @@ class Common_model extends CI_Model {
 	
 	/**
 	 * 다국어 텍스트 name 값으로 실제 텍스트 값을 가져온다.
+	 * getTextsByLanguage 는 여러개를 가져오지만 getTextByLanguage 는 하나만 가져온다.
+	 *
+	 * @param name {string} 다국어 텍스트 name array
+	 * @param lang_code {string} 만일 false 이면, hook 에서 설정된 언어 값을 사용한다
+	 * @return {string} 다국어 텍스트 name 값으로 변경한 실제 텍스트 값
+	 */
+	public function getTextByLanguage($name, $lang_code=FALSE) {
+		if(!$lang_code) {
+			$lang_code = $this->load->get_var('h_lang');
+		}
+		
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
+		
+		$sql = ' SELECT '.
+			   '     A.name as name, B.text_value as text_value '.
+			   ' FROM '.
+			   '     ( '.
+			   '         SELECT text_srl, name FROM '.$this->slave_db->dbprefix('text').
+			   '         WHERE name = ? '.
+			   '     ) A, '.
+			   '     ( '.
+			   '         SELECT text_srl, text_value FROM '.$this->slave_db->dbprefix('text_list').
+			   '         WHERE lang_code = ? ' .
+			   '     ) B '.
+			   ' WHERE A.text_srl = B.text_srl ';
+		$query = $this->slave_db->query($sql, array($name, $lang_code));
+		
+		if($query->num_rows() <= 0) { return $name; }
+		
+		$row = $query->row_array();
+		$ret = $row['text_value'];
+		$query->free_result();
+		
+		return $ret;
+	}
+	
+	/**
+	 * 다국어 텍스트 name 값으로 실제 텍스트 값을 가져온다.
 	 * 하나씩 가져오는 것이 아니라 여러개를 한번에 가져 올때 사용한다.
 	 * 흠...설명하기가 좀 복잡한데....로직 간단 하니 그냥 보고 알도록 하자.
 	 * 
@@ -31,7 +72,7 @@ class Common_model extends CI_Model {
 	 * @param lang_code {string} 만일 false 이면, hook 에서 설정된 언어 값을 사용한다
 	 * @return {array} 다국어 텍스트 name 값으로 변경한 실제 텍스트 값
 	 */
-	public function getTextByLanguage($names, $lang_code=FALSE) {
+	public function getTextsByLanguage($names, $lang_code=FALSE) {
 		if(!$lang_code) {
 			$lang_code = $this->load->get_var('h_lang');
 		}
@@ -355,13 +396,8 @@ class Common_model extends CI_Model {
 	 *							serial_login_count		- (x) member_extra.serial_login_count
 	 * @param member_group_info {array} 포함하고 있는 정보는 다음과 같다. 현재 포함하고 있는 것은 (o) 로 표시 했음.
 	 *							group_srl				- (o) member_group.group_srl
-	 *							title					- (x) member_group.title
+	 *							group_name				- (o) member_group.title
 	 *							is_root					- (o) member_group.is_root
-	 *							group_image_mark		- (x) member_group.image_mark
-	 *							index_module_srl		- (x) site.index_module_srl
-	 *							site_domain				- (o) site.domain
-	 *							site_default_language	- (x) site.default_language
-	 *							site_image_mark			- (x) site.image_mark
 	 */
 	public function setMemberInfoSession($member_info, $member_group_info) {
 		$session_data = array(
@@ -381,10 +417,8 @@ class Common_model extends CI_Model {
 				$session_data['profile_image'] = $profile_image;
 			}
 		}
-			
-		$session_data['group_srl'] = $member_group_info['group_srl'];
-		$session_data['is_root'] = $member_group_info['is_root'];
-		$session_data['domain'] = $member_group_info['site_domain'];
+		
+		$session_data['group'] = $member_group_info;
 			
 		$this->session->set_userdata($session_data);
 		

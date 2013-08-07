@@ -34,7 +34,7 @@ class Mlanguage_model extends CI_Model {
 	 * @param lang {string} 변경할 언어
 	 * @param new_value {string} 변경할 새로운 텍스트
 	 */
-	public function setText($code=FALSE, $lang=FALSE, $new_value) {
+	public function setText($code=FALSE, $lang=FALSE, $new_value='') {
 		$lang_code = $this->config->item('support_language', 'my_conf/common');
 		
 		// 텍스트 변경을 위한 텍스트 name 이 없음
@@ -143,7 +143,7 @@ class Mlanguage_model extends CI_Model {
 			   '                 SELECT text_srl, name, c_date '.
 			   '                 FROM '.$this->slave_db->dbprefix('text').
 			   '             ) B '.
-			   '         WHERE A.text_srl = B.text_srl ORDER BY B.c_date DESC '.$sLimit.
+			   '         WHERE A.text_srl = B.text_srl ORDER BY B.text_srl DESC '.$sLimit.
 			   '     ) C, '.
 			   '     '.$this->slave_db->dbprefix('text_list').' D '.
 			   ' WHERE C.text_srl = D.text_srl';

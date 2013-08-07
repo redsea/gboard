@@ -63,9 +63,9 @@ class Service extends CI_Controller {
 	 *
 	 * @param service_id {string} admin tree 의 service id
 	 * @param leaf_id {string} 가져올 leaf 의 id. 값이 없으면 root 부터 가져온다.
-	 * @param depth {number} 가져올 depth. 값이 없으면 2 (자신과 children 까지) 로 설정 한다. -1 이면 max tree depth 인 10으로 설정 한다.
+	 * @param depth {number} 가져올 depth. 값이 없으면 -1 로 설정 한다. -1 이면 max tree depth 인 10으로 설정 된다.
 	 */
-	public function tree($service_id, $leaf_id=0, $depth=2) {
+	public function tree($service_id, $leaf_id=0, $depth=-1) {
 		$this->benchmark->mark('start_service_menu');
 		
 		//$this->load->helper('string');

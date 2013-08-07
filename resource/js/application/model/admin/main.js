@@ -252,7 +252,8 @@ initServiceTab: function(service_list) {
 			.attr({
 					'id': 'menu-tab-item-index'+i,
 					'data-bind': 'click:clickMenuTabItem',
-					'x-data-url': service_list[i].url
+					'x-data-url': 'http://'+gboard.ajax.domain+'/'+service_list[i].controller+'/'+
+							service_list[i].action+'/'+service_list[i].service_id
 				})
 			.addClass('menu-tab-item');
 		if(i== 0) {
@@ -304,12 +305,8 @@ initLoadPage: function(service_menu) {
 	
 	// max tree depth 만큼 가져온다. depth 에 -1 으로 주면 서버에 설정된 max tree depth 로 변경 된다.
 	gboard.ajax.admin_menu_tree(gboard.admin.main.ajax.cb_admin_menu_tree, 
-		service_menu.url+'/0/-1', {id:nid, content:'service-'+service_menu.service_id});
-	
-	
-	
-	
-	
+		'http://'+gboard.ajax.domain+'/'+service_menu.controller+'/'+service_menu.action+'/'+service_menu.service_id, 
+		{id:nid, content:'service-'+service_menu.service_id});
 },
 
 
@@ -318,10 +315,9 @@ initLoadPage: function(service_menu) {
  *
  * @param clang {string} 사용자 언어 설정값
  * @param expire_second {number} 페이지 인증 만료 시간 카운트용
- * @param home_url {string} home page 의 URL 
  * @param profile_image {array} 유저의 프로필 이미지
  */
-init: function(clang, expire_second, home_url, profile_image, service_list) {
+init: function(clang, expire_second, profile_image, service_list) {
 	if(gboard.admin.main.data.conf.initialized) { return; }
 	
 	gboard.admin.main.data.conf.expire_second = expire_second;
@@ -331,6 +327,11 @@ init: function(clang, expire_second, home_url, profile_image, service_list) {
 	// menu tab 을 넣는다.
 	var menu_tab_min_width = gboard.admin.main.action.initServiceTab(service_list);
 	
+
+
+	console.log(service_list);
+
+
 
 	// menu 영역 resize 대응
 	$('#window-menu').resizable({
@@ -369,7 +370,7 @@ init: function(clang, expire_second, home_url, profile_image, service_list) {
 	gboard.component.quickbar.pushLeftItem({
 			title: gboard.admin.main.lang[clang].go_home,
 			depth: [gboard.admin.main.lang[clang].go_home],
-			url: home_url,		// TODO 이거 url 이 맞는지 체크 해 봐야 한다.
+			url: 'http://gboard.org/admin',		// TODO 이거 dashboard url 로 바꾸어야 한다.
 			type: 'home'
 		});
 	// profile item 을 quick bar 에 넣는다.(고정)

@@ -17,12 +17,6 @@ if($session_expire_tm && $session_expire_tm.length>0) {
 	$session_expire_tm = false;
 }
 
-if($home_url) {
-	$home_url = $.trim($home_url.text());
-} else {
-	$home_url = false;
-}
-
 if($service_list && $service_list.length>0) {
 	$service_list = eval('('+$.trim($service_list.text())+')');
 } else {
@@ -34,6 +28,6 @@ $('#window-buffer').empty();
 gboard.ajax.init('gboard.org');
 // 페이지 시작
 gboard.admin.main.action.init($.cookie('_u_lang_'), 
-	$session_expire_tm, $home_url, $profile_image, $service_list);
+	$session_expire_tm, $profile_image, $service_list);
 
 });})(jQuery);

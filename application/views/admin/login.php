@@ -2,6 +2,7 @@
 <head>
 	<link rel="stylesheet" href="/resource/css/application/admin/login.css" type="text/css" />
 	<script type="text/javascript" src="/resource/js/lib/jquery/plugin/jquery.cookie.js"></script>
+	<script type="text/javascript" src="/resource/js/application/model/admin/data/url.js"></script>
 	<script type="text/javascript" src="/resource/js/application/model/admin/login.js"></script>
 	<script type="text/javascript" src="/resource/js/application/view/admin/login.js"></script>
 </head>

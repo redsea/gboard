@@ -1,34 +1,7 @@
-# create gbd_sites table. this table manage site url
-DROP TABLE IF EXISTS  `gbd_sites`;
-CREATE TABLE  `gbd_sites` (
-    `site_srl` BIGINT( 11 ) NOT NULL AUTO_INCREMENT ,
-    `index_module_srl` BIGINT( 11 ) NOT NULL DEFAULT  '0',
-    `domain` VARCHAR( 256 ) NOT NULL ,
-    `is_default` CHAR(2) DEFAULT 'N', 
-    `default_language` VARCHAR( 8 ) DEFAULT NULL ,
-    `image_mark` TEXT,
-    `description` TEXT,
-    `list_order` BIGINT( 11 ) NOT NULL DEFAULT  '1',
-    `c_date` CHAR( 14 ) NOT NULL ,
-    `u_date` CHAR( 14 ) DEFAULT NULL ,
-    PRIMARY KEY (  `site_srl` ) ,
-    KEY  `list_order` (  `list_order` )
-) ENGINE = INNODB DEFAULT CHARSET = utf8;
-
-# create gboard root site. site URL is gboard.org
-INSERT INTO  `gbd_sites` (`domain`, `default_language`, `c_date` ) 
-VALUES ('gboard.org',  'ko', NOW( ) +0);
-
-# create gboard default service site. site URL is gboard.org
-INSERT INTO  `gbd_sites` (`domain`, `is_default`, `default_language`, `list_order`, `c_date` ) 
-VALUES ('gboard.org',  `Y`, 'ko', -2, NOW( ) +0);
-
-
 # create gbd_member_group table. this table manage group
 DROP TABLE IF EXISTS  `gbd_member_group` ;
 CREATE TABLE  `gbd_member_group` (
     `group_srl` BIGINT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-    `site_srl` BIGINT( 11 ) NOT NULL ,
     `title` VARCHAR( 128 ) NOT NULL ,
     `is_default` CHAR( 2 ) NOT NULL DEFAULT  'N',
     `is_root` CHAR( 2 ) NOT NULL DEFAULT  'N',
@@ -41,16 +14,16 @@ CREATE TABLE  `gbd_member_group` (
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
 # create gboard root group.
-INSERT INTO  `gbd_member_group` (  `site_srl` ,  `title` ,  `is_root` ,  `c_date` ) 
-VALUES ( 1,  "default_group_root",  "Y", NOW( ) +0 ) ;
+INSERT INTO  `gbd_member_group` (  `title` ,  `is_root` ,  `c_date` ) 
+VALUES ( "__usrLang17",  "Y", NOW( ) +0 ) ;
 
 # create gboard formal member group
-INSERT INTO  `gbd_member_group` (  `site_srl` ,  `title` ,  `list_order` , `c_date` ) 
-VALUES ( 2,  "default_group_formal_member",  2, NOW( ) +0 ) ;
+INSERT INTO  `gbd_member_group` (  `title` ,  `list_order` , `c_date` ) 
+VALUES ( "__usrLang18",  2, NOW( ) +0 ) ;
 
 # create gboard ready member group
-INSERT INTO  `gbd_member_group` (  `site_srl` ,  `title` ,  `is_default` , `list_order` ,  `c_date` ) 
-VALUES ( 2,  "default_group_ready_member",  "Y", 3, NOW( ) +0 ) ;
+INSERT INTO  `gbd_member_group` (  `title` ,  `is_default` , `list_order` ,  `c_date` ) 
+VALUES ( "__usrLang19",  "Y", 3, NOW( ) +0 ) ;
 
 
 # create gbd_member table. this table manage member
@@ -82,6 +55,7 @@ CREATE TABLE `gbd_member` (
 # create index for gbd_member
 ALTER TABLE  `gbd_member` ADD INDEX (  `user_id` ) ;
 ALTER TABLE  `gbd_member` ADD INDEX (  `email_address` ) ;
+ALTER TABLE  `gbd_member` ADD INDEX (  `user_name` ) ;
 ALTER TABLE  `gbd_member` ADD INDEX (  `nick_name` ) ;
 ALTER TABLE  `gbd_member` ADD INDEX (  `list_order` ) ;
 ALTER TABLE  `gbd_member` ADD INDEX (  `c_date` ) ;
@@ -185,45 +159,21 @@ DROP TABLE IF EXISTS  `gbd_member_group_member`;
 CREATE TABLE `gbd_member_group_member` (
     `group_srl` bigint(11) NOT NULL, 
     `member_srl` bigint(11) NOT NULL, 
-    `site_srl` bigint(11) NOT NULL, 
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
     INDEX( `group_srl` ),
     INDEX( `member_srl` ), 
-    INDEX( `site_srl` ), 
     FOREIGN KEY( `group_srl`) REFERENCES `gbd_member_group`(`group_srl`) ON DELETE CASCADE, 
     FOREIGN KEY( `member_srl`) REFERENCES `gbd_member`(`member_srl`) ON DELETE CASCADE, 
-    FOREIGN KEY( `site_srl`) REFERENCES `gbd_sites`(`site_srl`) ON DELETE CASCADE, 
     PRIMARY KEY(`group_srl`, `member_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
 # mapping between gboard root group and gboard root account
-INSERT INTO `gbd_member_group_member`( 
-    `group_srl`, 
-    `member_srl`, 
-    `site_srl`, 
-    `c_date`
-) 
-VALUES (
-    1, 
-    1, 
-    1, 
-    NOW() +0
-);
-
-# mapping between gboard normal group and gboard system default account
-INSERT INTO `gbd_member_group_member`( 
-    `group_srl`, 
-    `member_srl`, 
-    `site_srl`, 
-    `c_date`
-) 
-VALUES (
-    2, 
-    2, 
-    1, 
-    NOW() +0
-);
+INSERT INTO `gbd_member_group_member` 
+    (`group_srl`, `member_srl`, `c_date`) 
+VALUES 
+    (1, 1, NOW() +0),	# admin 용 group 매핑
+    (2, 2, NOW() +0);	# 기본 용 group 매핑
 
 
 # create gbd_files. this table manage uploaded file
@@ -233,14 +183,14 @@ CREATE TABLE `gbd_files` (
     `member_srl` bigint(11) NOT NULL, 
     `download_count` bigint(11) DEFAULT '0', 
     `file_type` varchar(128) NOT NULL, 
-    `orig_name` varchar(256) DEFAULT NULL, 
+    `orig_name` varchar(128) DEFAULT NULL, 
     `local_path` varchar(256) DEFAULT NULL, 
     `local_url` varchar(256) DEFAULT NULL, 
     `network_url` varchar(256) DEFAULT NULL, 
     `width` int(8) DEFAULT '0', 
     `height` int(8) DEFAULT '0', 
     `file_size` bigint(11) DEFAULT '0', 
-    `comment` varchar(256) DEFAULT NULL, 
+    `file_comment` varchar(256) DEFAULT NULL, 
     `thumbnail_local_path` varchar(256) DEFAULT NULL, 
     `thumbnail_local_url` varchar(256) DEFAULT NULL, 
     `thumbnail_network_url` varchar(256) DEFAULT NULL, 
@@ -250,6 +200,8 @@ CREATE TABLE `gbd_files` (
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
     INDEX( `member_srl` ), 
+    INDEX( `orig_name` ), 
+    INDEX( `file_size` ), 
     FOREIGN KEY( `member_srl`) REFERENCES `gbd_member`(`member_srl`) ON DELETE CASCADE, 
     PRIMARY KEY(`file_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
@@ -302,10 +254,13 @@ CREATE TABLE `gbd_oauth20` (
     `api_key` char(32) NOT NULL, 
     `api_secret` char(32) NOT NULL, 
     `api_version` char(11) NOT NULL, 
+    `member_srl` bigint(11) NOT NULL, 
     `is_using_root` char(1) DEFAULT 'N', 
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
-    INDEX(`api_key`, `is_using_root`),
+    INDEX(`api_key`, `is_using_root`), 
+    INDEX(`member_srl`), 
+    FOREIGN KEY( `member_srl`) REFERENCES `gbd_member`(`member_srl`) ON DELETE CASCADE, 
     PRIMARY KEY(`client_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
@@ -314,13 +269,15 @@ INSERT INTO `gbd_oauth20` (
     `api_key`,
     `api_secret`, 
     `api_version`, 
+    `member_srl`, 
     `is_using_root`, 
     `c_date`
 ) VALUES (
-    "e44f11e891d4c8afdd6ffbf7a0c03bd3", 
-    "9c10a58811c6932fd388c0959b0ec112", 
-    "000.000.001", 
-    "Y",
+    'e44f11e891d4c8afdd6ffbf7a0c03bd3', 
+    '9c10a58811c6932fd388c0959b0ec112', 
+    '000.000.001',
+    1,  
+    'Y',
     NOW()+0
 );
 
@@ -352,9 +309,9 @@ INSERT INTO `gbd_oauth20_extra` (
     `c_date`
 ) VALUES (
     1, 
-    "system", 
-    "루트", 
-    "dhkim94@gmail.com", 
+    'My Company', 
+    '루트', 
+    'dhkim94@gmail.com', 
     NOW()+0
 );
 
@@ -450,48 +407,20 @@ DROP TABLE IF EXISTS  `gbd_service_group_service`;
 CREATE TABLE `gbd_service_group_service` (
     `group_srl` bigint(11) NOT NULL, 
     `service_srl` bigint(11) NOT NULL, 
-    `site_srl` bigint(11) NOT NULL, 
-    `list_order` bigint(11) NOT NULL DEFAULT '-1', 
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
     INDEX( `service_srl` ), 
-    INDEX( `site_srl` ), 
-    INDEX (  `list_order` ), 
     FOREIGN KEY( `group_srl`) REFERENCES `gbd_member_group`(`group_srl`) ON DELETE CASCADE, 
     FOREIGN KEY( `service_srl`) REFERENCES `gbd_service`(`service_srl`) ON DELETE CASCADE, 
-    FOREIGN KEY( `site_srl`) REFERENCES `gbd_sites`(`site_srl`) ON DELETE CASCADE, 
     PRIMARY KEY(`group_srl`, `service_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
 # admin menu service 와 admin group 매핑
-INSERT INTO `gbd_service_group_service` (
-    `group_srl`, 
-    `service_srl`, 
-    `site_srl`, 
-    `list_order`, 
-    `c_date` 
-) VALUES (
-    1, 
-    1, 
-    1, 
-    1, 
-    NOW( ) +0
-);
-
-# member acitivity history service 와 admin group 매핑
-INSERT INTO `gbd_service_group_service` (
-    `group_srl`, 
-    `service_srl`, 
-    `site_srl`, 
-    `list_order`, 
-    `c_date` 
-) VALUES (
-    1, 
-    2, 
-    1, 
-    2, 
-    NOW( ) +0
-);
+INSERT INTO `gbd_service_group_service` 
+    ( `group_srl`, `service_srl`, `c_date` ) 
+VALUES 
+    ( 1, 1, NOW( ) +0 ),    # admin menu service 와 admin group 매핑
+    ( 1, 2, NOW( ) +0 );    # member acitivity history service 와 admin group 매핑
 
 
 # create gbd_menus. service 를 구성하는 menu 관리 테이블
@@ -509,68 +438,17 @@ CREATE TABLE `gbd_menus` (
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
 # admin menu page insert
-INSERT INTO `gbd_menus` (
-    `menu_name`,
-    `menu_type`,
-    `description`,
-    `c_date`
-) VALUES (
-    '__usrLang1',
-    'folder',
-    'oauth 인증 관리',
-    NOW( ) +0
-);
-
-# admin menu page insert
-INSERT INTO `gbd_menus` (
-    `menu_name`,
-    `menu_type`,
-    `menu_controller`, 
-    `menu_action`, 
-    `description`,
-    `c_date`
-) VALUES (
-    '__usrLang2',
-    'dynamic',
-    'oauth', 
-    'application_list', 
-    'oauth 사용을 위해 등록한 애플리케이션 리스트',
-    NOW( ) +0
-);
-
-# admin menu page insert
-INSERT INTO `gbd_menus` (
-    `menu_name`,
-    `menu_type`,
-    `menu_controller`, 
-    `menu_action`, 
-    `description`,
-    `c_date`
-) VALUES (
-    '__usrLang3',
-    'dynamic',
-    'oauth', 
-    'code_list', 
-    'oauth 를 위해 발급된 코드 리스트',
-    NOW( ) +0
-);
-
-# 다국어 관리 메뉴 생성
-INSERT INTO `gbd_menus` (
-    `menu_name`,
-    `menu_type`,
-    `menu_controller`, 
-    `menu_action`, 
-    `description`,
-    `c_date`
-) VALUES (
-    '__usrLang4',
-    'dynamic',
-    'lang', 
-    'index', 
-    '다국어 관리',
-    NOW( ) +0
-);
+INSERT INTO `gbd_menus` 
+    ( `menu_name`, `menu_type`, `menu_controller`, `menu_action`, `description`, `c_date` ) 
+VALUES 
+    ( '__usrLang1', 'folder', '', '', '__usrLang5', NOW()+0 ),                          # admin menu page insert
+    ( '__usrLang2', 'dynamic', 'oauth', 'application_list', '__usrLang6', NOW()+0 ),    # admin menu page insert
+    ( '__usrLang3', 'dynamic', 'oauth', 'code_list', '__usrLang7', NOW()+0 ),           # admin menu page insert
+    ( '__usrLang4', 'dynamic', 'admin', 'language_texts', '__usrLang8', NOW()+0 ),      # 다국어 관리 메뉴 생성
+    ( '__usrLang11', 'dynamic', 'admin', 'file_list', '__usrLang12', NOW()+0 ),         # 파일 관리 메뉴 생성
+    ( '__usrLang13', 'folder', '', '', '__usrLang14', NOW()+0 ),         				# 회원 폴더 메뉴 생성
+    ( '__usrLang13', 'dynamic', 'admin', 'member_list', '__usrLang14', NOW()+0 ),      	# 회원 메뉴 생성
+    ( '__usrLang15', 'dynamic', 'admin', 'group_list', '__usrLang16', NOW()+0 );      	# 그룹 메뉴 생성
 
 
 # create gbd_menu_tree. menu 를 보여주기 위해 menu 로 만든 tree 구조
@@ -591,106 +469,52 @@ CREATE TABLE `gbd_menus_tree` (
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
 # admin menu item insert in tree
-INSERT INTO `gbd_menus_tree` (
-    `menu_srl`, 
-    `service_srl`, 
-    `parent_element_srl`, 
-    `c_date`
-) VALUES (
-    1,
-    1,
-    0,
-    NOW()+0
-);
+INSERT INTO `gbd_menus_tree` 
+    ( `menu_srl`, `service_srl`, `parent_element_srl`, `list_order`, `c_date` ) 
+VALUES 
+    ( 1, 1, 0, 2, NOW()+0 ),  # admin menu item insert in tree
+    ( 2, 1, 1, 1, NOW()+0 ),  # admin menu item insert in tree
+    ( 3, 1, 1, 2, NOW()+0 ),  # admin menu item insert in tree
+    ( 4, 1, 0, 3, NOW()+0 ),  # 다국어 관리 메뉴 추가
+    ( 5, 1, 0, 4, NOW()+0 ),  # 파일 관리 메뉴 추가
+    ( 6, 1, 0, 1, NOW()+0 ),  # 회원 폴더 메뉴 추가
+    ( 7, 1, 6, 1, NOW()+0 ),  # 회원 메뉴 추가
+    ( 8, 1, 6, 2, NOW()+0 );  # 회원 메뉴 추가
 
-# admin menu item insert in tree
-INSERT INTO `gbd_menus_tree` (
-    `menu_srl`, 
-    `service_srl`, 
-    `parent_element_srl`, 
-    `c_date`
-) VALUES (
-    2,
-    1,
-    1,
-    NOW()+0
-);
-
-# admin menu item insert in tree
-INSERT INTO `gbd_menus_tree` (
-    `menu_srl`, 
-    `service_srl`, 
-    `parent_element_srl`, 
-    `list_order`, 
-    `c_date`
-) VALUES (
-    3,
-    1,
-    1,
-    2, 
-    NOW()+0
-);
-
-# 다국어 관리 메뉴 추가
-INSERT INTO `gbd_menus_tree` (
-    `menu_srl`, 
-    `service_srl`, 
-    `parent_element_srl`, 
-    `list_order`, 
-    `c_date`
-) VALUES (
-    4,
-    1,
-    0,
-    2,
-    NOW()+0
-);
 
 # create gbd_text. 다국어 텍스트 테이블
 DROP TABLE IF EXISTS  `gbd_text`;
 CREATE TABLE `gbd_text` (
     `text_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
     `name` char(37) NOT NULL, 
-    `c_date` char(14) NOT NULL 
+    `c_date` char(14) NOT NULL, 
     INDEX(`name`), 
     PRIMARY KEY(`text_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
-# 인증(다국어)
-INSERT INTO `gbd_text` (
-    `name`,
-    `c_date`
-) VALUES (
-    '__usrLang1',
-    NOW()+0
-);
-
-# 애플리케이션(다국어)
-INSERT INTO `gbd_text` (
-    `name`,
-    `c_date`
-) VALUES (
-    '__usrLang2',
-    NOW()+0
-);
-
-# 발급 코드(다국어)
-INSERT INTO `gbd_text` (
-    `name`,
-    `c_date`
-) VALUES (
-    '__usrLang3',
-    NOW()+0
-);
-
-# 다국어(다국어)
-INSERT INTO `gbd_text` (
-    `name`,
-    `c_date`
-) VALUES (
-    '__usrLang4',
-    NOW()+0
-);
+# 텍스트 메타 입력
+INSERT INTO `gbd_text` 
+    ( `name`, `c_date` ) 
+VALUES 
+    ( '__usrLang1', NOW()+0 ),  # 인증
+    ( '__usrLang2', NOW()+0 ),  # 애플리케이션
+    ( '__usrLang3', NOW()+0 ),  # 발급 코드
+    ( '__usrLang4', NOW()+0 ),  # 다국어
+    ( '__usrLang5', NOW()+0 ),  # oauth 인증 관리
+    ( '__usrLang6', NOW()+0 ),  # oauth 사용을 위해 등록한 애플리케이션 리스트
+    ( '__usrLang7', NOW()+0 ),  # oauth 를 위해 발급된 코드 리스트
+    ( '__usrLang8', NOW()+0 ),  # 다국어 관리
+    ( '__usrLang9', NOW()+0 ),  # 인증 확인을 실패 했습니다. 다시 로그인 해 주세요.
+    ( '__usrLang10', NOW()+0 ), # 페이지 접근 권한이 없습니다(로그인 하지 않았거나, 접근 권한이 없는 페이지에 접근 했을때 안내 메시지)
+    ( '__usrLang11', NOW()+0 ), # 파일
+    ( '__usrLang12', NOW()+0 ), # 파일 관리
+    ( '__usrLang13', NOW()+0 ), # 회원
+    ( '__usrLang14', NOW()+0 ), # 회원 관리
+    ( '__usrLang15', NOW()+0 ), # 그룹
+    ( '__usrLang16', NOW()+0 ), # 그룹 관리
+    ( '__usrLang17', NOW()+0 ), # 어드민
+    ( '__usrLang18', NOW()+0 ), # 정회원
+    ( '__usrLang19', NOW()+0 ); # 준회원
 
 
 # create gbd_text_ko. 실제 텍스트가 저장되는 테이블. 각 언어 마다 테이블이 분리 됨
@@ -700,116 +524,53 @@ CREATE TABLE `gbd_text_list` (
     `text_srl` bigint(11) NOT NULL, 
     `lang_code` varchar(4) NOT NULL, 
     `text_value` varchar(128) DEFAULT NULL, 
-    `c_date` char(14) NOT NULL, 
-    `u_date` char(14) DEFAULT NULL, 
-    INDEX(`text`),
+    INDEX(`text_value`),
     INDEX(`text_srl`),
     FOREIGN KEY( `text_srl`) REFERENCES `gbd_text`(`text_srl`) ON DELETE CASCADE, 
     PRIMARY KEY(`text_list_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
-# 인증(한글)
-INSERT INTO `gbd_text_list` (
-    `text_srl`,
-    `lang_code`, 
-    `text_value`,
-    `c_date`
-) VALUES (
-    1,
-    'ko',
-    '인증',
-    NOW()+0
-);
-
-# 인증(영어)
-INSERT INTO `gbd_text_list` (
-    `text_srl`,
-    `lang_code`, 
-    `text_value`,
-    `c_date`
-) VALUES (
-    1,
-    'en',
-    'Authorization',
-    NOW()+0
-);
-
-# 애플리케이션(한글)
-INSERT INTO `gbd_text_list` (
-    `text_srl`,
-    `lang_code`, 
-    `text_value`,
-    `c_date`
-) VALUES (
-    2,
-    'ko',
-    '애플리케이션',
-    NOW()+0
-);
-
-# 애플리케이션(영어)
-INSERT INTO `gbd_text_list` (
-    `text_srl`,
-    `lang_code`, 
-    `text_value`,
-    `c_date`
-) VALUES (
-    2,
-    'en',
-    'Application',
-    NOW()+0
-);
-
-# 발급 코드(한글)
-INSERT INTO `gbd_text_list` (
-    `text_srl`,
-    `lang_code`, 
-    `text_value`,
-    `c_date`
-) VALUES (
-    3,
-    'ko',
-    '발급 코드',
-    NOW()+0
-);
-
-# 발급 코드(영어)
-INSERT INTO `gbd_text_list` (
-    `text_srl`,
-    `lang_code`, 
-    `text_value`,
-    `c_date`
-) VALUES (
-    3,
-    'en',
-    'Authorization Code',
-    NOW()+0
-);
-
-# 다국어(한글)
-INSERT INTO `gbd_text_list` (
-    `text_srl`,
-    `lang_code`, 
-    `text_value`,
-    `c_date`
-) VALUES (
-    4,
-    'ko',
-    '다국어',
-    NOW()+0
-);
-
-# 다국어(영어)
-INSERT INTO `gbd_text_list` (
-    `text_srl`,
-    `lang_code`, 
-    `text_value`,
-    `c_date`
-) VALUES (
-    4,
-    'en',
-    'Multi Language',
-    NOW()+0
-);
+# 실제 텍스트 추가
+INSERT INTO `gbd_text_list` 
+    ( `text_srl`, `lang_code`, `text_value` )
+VALUES 
+    ( 1, 'ko', '인증' ),
+    ( 1, 'en', 'Authorization' ),
+    ( 2, 'ko', '애플리케이션' ),
+    ( 2, 'en', 'Application' ),
+    ( 3, 'ko', '발급 코드' ),
+    ( 3, 'en', 'Authorization Code' ),
+    ( 4, 'ko', '다국어' ),
+    ( 4, 'en', 'Multi Language' ),
+    ( 5, 'ko', 'oauth 인증 관리' ), 
+    ( 5, 'en', 'oauth 인증 관리' ),
+    ( 6, 'ko', 'oauth 사용을 위해 등록한 애플리케이션 리스트' ),
+    ( 6, 'en', 'oauth 사용을 위해 등록한 애플리케이션 리스트' ),
+    ( 7, 'ko', 'oauth 를 위해 발급된 코드 리스트' ),
+    ( 7, 'en', 'oauth 를 위해 발급된 코드 리스트' ),
+    ( 8, 'ko', '다국어 관리' ),
+    ( 8, 'en', '다국어 관리' ),
+    ( 9, 'ko', '인증 확인을 실패 했습니다. 다시 로그인 해 주세요.' ),
+    ( 9, 'en', '인증 확인을 실패 했습니다. 다시 로그인 해 주세요.' ),
+    ( 10, 'ko', '페이지 접근 권한이 없습니다.' ),
+    ( 10, 'en', '페이지 접근 권한이 없습니다.' ),
+    ( 11, 'ko', '파일' ),
+    ( 11, 'en', '파일' ),
+    ( 12, 'ko', '파일 관리' ),
+    ( 12, 'en', '파일 관리' ),
+    ( 13, 'ko', '회원' ),
+    ( 13, 'en', '회원' ),
+    ( 14, 'ko', '회원 관리' ),
+    ( 14, 'en', '회원 관리' ),
+    ( 15, 'ko', '그룹' ),
+    ( 15, 'en', '그룹' ),
+    ( 16, 'ko', '그룹 관리' ),
+    ( 16, 'en', '그룹 관리' ),
+    ( 17, 'ko', '어드민' ),
+    ( 17, 'en', 'Admin' ),
+    ( 18, 'ko', '정회원' ),
+    ( 18, 'en', '정회원' ),
+    ( 19, 'ko', '준회원' ),
+    ( 19, 'en', '준회원' );
 
 

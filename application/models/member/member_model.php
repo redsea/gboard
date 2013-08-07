@@ -15,6 +15,8 @@ class Member_model extends CI_Model {
 		$this->config->load('error_code/common', TRUE);
 		$this->config->load('error_code/member', TRUE);
 		
+		$this->load->model('common/common_model', 'cmodel');
+		
 		$this->yes = $this->config->item('yes', 'my_conf/common');
 		$this->no = $this->config->item('no', 'my_conf/common');
 		
@@ -124,10 +126,13 @@ class Member_model extends CI_Model {
 		}
 		
 		// 동일한 user_id, nick_name 이 존재 하는지 체크
-		if(!$this->slave_db) { $this->slave_db = $this->load->database('slave', TRUE); }
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
 		
 		$where_array = array('user_id' => $user_info['user_id'], 'nick_name' => $user_info['nick_name']);
-		$this->slave_db->select('member_srl, user_id, email_address, nick_name')->from($this->table_prefix.'member')->or_where($where_array);
+		$this->slave_db->select('member_srl, user_id, email_address, nick_name')->from($this->slave_db->dbprefix('member'))->or_where($where_array);
 		$query = $this->slave_db->get();
 
 		if($query->num_rows() > 0) {
@@ -148,7 +153,7 @@ class Member_model extends CI_Model {
 		
 		if($user_info['image_mark']) {
 			$this->slave_db->where_in('file_srl', $user_info['image_mark']);
-			$this->slave_db->from($this->table_prefix.'files');
+			$this->slave_db->from($this->slave_db->dbprefix('files'));
 			$count = $this->slave_db->count_all_results();
 			$query->free_result();
 			
@@ -232,9 +237,13 @@ class Member_model extends CI_Model {
 				$data = array('alpha3'=>$user_info['country']);
 			}
 			
-			if(!$this->slave_db) { $this->slave_db = $this->load->database('slave', TRUE); }
+			if(!$this->slave_db) {
+				$this->slave_db = $this->load->database('slave', TRUE);
+				$this->slave_db->set_dbprefix($this->table_prefix);
+			}
+			
 			$this->slave_db->where($key, strtoupper($data[$key]));
-			$this->slave_db->from($this->table_prefix.'country_code');
+			$this->slave_db->from($this->slave_db->dbprefix('country_code'));
 			$count = $this->slave_db->count_all_results();
 			if($count <= 0) {
 				$err_code = $this->config->item('member_join_invalid_country', 'error_code/member');
@@ -244,9 +253,13 @@ class Member_model extends CI_Model {
 		}
 		
 		if($user_info['country_call_code']) {
-			if(!$this->slave_db) { $this->slave_db = $this->load->database('slave', TRUE); }
+			if(!$this->slave_db) {
+				$this->slave_db = $this->load->database('slave', TRUE);
+				$this->slave_db->set_dbprefix($this->table_prefix);
+			}
+			
 			$this->slave_db->where('country_call_code', $user_info['country_call_code']);
-			$this->slave_db->from($this->table_prefix.'country_code');
+			$this->slave_db->from($this->slave_db->dbprefix('country_code'));
 			$count = $this->slave_db->count_all_results();
 			if($count <= 0) {
 				$err_code = $this->config->item('member_join_no_contry_call_code', 'error_code/member');
@@ -426,8 +439,12 @@ class Member_model extends CI_Model {
 		}
 		
 		// 3. 기본 가입 그룹 정보를 가져온다.
-		if(!$this->slave_db) { $this->slave_db = $this->load->database('slave', TRUE); }
-		$this->slave_db->select('group_srl')->from($this->table_prefix.'member_group')->where('is_default', 'Y');
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
+		
+		$this->slave_db->select('group_srl')->from($this->slave_db->dbprefix('member_group'))->where('is_default', 'Y');
 		$query = $this->slave_db->get();
 		if(!$query || $query->num_rows() <= 0) {
 			$err_code = $this->config->item('member_join_select_default_group', 'error_code/member');
@@ -437,19 +454,7 @@ class Member_model extends CI_Model {
 		$row = $query->row_array();
 		$default_member_group = $row['group_srl'];
 		$query->free_result();
-		
-		// 4. 기본 site 정보 가져오기
-		$this->slave_db->select('site_srl')->from($this->table_prefix.'sites')->where('is_default', 'Y');
-		$query = $this->slave_db->get();
-		if(!$query || $query->num_rows() <= 0) {
-			$err_code = $this->config->item('member_join_select_default_site', 'error_code/member');
-			log_message('warn', "join E[$err_code] select sites default site fail");
-			return $err_code;
-		}
-		$row = $query->row_array();
-		$default_site = $row['site_srl'];
-		$query->free_result();
-		
+				
 		$c_date = mdate('%Y%m%d%H%i%s');
 		
 		$data_member_extra = array(
@@ -484,12 +489,15 @@ class Member_model extends CI_Model {
 			);
 		
 		$error_code = $this->success_code;
-		if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
+		if(!$this->master_db) {
+			$this->master_db = $this->load->database('master', TRUE);
+			$this->master_db->set_dbprefix($this->table_prefix);
+		}
 		
 		$this->master_db->trans_begin();
 		
 		// member table 에 insert
-		$result = $this->master_db->insert($this->table_prefix.'member', $data_member);
+		$result = $this->master_db->insert($this->master_db->dbprefix('member'), $data_member);
 		if(!$result) {
 			$error_code = $this->config->item('member_join_insert_member', 'error_code/member');
 			log_message('error', "join E[$error_code] insert member table failed");
@@ -500,7 +508,7 @@ class Member_model extends CI_Model {
 			$member_srl = $this->master_db->insert_id();
 			$data_member_extra['member_srl'] = $member_srl;
 		
-			$result = $this->master_db->insert($this->table_prefix.'member_extra', $data_member_extra);
+			$result = $this->master_db->insert($this->master_db->dbprefix('member_extra'), $data_member_extra);
 			if(!$result) {
 				$error_code = $this->config->item('member_join_insert_member_extra', 'error_code/member');
 				log_message('error', "join E[$error_code] insert member_extra table failed");
@@ -510,7 +518,7 @@ class Member_model extends CI_Model {
 		// member table 의 list_order update
 		if($result) {
 			$this->master_db->where('member_srl', $member_srl);
-			$result = $this->master_db->update($this->table_prefix.'member', array('list_order'=>-$member_srl));
+			$result = $this->master_db->update($this->master_db->dbprefix('member'), array('list_order'=>-$member_srl));
 			if(!$result) {
 				$error_code = $this->config->item('member_join_update_list_order', 'error_code/member');
 				log_message('error', "join E[$error_code] update list_order column in member table failed");
@@ -522,10 +530,9 @@ class Member_model extends CI_Model {
 			$data_member_group = array(
 					'group_srl'		=> $default_member_group,
 					'member_srl'	=> $member_srl,
-					'site_srl'		=> $default_site,
 					'c_date'		=> $c_date
 				);
-			$result = $this->master_db->insert($this->table_prefix.'member_group_member', $data_member_group);
+			$result = $this->master_db->insert($this->master_db->dbprefix('member_group_member'), $data_member_group);
 			if(!$result) {
 				$error_code = $this->config->item('member_join_insert_member_group_member', 'error_code/member');
 				log_message('error', "join E[$error_code] insert member_group_member table failed");
@@ -535,7 +542,7 @@ class Member_model extends CI_Model {
 		// image_mark 로 사용한 file_srl 을 member 소유로 member_srl 업데이트
 		if($result && $user_info['image_mark']) {
 			$this->master_db->where_in('file_srl', $user_info['image_mark']);
-			$result = $this->master_db->update($this->table_prefix.'files', array('member_srl'=>$member_srl));
+			$result = $this->master_db->update($this->master_db->dbprefix('files'), array('member_srl'=>$member_srl));
 			if(!$result) {
 				$error_code = $this->config->item('member_join_update_file_owner', 'error_code/member');
 				log_message('error', "join E[$error_code] update member_srl column in files table failed");
@@ -580,7 +587,10 @@ class Member_model extends CI_Model {
 		
 		$password = md5($password);
 		
-		if(!$this->slave_db) { $this->slave_db = $this->load->database('slave', TRUE); }
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
 		
 		// member 정보를 가져온다.
 		$sql = ' SELECT '.
@@ -600,10 +610,10 @@ class Member_model extends CI_Model {
 			   '         SELECT member_srl, user_id, email_address, user_password, user_name, nick_name, '.
 			   '             allow_mailing, allow_message, image_mark, block, email_confirm, limit_date, '.
 			   '             last_login_date, change_password_date, c_date '.
-			   '         FROM '.$this->table_prefix.'member '.
+			   '         FROM '.$this->slave_db->dbprefix('member').
 			   '         WHERE user_id = ? '.
 			   '     ) A, '.
-			   '     '.$this->table_prefix.'member_extra B '.
+			   '     '.$this->slave_db->dbprefix('member_extra').' B '.
 			   ' WHERE A.member_srl = B.member_srl ';
 		$query = $this->slave_db->query($sql, array($user_id));
 
@@ -649,35 +659,34 @@ class Member_model extends CI_Model {
 		
 		// member 의 group 정보를 가져온다.
 		$sql = ' SELECT '.
-			   '     C.group_srl as group_srl, C.title as title, C.is_root as is_root, '.
-			   '     C.group_image_mark as group_image_mark, D.index_module_srl as index_module_srl, '.
-			   '     D.domain as site_domain, D.default_language as site_default_language, '.
-			   '     D.image_mark as site_image_mark '.
+			   '     B.group_srl as group_srl, B.title as group_name, B.is_root as is_root '.
 			   ' FROM '.
-			   '     ( '.
-			   '         SELECT A.group_srl as group_srl, B.site_srl as site_srl, '.
-			   '             B.title as title, B.is_root as is_root, B.image_mark as group_image_mark '.
-			   '         FROM '.$this->table_prefix.'member_group_member A, '.$this->table_prefix.'member_group B '.
-			   '         WHERE A.member_srl = ? AND A.group_srl = B.group_srl '.
-			   '     ) C, '.$this->table_prefix.'sites D '.
-			   ' WHERE C.site_srl = D.site_srl ';
+			   '     '.$this->slave_db->dbprefix('member_group_member').' A, '.
+			   '     '.$this->slave_db->dbprefix('member_group').' B '.
+			   ' WHERE A.member_srl = ? AND A.group_srl = B.group_srl ';
 		$query = $this->slave_db->query($sql, array($member_info['member_srl']));
-			   
+		
 		if($query->num_rows() <= 0) {
-			$err_code = $this->config->item('member_no_group_site', 'error_code/member');
-			log_message('warn', "login E[$err_code] no group or no site");
+			$err_code = $this->config->item('member_no_group', 'error_code/member');
+			log_message('warn', "login E[$err_code] no group");
 			return $err_code;
 		}
 		
-		$member_group_info = $query->row_array();
+		$member_group_info = array();
+		foreach($query->result_array() as $row) {
+			array_push($member_group_info, $row);
+		}
 		$query->free_result();
 		
-		if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
+		if(!$this->master_db) {
+			$this->master_db = $this->load->database('master', TRUE);
+			$this->master_db->set_dbprefix($this->table_prefix);
+		}
 		
 		$this->master_db->trans_begin();
 		
 		$this->master_db->where_in('member_srl', $member_info['member_srl']);
-		$result = $this->master_db->update($this->table_prefix.'member', 
+		$result = $this->master_db->update($this->master_db->dbprefix('member'), 
 				array(
 					'last_login_date' => mdate('%Y%m%d%H%i%s', $current_tm),
 					'u_date' => mdate('%Y%m%d%H%i%s', $current_tm)
@@ -702,7 +711,7 @@ class Member_model extends CI_Model {
 			
 			// 로그인 총 카운트와 연속 로그인 카운트를 변경 시킨다.
 			$this->master_db->where_in('member_srl', $member_info['member_srl']);
-			$result = $this->master_db->update($this->table_prefix.'member_extra', 
+			$result = $this->master_db->update($this->master_db->dbprefix('member_extra'), 
 					array(
 						'login_count' => $new_login_count,
 						'serial_login_count' => $new_serial_login_count,
@@ -728,15 +737,195 @@ class Member_model extends CI_Model {
 		$this->load->model('common/common_model', 'cmodel');
 		$this->cmodel->setMemberInfoSession($member_info, $member_group_info);
 		
-		if($member_group_info['is_root'] == 'Y') {
-			$ret['request_url'] = 'http://'.$member_group_info['site_domain'].'/admin';
-		} else {
-			$ret['request_url'] = 'http://'.$member_group_info['site_domain'];
-		}
-		
 		log_message('info', 'login complete');
 		
 		return $this->success_code;
-	}	
+	}
+	
+	/**
+	 * 가입된 멤버 리스트를 구한다.
+	 *
+	 * @param data {array} member list 가 저장될 array
+	 * @param search_value {string} 검색 할 value(원본 파일명 에서 검색 한다)
+	 * @param start_row {string} limit 할 start row number
+	 * @param row_count {string} limt 할 row count
+	 * @param iSortCol {boolean} sort 할 column 분류. 0(유저아이디), 1(유저이메일), 2(유저네임), 3(닉네임), 6(생성일)
+	 *                           0, 1, 2, 3, 6 값이 아니면 6 으로 취급 한다.
+	 * @param sSortDir {string} order by 방향. asc, desc 값 중 하나.
+	 * @return 항상 success_code 를 리턴한다.(row 가 없으면 empty array 값이 사용되기 때문에 항상 성공임)
+	 */
+	public function getMemberList(&$data, $search_value=FALSE, $start_row=FALSE, $row_count=FALSE,
+			$iSortCol=FALSE, $sSortDir=FALSE) {
+			
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
+		
+		$data['iTotalRecords'] = '0';
+		$data['iTotalDisplayRecords'] = '0';
+		$data['aaData'] = array();
+		
+		// iTotalRecords 값을 가져 온다
+		$all_member_count = $this->slave_db->count_all($this->slave_db->dbprefix('member'));
+		if($all_member_count <= 0) {
+			// 데이터가 없으므로 바로 리턴한다.
+			return $this->success_code;
+		}
+		
+		$sLimit = '';
+		if($row_count !== FALSE && $start_row !== FALSE) {
+			$sLimit = ' LIMIT '.intval($start_row).', '.intval($row_count);
+		}
+
+		$sWhere = '';
+		if($search_value) {
+			$sWhere = " WHERE user_id LIKE '%".$this->slave_db->escape_str($search_value)."%' OR ".
+					  "       email_address LIKE '%".$this->slave_db->escape_str($search_value)."%' OR ".
+					  "       user_name LIKE '%".$this->slave_db->escape_str($search_value)."%' OR ".
+					  "       nick_name LIKE '%".$this->slave_db->escape_str($search_value)."%' ";
+		}
+
+		$sOrder = '';
+		if($iSortCol !== FALSE && $sSortDir !== FALSE) {
+			$sOrder = ' ORDER BY ';
+			switch($iSortCol) {
+				case 1:		$sOrder .= 'email_address ';	break;
+				case 2:		$sOrder .= 'user_name ';		break;
+				case 3:		$sOrder .= 'nick_name ';		break;
+				case 5:		$sOrder .= 'c_date ';			break;
+				default:	$sOrder .= 'user_id ';			break;
+			}
+			$sOrder .= $sSortDir;
+		}
+		
+		$sql = ' SELECT '.
+			   '     user_id, email_address, user_name, nick_name, block, c_date '.
+			   ' FROM '.$this->slave_db->dbprefix('member').$sWhere.$sOrder.$sLimit;
+        $query = $this->slave_db->query($sql);
+	
+		if($query->num_rows() <= 0) {
+			// 데이터가 없으므로 바로 리턴한다.
+			return $this->success_code;
+		}
+		
+		foreach($query->result() as $row) {
+			$row->DT_RowId = 'member_'.$row->user_id;
+			
+			array_push($data['aaData'], $row);
+		}
+		$query->free_result();
+		
+		// filter row count 를 가져온다
+		$sql = ' SELECT COUNT(1) as count '.
+			   ' FROM '.$this->slave_db->dbprefix('member').$sWhere;
+		$query = $this->slave_db->query($sql);
+		
+		$row = $query->row_array();
+		$query->free_result();
+		
+		$data['iTotalRecords'] = $all_member_count.'';	// 총 row 갯수
+		$data['iTotalDisplayRecords'] = $row['count'].'';	// filter 된 row 갯수
+		
+		return $this->success_code;
+	}
+	
+	/**
+	 * 유저의 상세 정보를 구한다.
+	 *
+	 * @param data {&array} 유저의 상세 정보가 저장될 array
+	 * @param user_id {string} user id
+	 */
+	public function getUserInfo(&$data, $user_id=FALSE) {
+		if($user_id === FALSE) {
+			$error_code = $this->config->item('member_invalid_user_id', 'error_code/member');
+			log_message('error', "getUserInfo E[$error_code] no user_id");
+			return $error_code;
+		}
+		
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
+		
+		$sql = ' SELECT '.
+			   '     A.member_srl as member_srl, A.user_id as user_id, A.email_address as email_address, '.
+			   '     A.user_name as user_name, A.nick_name as nick_name, A.allow_mailing as allow_mailing, '.
+			   '     A.allow_message as allow_message, A.image_mark as image_mark, A.block as block, '.
+			   '     A.email_confirm as email_confirm, A.limit_date as limit_date, '.
+			   '     A.last_login_date as last_login_date, A.change_password_date as change_password_date, '.
+			   '     A.c_date as c_date, '.
+			   '     B.homepage as homepage, B.blog as blog, B.birthday as birthday, B.gender as gender, '.
+			   '     B.country as country, B.country_call_code as country_call_code, B.mobile_phone_number as mobile_phone_number, '.
+			   '     B.phone_number as phone_number, B.account_social_type as account_social_type, '.
+			   '     B.account_social_id as account_social_id, B.login_count as login_count, '.
+			   '     B.serial_login_count as serial_login_count '.
+			   ' FROM '.$this->slave_db->dbprefix('member').' A, '.$this->slave_db->dbprefix('member_extra').' B '.
+			   ' WHERE A.user_id = ? AND A.member_srl = B.member_srl ';
+		$query = $this->slave_db->query($sql, $user_id);
+		
+		if($query->num_rows() <= 0) {
+			$error_code = $this->config->item('member_no_user', 'error_code/member');
+			log_message('error', "getUserInfo E[$error_code] no user. user_id[$user_id]");
+			return $error_code;
+		}
+		
+		$data = $query->row_array();
+		$query->free_result();
+		
+		if(!$data['limit_date']) { $data['limit_date'] = ''; }
+		if(!$data['last_login_date']) { $data['last_login_date'] = ''; }
+		if(!$data['change_password_date']) { $data['change_password_date'] = ''; }
+		
+		if(!$data['homepage']) { $data['homepage'] = ''; }
+		if(!$data['blog']) { $data['blog'] = ''; }
+		if(!$data['birthday']) { $data['birthday'] = ''; }
+		if(!$data['gender']) { $data['gender'] = ''; }
+		if(!$data['country']) { $data['country'] = ''; }
+		if(!$data['country_call_code']) { $data['country_call_code'] = ''; }
+		if(!$data['mobile_phone_number']) { $data['mobile_phone_number'] = ''; }
+		if(!$data['phone_number']) { $data['phone_number'] = ''; }
+		if(!$data['account_social_type']) { $data['account_social_type'] = ''; }
+		if(!$data['account_social_id']) { $data['account_social_id'] = ''; }
+		
+		// group 명 다국어 매핑
+		//$data['group_name'] = $this->cmodel->getTextByLanguage($data['group_name']);
+		
+		// profile image 찾기
+		if($data['image_mark']) {
+			$data['image_mark'] = $this->cmodel->getFileImageURL(unserialize($data['image_mark']));
+			if($data['image_mark']) { $data['image_mark'] = $this->cmodel->sortImageURLBySize($data['image_mark']); }
+			else					{ $data['image_mark'] = new stdClass(); }
+		} else {
+			$data['image_mark'] = new stdClass();
+		}
+		
+		// group 명을 찾아야 함.(이거 원래 sql join 으로 처리 하려고 했으나, 쓸데없이 sql 문이 복잡해 져서 따로 땜)
+		$sql = ' SELECT '.
+			   '     B.group_srl as group_srl, B.title as group_name '.
+			   ' FROM '.
+			   '     '.$this->slave_db->dbprefix('member_group_member').' A, '.
+			   '     '.$this->slave_db->dbprefix('member_group').' B '.
+			   ' WHERE A.member_srl = ? AND A.group_srl = B.group_srl ';
+		$query = $this->slave_db->query($sql, $data['member_srl']);
+		
+		$data['group_name'] = array();
+		
+		if($query->num_rows() > 0) {
+			$str_arr = array();
+			foreach($query->result_array() as $row) {
+				array_push($str_arr, $row['group_name']);
+			}
+			
+			// group 명 다국어 매핑
+			$str_arr = $this->cmodel->getTextsByLanguage($str_arr);
+			
+			foreach($str_arr as $value) {
+				array_push($data['group_name'], $value);
+			}
+		}
+		
+		return $this->success_code;
+	}
 }
 ?>

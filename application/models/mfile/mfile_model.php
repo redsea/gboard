@@ -19,7 +19,7 @@ class Mfile_model extends CI_Model {
 		$this->success_code = $this->config->item('common_success', 'error_code/common');
 		
 		$this->master_db = FALSE;
-		//$this->slave_db = FALSE;
+		$this->slave_db = FALSE;
 	}
 	
 	/**
@@ -34,7 +34,7 @@ class Mfile_model extends CI_Model {
 	 * @param file_type {string} mfile.config 에 설정 되어 있는 업로드 되는 파일이 사용되는 종류
 	 * @return {string} return error code
 	 */
-	private function upload_to_amazon_s3(&$ret, $file_info, $member_srl,
+	private function uploadToAmazonS3(&$ret, $file_info, $member_srl,
 			$file_config, $thumbnail_info=FALSE) {
 		require_once('application/third_party/aws/sdk.class.php');
 		
@@ -98,7 +98,7 @@ class Mfile_model extends CI_Model {
 		$response = $s3->set_region($region);
 		if(!$response->parse_the_response) {
 			$error_code = $this->config->item('mfile_invalid_amazons3_region', 'error_code/mfile');
-			log_message('error', "upload_to_amazon_s3 E[$error_code] failed change amaozon s3 region");
+			log_message('error', "uploadToAmazonS3 E[$error_code] failed change amaozon s3 region");
 			return $error_code;
 		}
 		log_message('info', 'change amaozon s3 region');
@@ -117,14 +117,14 @@ class Mfile_model extends CI_Model {
 				);
 		} catch(Exception $e) {
 			$error_code = $this->config->item('mfile_upload_to_amazons3', 'error_code/mfile');
-			log_message('error', "upload_to_amazon_s3 E[$error_code] exception upload(".$file_config['type_name'].
+			log_message('error', "uploadToAmazonS3 E[$error_code] exception upload(".$file_config['type_name'].
 					") to amazon s3. e[".json_encode($e)."]");
 			return $error_code;
 		}
 		
 		if(!$response->isOK()) {
 			$error_code = $this->config->item('mfile_upload_to_amazons3', 'error_code/mfile');
-			log_message('error', "upload_to_amazon_s3 E[$error_code] failed upload(".$file_config['type_name'].
+			log_message('error', "uploadToAmazonS3 E[$error_code] failed upload(".$file_config['type_name'].
 					") to amazon s3. code[".
 					$response->body->Code."], message[".$response->body->Message."]");
 			return $error_code;
@@ -150,14 +150,14 @@ class Mfile_model extends CI_Model {
 					);
 			} catch(Exception $e) {
 				$error_code = $this->config->item('mfile_upload_to_amazons3', 'error_code/mfile');
-				log_message('error', "upload_to_amazon_s3 E[$error_code] exception upload(".$file_config['type_name'].
+				log_message('error', "uploadToAmazonS3 E[$error_code] exception upload(".$file_config['type_name'].
 						" thumbnail) to amazon s3. e[".json_encode($e)."]");
 				return $error_code;
 			}
 			
 			if(!$response->isOK()) {
 				$error_code = $this->config->item('mfile_upload_to_amazons3', 'error_code/mfile');
-				log_message('error', "upload_to_amazon_s3 E[$error_code] failed upload(".$file_config['type_name'].
+				log_message('error', "uploadToAmazonS3 E[$error_code] failed upload(".$file_config['type_name'].
 						" thumbnail) to amazon s3. code[".
 						$response->body->Code."], message[".$response->body->Message."]");
 				return $error_code;
@@ -202,6 +202,209 @@ class Mfile_model extends CI_Model {
 		return $this->success_code;
 	}
 	
+	/**
+	 * file_srl 로 파일 상세 정보를 구한다.
+	 *
+	 * @param data {array} 파일 정보가 들어 있는 array
+	 * @param file_srl {string} file_srl
+	 * @return {string} 파일 정보 가져오기가 성공하면 success_code 를 아니면 error_code 를 리턴한다.
+	 */
+	public function getFileInfo(&$data, $file_srl=FALSE) {
+		if($file_srl === FALSE) {
+			$error_code = $this->config->item('mfile_no_file_srl', 'error_code/mfile');
+			log_message('error', "getFileInfo E[$error_code] no file_srl");
+			return $error_code;
+		}
+		
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
+		
+		$sql = ' SELECT '.
+			   '     B.file_srl as file_srl, A.user_id as user_id, '.
+			   '     B.download_count as download_count, B.file_type as file_type, B.orig_name as orig_name, '.
+			   '     B.local_path as local_path, B.local_url as local_url, B.network_url as network_url, '.
+			   '     B.width as width, B.height as height, B.file_size as file_size, B.file_comment as file_comment, '.
+			   '     B.thumbnail_local_path as thumbnail_local_path, B.thumbnail_local_url as thumbnail_local_url, '.
+			   '     B.thumbnail_network_url as thumbnail_network_url, B.thumbnail_width as thumbnail_width, '.
+			   '     B.thumbnail_height as thumbnail_height, B.ipaddress as ipaddress, '.
+			   '     B.c_date as c_date, B.u_date as u_date '.
+			   ' FROM '.
+			   '     '.$this->slave_db->dbprefix('member').' A, '.
+			   '     ( '.
+			   '         SELECT '.
+			   '             file_srl, member_srl, download_count, file_type, orig_name, '.
+			   '             local_path, local_url, network_url, width, height, file_size, '.
+			   '             file_comment, thumbnail_local_path, thumbnail_local_url, '.
+			   '             thumbnail_network_url, thumbnail_width, thumbnail_height, '.
+			   '             ipaddress, c_date, u_date '.
+			   '         FROM '.$this->slave_db->dbprefix('files').
+			   '         WHERE file_srl = ? '.
+			   '     ) B '.
+			   ' WHERE A.member_srl = B.member_srl ';
+		$query = $this->slave_db->query($sql, $file_srl);
+			   
+		if($query->num_rows() <= 0) {
+			$error_code = $this->config->item('mfile_no_file', 'error_code/mfile');
+			log_message('error', "getFileInfo E[$error_code] no file");
+			return $error_code;
+		}
+		
+		$data = $query->row_array();
+		$query->free_result();
+		
+		if($data['local_path'])	{ $data['storage'] = 'local'; }
+		else					{ $data['storage'] = 'network'; }
+		
+		if($data['local_url']) {
+			$data['url'] = $data['local_url'];
+		} else {
+			$data['url'] = $data['network_url'];
+		}
+		
+		if($data['thumbnail_local_url']) {
+			$data['thumbnail_url'] = $data['thumbnail_local_url'];
+		} else {
+			$data['thumbnail_url'] = $data['thumbnail_network_url'];
+		}
+		
+		if(!$data['thumbnail_width']) { $data['thumbnail_width'] = '0'; }
+		if(!$data['thumbnail_height']) { $data['thumbnail_height'] = '0'; }
+		if(!$data['thumbnail_url']) { $data['thumbnail_url'] = ''; }
+		if(!$data['u_date']) { $data['u_date'] = ''; }
+		
+		unset($data['local_path']);
+		unset($data['local_url']);
+		unset($data['network_url']);
+		
+		unset($data['thumbnail_local_path']);
+		unset($data['thumbnail_local_url']);
+		unset($data['thumbnail_network_url']);
+		
+		return $this->success_code;
+	}
+	
+	/**
+	 * 로컬 서버나 네트웍 서버에 저장된 파일 리스트를 구한다.
+	 *
+	 * @param data {array} application list 가 저장될 array
+	 * @param search_value {string} 검색 할 value(원본 파일명 에서 검색 한다)
+	 * @param start_row {string} limit 할 start row number
+	 * @param row_count {string} limt 할 row count
+	 * @param iSortCol {boolean} sort 할 column 분류. 0(소유자), 1(파일명), 3(파일사이즈), 4(생성일)
+	 *                           0, 1, 3, 4 값이 아니면 0 으로 취급 한다.
+	 * @param sSortDir {string} order by 방향. asc, desc 값 중 하나.
+	 * @return 항상 success_code 를 리턴한다.(row 가 없으면 empty array 값이 사용되기 때문에 항상 성공임)
+	 */
+	public function getFileList(&$data, $search_value=FALSE, $start_row=FALSE, $row_count=FALSE,
+			$iSortCol=FALSE, $sSortDir=FALSE) {
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
+		
+		$data['iTotalRecords'] = '0';
+		$data['iTotalDisplayRecords'] = '0';
+		$data['aaData'] = array();
+		
+		// iTotalRecords 값을 가져 온다
+		$all_file_count = $this->slave_db->count_all($this->slave_db->dbprefix('files'));
+		if($all_file_count <= 0) {
+			// 데이터가 없으므로 바로 리턴한다.
+			return $this->success_code;
+		}
+		
+		$sLimit = '';
+		if($row_count !== FALSE && $start_row !== FALSE) {
+			$sLimit = ' LIMIT '.intval($start_row).', '.intval($row_count);
+		}
+		
+		$sWhere = '';
+		if($search_value) {
+			$sWhere = " WHERE orig_name LIKE '%".$this->slave_db->escape_str($search_value)."%' ";
+		}
+		
+		$sOrder = '';
+		if($iSortCol !== FALSE && $sSortDir !== FALSE) {
+			$sOrder = ' ORDER BY ';
+			switch($iSortCol) {
+				case 1:		$sOrder .= 'A.orig_name ';	break;
+				case 3:		$sOrder .= 'A.file_size ';	break;
+				case 4:		$sOrder .= 'A.c_date ';		break;
+				default:	$sOrder .= 'B.user_id ';	break;
+			}
+			$sOrder .= $sSortDir;
+		}
+		
+		$sql = ' SELECT '.
+			   '     A.file_srl as file_srl, B.user_id as user_id, A.orig_name as orig_name, '.
+			   '     A.local_url as local_url, A.network_url as network_url, A.file_size as file_size, '.
+			   '     A.c_date as c_date '.
+			   ' FROM '.
+			   '     ( '.
+			   '         SELECT '.
+			   '             file_srl, member_srl, orig_name, local_path, local_url, network_url, '.
+			   '             file_size, c_date '.
+			   '         FROM '.$this->slave_db->dbprefix('files').$sWhere.
+			   '     ) A, '.
+			   '     ( '.
+			   '         SELECT member_srl, user_id '.
+			   '         FROM '.$this->slave_db->dbprefix('member').
+               '     ) B '.
+               ' WHERE A.member_srl = B.member_srl '.$sOrder.$sLimit;
+        $query = $this->slave_db->query($sql);
+	
+		if($query->num_rows() <= 0) {
+			// 데이터가 없으므로 바로 리턴한다.
+			return $this->success_code;
+		}
+	
+		foreach($query->result() as $row) {
+			$row->DT_RowId = 'file_'.$row->file_srl;
+			$row->c_date = mysql_to_unix($row->c_date);
+			$row->c_date = unix_to_human($row->c_date);
+			
+			if($row->local_url) {
+				$row->preview_tag = '<img style="width:40px;" src="'.$row->local_url.'">';
+				$row->url = $row->local_url;
+			} else {
+				$row->preview_tag = '<img style="width:40px;" src="'.$row->network_url.'">';
+				$row->url = $row->network_url;
+			}
+			
+			unset($row->local_url);
+			unset($row->network_url);
+			unset($row->file_srl);
+			
+			array_push($data['aaData'], $row);
+		}
+		$query->free_result();
+		
+		// filter row count 를 가져온다
+		$sql = ' SELECT COUNT(1) as count '.
+			   ' FROM '.
+			   '     ( '.
+			   '         SELECT '.
+			   '             file_srl, member_srl, orig_name, local_path, local_url, network_url, '.
+			   '             file_size, c_date '.
+			   '         FROM '.$this->slave_db->dbprefix('files').$sWhere.
+			   '     ) A, '.
+			   '     ( '.
+			   '         SELECT member_srl, user_id '.
+			   '         FROM '.$this->slave_db->dbprefix('member').
+               '     ) B '.
+               ' WHERE A.member_srl = B.member_srl';
+		$query = $this->slave_db->query($sql);
+		
+		$row = $query->row_array();
+		$query->free_result();
+		
+		$data['iTotalRecords'] = $all_file_count.'';	// 총 row 갯수
+		$data['iTotalDisplayRecords'] = $row['count'].'';	// filter 된 row 갯수
+		
+		return $this->success_code;
+	}
 	
 	/** 
 	 * upload 된 파일을 저장한다.
@@ -213,7 +416,7 @@ class Mfile_model extends CI_Model {
 	 *							 support_data_type 값중 하나
 	 * @return {string} return error code
 	 */
-	public function save_file_in_local(&$ret, $member_srl=FALSE, $file_type=FALSE) {
+	public function saveFileInLocal(&$ret, $member_srl=FALSE, $file_type=FALSE) {
 		$ret_valid = array();
 		$result_code = $this->validFileType($ret_valid, $member_srl, $file_type);
 		if($result_code != $this->success_code) { return $result_code; }
@@ -226,7 +429,7 @@ class Mfile_model extends CI_Model {
 			}
 		} else {
 			$error_code = $this->config->item('mfile_file_upload_no_upload_config', 'error_code/mfile');
-			log_message('error', "save_file_in_local E[$error_code] non-config local_file_directory in my_conf/mfile");
+			log_message('error', "saveFileInLocal E[$error_code] non-config local_file_directory in my_conf/mfile");
 			return $error_code;
 		}
 		
@@ -235,7 +438,7 @@ class Mfile_model extends CI_Model {
 		if(!is_dir($config['upload_path'])) {
 			if(!mkdir($config['upload_path'], 0777)) {
 				$error_code = $this->config->item('mfile_file_upload_mkdir', 'error_code/mfile');
-				log_message('error', "save_file_in_local E[$error_code] can't create directory[".$config['upload_path']."]");
+				log_message('error', "saveFileInLocal E[$error_code] can't create directory[".$config['upload_path']."]");
 				return $error_code;
 			}
 		}
@@ -245,7 +448,7 @@ class Mfile_model extends CI_Model {
 		if(!is_dir($config['upload_path'])) {
 			if(!mkdir($config['upload_path'], 0777)) {
 				$error_code = $this->config->item('mfile_file_upload_mkdir', 'error_code/mfile');
-				log_message('error', "save_file_in_local E[$error_code] can't create directory[".$config['upload_path']."]");
+				log_message('error', "saveFileInLocal E[$error_code] can't create directory[".$config['upload_path']."]");
 				return $error_code;
 			}
 		}
@@ -264,7 +467,7 @@ class Mfile_model extends CI_Model {
 		
 		$file_info = $this->upload->data();
 		if(!chmod($file_info['full_path'], 0666)) {
-			log_message('warn', 'save_file_in_local can\'t change permission 0646 file['.$file_info['full_path'].']');
+			log_message('warn', 'saveFileInLocal can\'t change permission 0646 file['.$file_info['full_path'].']');
 		}
 		foreach($file_info as $key=>$value) { $ret[$key] = $value; }
 		
@@ -283,7 +486,7 @@ class Mfile_model extends CI_Model {
 	 * @param file_type {string} mfile.config 에 설정 되어 있는 업로드 되는 파일이 사용되는 종류
 	 * @return {string} return error code
 	 */
-	public function save_thumbnail_file_in_local(&$ret, $file_info, $member_srl=FALSE, $file_type=FALSE) {
+	public function saveThumbnailFileInLocal(&$ret, $file_info, $member_srl=FALSE, $file_type=FALSE) {
 		$ret_valid = array();
 		$result_code = $this->validFileType($ret_valid, $member_srl, $file_type);
 		if($result_code != $this->success_code) { return $result_code; }
@@ -298,7 +501,7 @@ class Mfile_model extends CI_Model {
 		$thumbnail_height = $this->input->post2('thumbnail_height', TRUE);
 		
 		if(!$thumbnail_width || $thumbnail_width > $file_config['thumbnail_max_width']) {
-			log_message('info', 'save_thumbnail_file_in_local user thumbnail size wrong['.
+			log_message('info', 'saveThumbnailFileInLocal user thumbnail size wrong['.
 					($thumbnail_width?$thumbnail_width:0).'x'.
 					($thumbnail_height?$thumbnail_height:0).', set default thumbnail size['.
 					$file_config['thumbnail_max_width'].'x'.
@@ -309,7 +512,7 @@ class Mfile_model extends CI_Model {
 		}
 		
 		if(!$thumbnail_height || $thumbnail_height > $file_config['thumbnail_max_height']) {
-			log_message('info', 'save_thumbnail_file_in_local user thumbnail size wrong['.
+			log_message('info', 'saveThumbnailFileInLocal user thumbnail size wrong['.
 					($thumbnail_width?$thumbnail_width:0).'x'.
 					($thumbnail_height?$thumbnail_height:0).', set default thumbnail size['.
 					$file_config['thumbnail_max_width'].'x'.
@@ -334,7 +537,7 @@ class Mfile_model extends CI_Model {
 		
 		if(!$result) {
 			$error_code = $this->config->item('mfile_create_thumbnail', 'error_code/mfile');
-			log_message('error', "save_thumbnail_file_in_local E[$error_code] can\'t create thumbnail for file[".
+			log_message('error', "saveThumbnailFileInLocal E[$error_code] can\'t create thumbnail for file[".
 					$file_info['full_path']."]");
 			return $error_code;
 		}
@@ -359,7 +562,7 @@ class Mfile_model extends CI_Model {
 	 *         FALSE : 업로드 실패
 	 *         나머지 : 원격 디스크에 업로드 한 정보(접속 할 수 있는 url)
 	 */
-	public function save_file_to_network_disk(&$ret, $file_info, $thumbnail_info=FALSE, 
+	public function saveFileToNetworkDisk(&$ret, $file_info, $thumbnail_info=FALSE, 
 			$member_srl=FALSE, $file_type=FALSE) {
 			
 		$ret_valid = array();
@@ -370,11 +573,11 @@ class Mfile_model extends CI_Model {
 		$disk_type = $file_config['network_disk_type'];
 		switch($disk_type) {
 			case 'amazon_s3':
-				return $this->upload_to_amazon_s3($ret, $file_info, $ret_valid['member_srl'], 
+				return $this->uploadToAmazonS3($ret, $file_info, $ret_valid['member_srl'], 
 						$file_config, $thumbnail_info);
 			default:
 				$error_code = $this->config->item('mfile_upload_to_network_disk_fail', 'error_code/mfile');
-				log_message('error', "save_file_to_network_disk E[$error_code] not supported network disk type[$disk_type]");
+				log_message('error', "saveFileToNetworkDisk E[$error_code] not supported network disk type[$disk_type]");
 				return $error_code;
 		}
 	}
@@ -393,14 +596,17 @@ class Mfile_model extends CI_Model {
 	 * @param network_url {string} network disk 의 url
 	 * @return {string} return error code
 	 */
-	public function save_file_in_db(&$ret, $file_info, $thumbnail_info=FALSE, $member_srl=FALSE, 
+	public function saveFileInDB(&$ret, $file_info, $thumbnail_info=FALSE, $member_srl=FALSE, 
 				$file_type=FALSE, $comment=FALSE, $network_url=FALSE) {
 		$ret_valid = array();
 		$result_code = $this->validFileType($ret_valid, $member_srl, $file_type);
 		if($result_code != $this->success_code) { return $result_code; }
 		$file_config = $ret_valid['file_config'];
 		
-		if(!$this->master_db) { $this->master_db = $this->load->database('master', TRUE); }
+		if(!$this->master_db) {
+			$this->master_db = $this->load->database('master', TRUE);
+			$this->master_db->set_dbprefix($this->table_prefix);
+		}
 		
 		$this->load->helper('url');
 		
@@ -446,17 +652,17 @@ class Mfile_model extends CI_Model {
 				'c_date' => mdate('%Y%m%d%H%i%s')
 			);
 		
-		$result = $this->master_db->insert($this->table_prefix.'files', $ret);
+		$result = $this->master_db->insert($this->master_db->dbprefix('files'), $ret);
 		if(!$result) {
 			$error_code = $this->config->item('mfile_insert_table_fail', 'error_code/mfile');
-			log_message('error', "save_file_in_db E[$error_code] insert meta-data files table failed");
+			log_message('error', "saveFileInDB E[$error_code] insert meta-data files table failed");
 			return $error_code;
 		}
 		
 		// row_count 체크를 할 필요가 있나?
 		//$row_count = $this->master_db->affected_rows();
 		//if($row_count <= 0) {
-		//	log_message('error', 'save_file_in_db insert file meta-data, but not found affected row');
+		//	log_message('error', 'saveFileInDB insert file meta-data, but not found affected row');
 		//	return FALSE;
 		//}
 		

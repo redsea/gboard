@@ -22,31 +22,17 @@ class Mlanguage extends CI_Controller {
 		
 		$this->success_code = $this->config->item('common_success', 'error_code/common');
 	}
-
-	/**
-	 * 다국어로 설정되어 있는 텍스트 리스트를 출력 하는 html 페이지를 보여 준다.
-	 */	
-	public function index() {
-		$this->benchmark->mark('start_mlanguage_index');
-		
-		$result = $this->cmodel->validAuthorization(FALSE, TRUE);
-		if($result != $this->success_code) {
-			// TODO 에러 web page 를 넣어야 한다.
-		
-			echo "auth fail";
-		}
-		
-		// 지원하는 언어 리스트를 구한다.
-		$lang_list = array('list'=>array());
-		$result = $this->model->getSupportLanguage($lang_list['list']);
-		$data['language'] = $lang_list['list'];
-		
-		$this->load->view('mlanguage/index', $data);
-		
-		$this->benchmark->mark('end_mlanguage_index');
-		log_message('info', 'mlanguage_index T['.$this->benchmark->elapsed_time('start_mlanguage_index', 'end_mlanguage_index').']');
-	}
 	
+	
+	//--------------------------------------------------------
+	// 1. HTML 으로 결과가 나오는 function
+	//--------------------------------------------------------
+		
+	
+	
+	//--------------------------------------------------------
+	// 2. JSON 으로 결과가 나오는 function
+	//--------------------------------------------------------
 	/**
 	 * 다국어로 사용하려고 설정 해둔 텍스트를 수정 한다.
 	 * jQuery datatable + jeditable 을 사용하여 수정 하는 것을 지원하는 API 이다.
@@ -70,8 +56,8 @@ class Mlanguage extends CI_Controller {
 			return;
 		}
 		
-		$code = $this->input->post2('row_id');
-		$lang = $this->input->post2('lang');
+		$code = $this->input->post2('text_name');
+		$lang = $this->input->post2('lang_code');
 		$new_value = $this->input->post2('value');
 		
 		$result = $this->model->setText($code, $lang, $new_value);
@@ -110,7 +96,7 @@ class Mlanguage extends CI_Controller {
 	}
 	
 	/**
-	 * 다국어로 사용하려고 설정 해둔 텍스트 리스트를 구한다.(json 출력)
+	 * 다국어로 사용하려고 설정 해둔 텍스트 리스트를 구한다.
 	 * jQuery datatable 의 json 데이터 형식으로 출력 된다.
 	 */
 	public function text_list() {
@@ -154,7 +140,7 @@ class Mlanguage extends CI_Controller {
 	}
 	
 	/**
-	 * 지원하는 언어 리스트를 구한다.(json 출력)
+	 * 지원하는 언어 리스트를 구한다.
 	 */
 	public function support_lang() {
 		$this->benchmark->mark('start_mlanguage_support_lang');

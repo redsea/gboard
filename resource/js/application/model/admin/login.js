@@ -95,21 +95,7 @@ valid_error: function(result, data) {
 // XXX 왠만하면 이벤트로 빼고 싶은데, 그냥 하자 ㅜㅜ
 cb_login: function(result, jqXHR, data, textStatus, errorThrown) {
 	if(!gboard.admin.login.action.valid_error(result, data)) { return; }
-	
-	if(!data.request_url) {
-		clearInterval(gboard.admin.login.action.interval);
-		gboard.admin.login.action.interval = null;
-		
-		gboard.admin.login.model.data.try_login(
-			gboard.admin.login.lang[gboard.admin.login.model.language].error_message);
-			
-		gboard.admin.login.model.data.button_enable('yes');
-		gboard.admin.login.model.data.input_enable('yes');
-		return;
-	}
-	
-	// request_url 로 redirect 한다.
-	window.location = data.request_url;
+	window.location = gboard.admin.url.admin_index;
 },
 
 // access_token 결과 받는 callback function

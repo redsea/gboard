@@ -26,4 +26,6 @@ $config['mfile_not_support_data_type']			= 'E020018';	// 지원 하는 서비스
 $config['mfile_not_config_data_type']			= 'E020019';	// 지원 하는 서비스 파일 타입 설정이 미완료 되었음
 $config['mfile_invalid_amazons3_region']		= 'E020020';	// amazon s3 region 전환 실패
 $config['mfile_upload_to_amazons3']				= 'E020021';	// amazon s3 에 업로드 실패
+$config['mfile_no_file_srl']					= 'E020022';	// file 정보 확인시 file_id 값이 없음
+$config['mfile_no_file']						= 'E020023';	// file 정보 확인시 서버에 file 이 없음
 ?>
