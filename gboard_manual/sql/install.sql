@@ -363,43 +363,13 @@ CREATE TABLE `gbd_service` (
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
 # admin menu service 추가
-INSERT INTO  `gbd_service` (
-    `service_id`, 
-    `service_name`, 
-    `controller`, 
-    `controller_action`, 
-    `is_active`,
-    `description`,
-    `c_date`
-) VALUES (
-    '0a3a6699a06b4d52adcf2951e73bc68f',
-    'Admin',  
-    'admin', 
-    'menu', 
-    'Y', 
-    'Admin menu tree', 
-    NOW( ) +0
-);
-
-# member activity history service 추가
-INSERT INTO  `gbd_service` (
-    `service_id`, 
-    `service_name`, 
-    `controller`, 
-    `controller_action`, 
-    `is_active`,
-    `description`,
-    `c_date`
-) VALUES (
-    '729dee41711a01515177ab1c8100b431', 
-    'Activity',  
-    'activity', 
-    'index', 
-    'Y', 
-    'Member acitivity history', 
-    NOW( ) +0
-);
-
+INSERT INTO  `gbd_service` 
+    ( `service_id`, `service_name`, `controller`, `controller_action`, `is_active`, `description`, `c_date`)
+VALUES 
+    # admin menu service 추가
+    ('0a3a6699a06b4d52adcf2951e73bc68f', '__usrLang17', 'admin', 'menu', 'Y', 'Admin menu tree', NOW() +0),
+    # 공용 게시판 트리 리스트
+    ('729dee41711a01515177ab1c8100b431', '__usrLang20', 'board', 'common_boards', 'Y', 'Common board', NOW() +0);
 
 
 # create gbd_service_group_service. member 그룹별로 service 매핑 테이블
@@ -514,7 +484,8 @@ VALUES
     ( '__usrLang16', NOW()+0 ), # 그룹 관리
     ( '__usrLang17', NOW()+0 ), # 어드민
     ( '__usrLang18', NOW()+0 ), # 정회원
-    ( '__usrLang19', NOW()+0 ); # 준회원
+    ( '__usrLang19', NOW()+0 ), # 준회원
+    ( '__usrLang20', NOW()+0 ); # 어드민
 
 
 # create gbd_text_ko. 실제 텍스트가 저장되는 테이블. 각 언어 마다 테이블이 분리 됨
@@ -571,6 +542,8 @@ VALUES
     ( 18, 'ko', '정회원' ),
     ( 18, 'en', '정회원' ),
     ( 19, 'ko', '준회원' ),
-    ( 19, 'en', '준회원' );
+    ( 19, 'en', '준회원' ),
+    ( 20, 'ko', '공용 게시판' ),
+    ( 20, 'en', '공용 게시판' );
 
 

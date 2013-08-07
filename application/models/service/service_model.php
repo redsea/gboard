@@ -116,12 +116,16 @@ class Service_model extends CI_Model {
 			return $this->success_code;
 		}
 		
+		$str_arr = array();
 		$list_data = new stdClass();
+		
 		foreach($query->result_array() as $row) {
 			$row['action'] = $row['controller_action'];
 			
 			if(!$row['image_mark']) { $row['service_icon'] = ''; }
 			else { $row['service_icon'] = unserialize($row['image_mark']); }
+			
+			array_push($str_arr, $row['service_name']);
 			
 			unset($row['controller_action']);
 			unset($row['image_mark']);
@@ -132,7 +136,12 @@ class Service_model extends CI_Model {
 		}
 		$query->free_result();
 		
-		foreach($list_data as $row) { array_push($service_list, $row); }
+		$str_arr = $this->cmodel->getTextsByLanguage($str_arr);
+		
+		foreach($list_data as $row) {
+			$row['service_name'] = $str_arr[$row['service_name']];
+			array_push($service_list, $row);
+		}
 		
 		return $this->success_code;
 	}
