@@ -547,3 +547,121 @@ VALUES
     ( 20, 'en', '공용 게시판' );
 
 
+# 게시판 카테고리 테이블
+DROP TABLE IF EXISTS  `gbd_board_category`;
+CREATE TABLE `gbd_board_category` (
+    `category_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+    `menu_srl` bigint(11) NOT NULL , 
+    `category_name` varchar(32) NOT NULL, 
+    `description` varchar(256) DEFAULT NULL, 
+    `list_order` bigint(11) NOT NULL DEFAULT  '1', 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    INDEX(`list_order`), 
+    INDEX(`menu_srl`),
+    FOREIGN KEY( `menu_srl`) REFERENCES `gbd_menus`(`menu_srl`) ON DELETE CASCADE, 
+    PRIMARY KEY(`category_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+
+# 게시판 게시물 테이블. 게시물의 내용은 board_document_content 에 저장된다.
+DROP TABLE IF EXISTS  `gbd_board_document`;
+CREATE TABLE `gbd_board_document` (
+	`document_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+	`member_srl` bigint(11) NOT NULL , 
+	`menu_srl` bigint(11) NOT NULL , 
+	`category_srl` bigint(11) NOT NULL , 
+	`is_notice` char(2) NOT NULL DEFAULT 'N', 
+	`document_title` varchar(32) NOT NULL, 
+	`document_content` varchar(32) NOT NULL, 
+	`read_count` bigint(11) DEFAULT '0', 
+	`like_count` bigint(11) DEFAULT '0', 
+	`blame_count` bigint(11) DEFAULT '0', 
+	`comment_count` bigint(11) DEFAULT '0', 
+	`secret` char(2) NOT NULL DEFAULT 'N', 
+	`ipaddress` varchar(32) DEFAULT NULL, 
+	`block` char(2) NOT NULL DEFAULT 'N', 
+	`allow_comment` char(2) NOT NULL DEFAULT 'N', 
+	`list_order` bigint(11) NOT NULL DEFAULT  '1', 
+	`c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    INDEX(`member_srl`), 
+    INDEX(`menu_srl`), 
+    INDEX(`category_srl`), 
+    INDEX(`list_order`), 
+    INDEX(`c_date`), 
+    FOREIGN KEY( `member_srl`) REFERENCES `gbd_member`(`member_srl`) ON DELETE CASCADE, 
+    FOREIGN KEY( `menu_srl`) REFERENCES `gbd_menus`(`menu_srl`) ON DELETE CASCADE, 
+    FOREIGN KEY( `category_srl`) REFERENCES `gbd_board_category`(`category_srl`) ON DELETE CASCADE, 
+    PRIMARY KEY(`document_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+
+# 게시판 게시물 다국어 테이블
+DROP TABLE IF EXISTS  `gbd_board_document_content_text`;
+CREATE TABLE `gbd_board_document_content_text` (
+    `text_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+    `document_srl` bigint(11) NOT NULL, 
+    `lang_code` varchar(4) NOT NULL, 
+    `text_value` varchar(128) DEFAULT NULL, 
+    INDEX(`text_value`),
+    INDEX(`document_srl`),
+    FOREIGN KEY( `document_srl`) REFERENCES `gbd_board_document`(`document_srl`) ON DELETE CASCADE, 
+    PRIMARY KEY(`text_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+
+# 게시판 게시물과 attach 파일 매핑 테이블
+DROP TABLE IF EXISTS  `gbd_board_document_file_document`;
+CREATE TABLE `gbd_board_document_file_document` (
+    `file_srl` bigint(11) NOT NULL, 
+    `document_srl` bigint(11) NOT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    INDEX( `file_srl` ),
+    INDEX( `document_srl` ), 
+    FOREIGN KEY( `file_srl`) REFERENCES `gbd_files`(`file_srl`) ON DELETE CASCADE, 
+    FOREIGN KEY( `document_srl`) REFERENCES `gbd_board_document`(`document_srl`) ON DELETE CASCADE, 
+    PRIMARY KEY(`file_srl`, `document_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+
+# 게시판 tag 테이블
+DROP TABLE IF EXISTS  `gbd_board_tag`;
+CREATE TABLE `gbd_board_tag` (
+    `tag_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+    `tag_name` varchar(32) NOT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    PRIMARY KEY(`tag_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+
+# 게시판 tag 와 게시물 매핑 테이블
+DROP TABLE IF EXISTS  `gbd_board_document_tag_document`;
+CREATE TABLE `gbd_board_document_tag_document` (
+    `tag_srl` bigint(11) NOT NULL, 
+    `document_srl` bigint(11) NOT NULL, 
+    `c_date` char(14) NOT NULL, 
+    `u_date` char(14) DEFAULT NULL, 
+    INDEX( `tag_srl` ),
+    INDEX( `document_srl` ), 
+    FOREIGN KEY( `tag_srl`) REFERENCES `gbd_board_tag`(`tag_srl`) ON DELETE CASCADE, 
+    FOREIGN KEY( `document_srl`) REFERENCES `gbd_board_document`(`document_srl`) ON DELETE CASCADE, 
+    PRIMARY KEY(`tag_srl`, `document_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+
+# 게시판 tag 다국어 테이블
+DROP TABLE IF EXISTS  `gbd_board_tag_text`;
+CREATE TABLE `gbd_board_tag_text` (
+    `text_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
+    `tag_srl` bigint(11) NOT NULL, 
+    `lang_code` varchar(4) NOT NULL, 
+    `text_value` varchar(128) DEFAULT NULL, 
+    INDEX(`text_value`),
+    INDEX(`tag_srl`),
+    FOREIGN KEY( `tag_srl`) REFERENCES `gbd_board_tag`(`tag_srl`) ON DELETE CASCADE, 
+    PRIMARY KEY(`text_srl`)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
