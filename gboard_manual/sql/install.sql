@@ -359,6 +359,10 @@ CREATE TABLE `gbd_service` (
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
     INDEX(`service_id`),
+    INDEX(`service_name`),
+    INDEX(`controller`),
+    INDEX(`controller_action`),
+    INDEX(`c_date`),
     PRIMARY KEY(`service_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
@@ -404,6 +408,9 @@ CREATE TABLE `gbd_menus` (
     `description` TEXT NULL, 
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
+    INDEX(`menu_controller`), 
+    INDEX(`menu_action`), 
+    INDEX(`c_date`), 
     PRIMARY KEY(`menu_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
@@ -418,7 +425,12 @@ VALUES
     ( '__usrLang11', 'dynamic', 'admin', 'file_list', '__usrLang12', NOW()+0 ),         # 파일 관리 메뉴 생성
     ( '__usrLang13', 'folder', '', '', '__usrLang14', NOW()+0 ),         				# 회원 폴더 메뉴 생성
     ( '__usrLang13', 'dynamic', 'admin', 'member_list', '__usrLang14', NOW()+0 ),      	# 회원 메뉴 생성
-    ( '__usrLang15', 'dynamic', 'admin', 'group_list', '__usrLang16', NOW()+0 );      	# 그룹 메뉴 생성
+    ( '__usrLang15', 'dynamic', 'admin', 'group_list', '__usrLang16', NOW()+0 ),      	# 그룹 메뉴 생성
+    ( '__usrLang21', 'folder', '', '', '__usrLang22', NOW()+0 ),      	                # 서비스 폴더 메뉴 생성
+    ( '__usrLang21', 'dynamic', 'admin', 'service_list', '__usrLang22', NOW()+0 ),      # 서비스 메뉴 생성
+    ( '__usrLang23', 'dynamic', 'admin', 'menu_list', '__usrLang24', NOW()+0 ),         # 메뉴 메뉴 생성
+    ( '__usrLang25', 'dynamic', 'admin', 'menu_list', '__usrLang26', NOW()+0 ),         # 샘플 게시판1 생성
+    ( '__usrLang27', 'dynamic', 'admin', 'menu_list', '__usrLang26', NOW()+0 );         # 샘플 게시판2 생성
 
 
 # create gbd_menu_tree. menu 를 보여주기 위해 menu 로 만든 tree 구조
@@ -442,14 +454,20 @@ CREATE TABLE `gbd_menus_tree` (
 INSERT INTO `gbd_menus_tree` 
     ( `menu_srl`, `service_srl`, `parent_element_srl`, `list_order`, `c_date` ) 
 VALUES 
-    ( 1, 1, 0, 2, NOW()+0 ),  # admin menu item insert in tree
-    ( 2, 1, 1, 1, NOW()+0 ),  # admin menu item insert in tree
-    ( 3, 1, 1, 2, NOW()+0 ),  # admin menu item insert in tree
-    ( 4, 1, 0, 3, NOW()+0 ),  # 다국어 관리 메뉴 추가
-    ( 5, 1, 0, 4, NOW()+0 ),  # 파일 관리 메뉴 추가
-    ( 6, 1, 0, 1, NOW()+0 ),  # 회원 폴더 메뉴 추가
-    ( 7, 1, 6, 1, NOW()+0 ),  # 회원 메뉴 추가
-    ( 8, 1, 6, 2, NOW()+0 );  # 회원 메뉴 추가
+    (  1, 1, 0, 2, NOW()+0 ),  # admin menu item insert in tree
+    (  2, 1, 1, 1, NOW()+0 ),  # admin menu item insert in tree
+    (  3, 1, 1, 2, NOW()+0 ),  # admin menu item insert in tree
+    (  4, 1, 0, 4, NOW()+0 ),  # 다국어 관리 메뉴 추가
+    (  5, 1, 0, 5, NOW()+0 ),  # 파일 관리 메뉴 추가
+    (  6, 1, 0, 1, NOW()+0 ),  # 회원 폴더 메뉴 추가
+    (  7, 1, 6, 1, NOW()+0 ),  # 회원 메뉴 추가
+    (  8, 1, 6, 2, NOW()+0 ),  # 그룹 메뉴 추가
+    (  9, 1, 0, 3, NOW()+0 ),  # 서비스 폴더 메뉴 추가
+    ( 10, 1, 9, 1, NOW()+0 ),  # 서비스 메뉴 추가
+    ( 11, 1, 9, 2, NOW()+0 ),  # 메뉴 메뉴 추가
+    ( 12, 2, 0, 1, NOW()+0 ),  # 샘플 게시판1 추가
+    ( 13, 2, 0, 2, NOW()+0 );  # 샘플 게시판2 추가
+    
 
 
 # create gbd_text. 다국어 텍스트 테이블
@@ -485,7 +503,14 @@ VALUES
     ( '__usrLang17', NOW()+0 ), # 어드민
     ( '__usrLang18', NOW()+0 ), # 정회원
     ( '__usrLang19', NOW()+0 ), # 준회원
-    ( '__usrLang20', NOW()+0 ); # 어드민
+    ( '__usrLang20', NOW()+0 ), # 어드민
+    ( '__usrLang21', NOW()+0 ), # 서비스
+    ( '__usrLang22', NOW()+0 ), # 서비스 관리
+    ( '__usrLang23', NOW()+0 ), # 메뉴
+    ( '__usrLang24', NOW()+0 ), # 메뉴 관리
+    ( '__usrLang25', NOW()+0 ), # 샘플 게시판1
+    ( '__usrLang26', NOW()+0 ), # 샘플 게시판
+    ( '__usrLang27', NOW()+0 ); # 샘플 게시판2
 
 
 # create gbd_text_ko. 실제 텍스트가 저장되는 테이블. 각 언어 마다 테이블이 분리 됨
@@ -544,7 +569,21 @@ VALUES
     ( 19, 'ko', '준회원' ),
     ( 19, 'en', '준회원' ),
     ( 20, 'ko', '공용 게시판' ),
-    ( 20, 'en', '공용 게시판' );
+    ( 20, 'en', '공용 게시판' ),
+    ( 21, 'ko', '서비스' ),
+    ( 21, 'en', '서비스' ),
+    ( 22, 'ko', '서비스 관리' ),
+    ( 22, 'en', '서비스 관리' ),
+    ( 23, 'ko', '메뉴' ),
+    ( 23, 'en', '메뉴' ),
+    ( 24, 'ko', '메뉴 관리' ),
+    ( 24, 'en', '메뉴 관리' ),
+    ( 25, 'ko', '샘플 게시판1' ),
+    ( 25, 'en', '샘플 게시판1' ),
+    ( 26, 'ko', '샘플 게시판' ),
+    ( 26, 'en', '샘플 게시판' ),
+    ( 27, 'ko', '샘플 게시판2' ),
+    ( 27, 'en', '샘플 게시판2' );
 
 
 # 게시판 카테고리 테이블
@@ -552,7 +591,7 @@ DROP TABLE IF EXISTS  `gbd_board_category`;
 CREATE TABLE `gbd_board_category` (
     `category_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
     `menu_srl` bigint(11) NOT NULL , 
-    `category_name` varchar(32) NOT NULL, 
+    `category_name` varchar(128) NOT NULL, 
     `description` varchar(256) DEFAULT NULL, 
     `list_order` bigint(11) NOT NULL DEFAULT  '1', 
     `c_date` char(14) NOT NULL, 
@@ -572,8 +611,8 @@ CREATE TABLE `gbd_board_document` (
 	`menu_srl` bigint(11) NOT NULL , 
 	`category_srl` bigint(11) NOT NULL , 
 	`is_notice` char(2) NOT NULL DEFAULT 'N', 
-	`document_title` varchar(32) NOT NULL, 
-	`document_content` varchar(32) NOT NULL, 
+	`document_title` varchar(128) NOT NULL, 
+	`document_content` TEXT NULL ,
 	`read_count` bigint(11) DEFAULT '0', 
 	`like_count` bigint(11) DEFAULT '0', 
 	`blame_count` bigint(11) DEFAULT '0', 
@@ -588,26 +627,13 @@ CREATE TABLE `gbd_board_document` (
     INDEX(`member_srl`), 
     INDEX(`menu_srl`), 
     INDEX(`category_srl`), 
+    INDEX(`document_title`), 
     INDEX(`list_order`), 
     INDEX(`c_date`), 
     FOREIGN KEY( `member_srl`) REFERENCES `gbd_member`(`member_srl`) ON DELETE CASCADE, 
     FOREIGN KEY( `menu_srl`) REFERENCES `gbd_menus`(`menu_srl`) ON DELETE CASCADE, 
     FOREIGN KEY( `category_srl`) REFERENCES `gbd_board_category`(`category_srl`) ON DELETE CASCADE, 
     PRIMARY KEY(`document_srl`)
-) ENGINE = INNODB DEFAULT CHARSET = utf8;
-
-
-# 게시판 게시물 다국어 테이블
-DROP TABLE IF EXISTS  `gbd_board_document_content_text`;
-CREATE TABLE `gbd_board_document_content_text` (
-    `text_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
-    `document_srl` bigint(11) NOT NULL, 
-    `lang_code` varchar(4) NOT NULL, 
-    `text_value` varchar(128) DEFAULT NULL, 
-    INDEX(`text_value`),
-    INDEX(`document_srl`),
-    FOREIGN KEY( `document_srl`) REFERENCES `gbd_board_document`(`document_srl`) ON DELETE CASCADE, 
-    PRIMARY KEY(`text_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
 
@@ -630,7 +656,7 @@ CREATE TABLE `gbd_board_document_file_document` (
 DROP TABLE IF EXISTS  `gbd_board_tag`;
 CREATE TABLE `gbd_board_tag` (
     `tag_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
-    `tag_name` varchar(32) NOT NULL, 
+    `tag_name` varchar(64) NOT NULL, 
     `c_date` char(14) NOT NULL, 
     `u_date` char(14) DEFAULT NULL, 
     PRIMARY KEY(`tag_srl`)
@@ -651,17 +677,4 @@ CREATE TABLE `gbd_board_document_tag_document` (
     PRIMARY KEY(`tag_srl`, `document_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
-
-# 게시판 tag 다국어 테이블
-DROP TABLE IF EXISTS  `gbd_board_tag_text`;
-CREATE TABLE `gbd_board_tag_text` (
-    `text_srl` bigint(11) NOT NULL AUTO_INCREMENT , 
-    `tag_srl` bigint(11) NOT NULL, 
-    `lang_code` varchar(4) NOT NULL, 
-    `text_value` varchar(128) DEFAULT NULL, 
-    INDEX(`text_value`),
-    INDEX(`tag_srl`),
-    FOREIGN KEY( `tag_srl`) REFERENCES `gbd_board_tag`(`tag_srl`) ON DELETE CASCADE, 
-    PRIMARY KEY(`text_srl`)
-) ENGINE = INNODB DEFAULT CHARSET = utf8;
 

@@ -74,14 +74,15 @@ class Service_model extends CI_Model {
 	}
 	
 	/**
-	 * service menu action 처리용 function
+	 * active 한 서비스만 포함되어 있는 서비스 리스트를 구한다.
+	 * active 이고, member group 권한에 맞는 서비스 리스트를 구한다.
 	 *
 	 * @param service_list {array} service list 가 저장될 장소
 	 * @param member_srl {string} FALSE 이면 자동으로 session 에서 값을 가져 온다
 	 * @param is_root {string} FALSE 이면 자동으로 session 에서 값을 가져 온다.
 	 * @return {string} error code
 	 */
-	public function getServiceMenu(&$service_list, $member_srl=FALSE, $is_root=FALSE) {
+	public function getServiceList1(&$service_list, $member_srl=FALSE, $is_root=FALSE) {
 		$group_info = $this->session->userdata('group');
 		$group_srl = array();
 		foreach($group_info as $row) {
@@ -117,7 +118,7 @@ class Service_model extends CI_Model {
 		}
 		
 		$str_arr = array();
-		$list_data = new stdClass();
+		$list_data = array();
 		
 		foreach($query->result_array() as $row) {
 			$row['action'] = $row['controller_action'];
@@ -130,9 +131,8 @@ class Service_model extends CI_Model {
 			unset($row['controller_action']);
 			unset($row['image_mark']);
 			
-			if(!isset($list_data->{$row['controller'].'_'.$row['action']})) {
-				$list_data->{$row['controller'].'_'.$row['action']} = $row;
-			}
+			$list_data->{$row['controller'].'_'.$row['action']} = $row;
+			array_push($list_data, $row);
 		}
 		$query->free_result();
 		
@@ -143,6 +143,196 @@ class Service_model extends CI_Model {
 			array_push($service_list, $row);
 		}
 		
+		return $this->success_code;
+	}
+	
+	/**
+	 * 서비스 리스트를 구한다. getServiceList1 와는 다르게 모든 서비스가 포함되어 있는 리스트를 구한다.
+	 * datatable 에서 사용하기 위해서 pageing, sort, search 기능도 제공 한다.
+	 *
+	 * @param data {array} member list 가 저장될 array
+	 * @param search_value {string} 검색 할 value(원본 파일명 에서 검색 한다)
+	 * @param start_row {string} limit 할 start row number
+	 * @param row_count {string} limt 할 row count
+	 * @param iSortCol {boolean} sort 할 column 분류. 1(서비스명), 2(컨트롤러명), 3(액션명), 5(생성일)
+	 *                           1, 2, 3 값이 아니면 5 로 취급 한다.
+	 * @param sSortDir {string} order by 방향. asc, desc 값 중 하나.
+	 * @return 항상 success_code 를 리턴한다.(row 가 없으면 empty array 값이 사용되기 때문에 항상 성공임)
+	 */
+	public function getServiceList2(&$data, $search_value=FALSE, $start_row=FALSE, $row_count=FALSE,
+			$iSortCol=FALSE, $sSortDir=FALSE) {
+			
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
+		
+		$data['iTotalRecords'] = '0';
+		$data['iTotalDisplayRecords'] = '0';
+		$data['aaData'] = array();
+		
+		// iTotalRecords 값을 가져 온다
+		$all_service_count = $this->slave_db->count_all($this->slave_db->dbprefix('service'));
+		if($all_service_count <= 0) {
+			// 데이터가 없으므로 바로 리턴한다.
+			return $this->success_code;
+		}
+		
+		$sLimit = '';
+		if($row_count !== FALSE && $start_row !== FALSE) {
+			$sLimit = ' LIMIT '.intval($start_row).', '.intval($row_count);
+		}
+
+		$sWhere = '';
+		if($search_value) {
+			$sWhere = " WHERE controller LIKE '%".$this->slave_db->escape_str($search_value)."%' OR ".
+					  "       controller_action LIKE '%".$this->slave_db->escape_str($search_value)."%' ";
+		}
+
+		$sOrder = '';
+		if($iSortCol !== FALSE && $sSortDir !== FALSE) {
+			$sOrder = ' ORDER BY ';
+			switch($iSortCol) {
+				case 1:		$sOrder .= 'service_name ';			break;
+				case 2:		$sOrder .= 'controller ';			break;
+				case 3:		$sOrder .= 'controller_action ';	break;
+				default:	$sOrder .= 'c_date ';				break;
+			}
+			$sOrder .= $sSortDir;
+		}
+		
+		$sql = ' SELECT '.
+			   '     service_id, service_name, controller, controller_action, is_active, c_date '.
+			   ' FROM '.$this->slave_db->dbprefix('service').$sWhere.$sOrder.$sLimit;
+        $query = $this->slave_db->query($sql);
+	
+		if($query->num_rows() <= 0) {
+			// 데이터가 없으므로 바로 리턴한다.
+			return $this->success_code;
+		}
+		
+		$str_arr = array();
+		foreach($query->result() as $row) {
+			array_push($str_arr, $row->service_name);
+			$row->DT_RowId = 'service_'.$row->service_id;
+			array_push($data['aaData'], $row);
+		}
+		$query->free_result();
+		
+		// service_name 다국어 변환
+		$str_arr = $this->cmodel->getTextsByLanguage($str_arr);
+		foreach($data['aaData'] as $row) {
+			$row->service_name = $str_arr[$row->service_name];
+		}
+		
+		// filter row count 를 가져온다
+		$sql = ' SELECT COUNT(1) as count '.
+			   ' FROM '.$this->slave_db->dbprefix('service').$sWhere;
+		$query = $this->slave_db->query($sql);
+		
+		$row = $query->row_array();
+		$query->free_result();
+		
+		$data['iTotalRecords'] = $all_service_count.'';	// 총 row 갯수
+		$data['iTotalDisplayRecords'] = $row['count'].'';	// filter 된 row 갯수
+		
+		return $this->success_code;
+	}
+	
+	/**
+	 * 메뉴 리스트를 구한다.
+	 * datatable 에서 사용하기 위해서 pageing, sort, search 기능도 제공 한다.
+	 *
+	 * @param data {array} member list 가 저장될 array
+	 * @param search_value {string} 검색 할 value(원본 파일명 에서 검색 한다)
+	 * @param start_row {string} limit 할 start row number
+	 * @param row_count {string} limt 할 row count
+	 * @param iSortCol {boolean} sort 할 column 분류. 2(컨트롤러명), 3(액션명), 5(생성일)
+	 *                           2, 3 값이 아니면 5 로 취급 한다.
+	 * @param sSortDir {string} order by 방향. asc, desc 값 중 하나.
+	 * @return 항상 success_code 를 리턴한다.(row 가 없으면 empty array 값이 사용되기 때문에 항상 성공임)
+	 */
+	public function getMenuList(&$data, $search_value=FALSE, $start_row=FALSE, $row_count=FALSE,
+			$iSortCol=FALSE, $sSortDir=FALSE) {
+		
+		if(!$this->slave_db) {
+			$this->slave_db = $this->load->database('slave', TRUE);
+			$this->slave_db->set_dbprefix($this->table_prefix);
+		}
+		
+		$data['iTotalRecords'] = '0';
+		$data['iTotalDisplayRecords'] = '0';
+		$data['aaData'] = array();
+		
+		// iTotalRecords 값을 가져 온다
+		$all_menu_count = $this->slave_db->count_all($this->slave_db->dbprefix('menus'));
+		if($all_menu_count <= 0) {
+			// 데이터가 없으므로 바로 리턴한다.
+			return $this->success_code;
+		}
+
+		$sLimit = '';
+		if($row_count !== FALSE && $start_row !== FALSE) {
+			$sLimit = ' LIMIT '.intval($start_row).', '.intval($row_count);
+		}
+
+		$sWhere = '';
+		if($search_value) {
+			$sWhere = " WHERE menu_controller LIKE '%".$this->slave_db->escape_str($search_value)."%' OR ".
+					  "       menu_action LIKE '%".$this->slave_db->escape_str($search_value)."%' ";
+		}
+
+		$sOrder = '';
+		if($iSortCol !== FALSE && $sSortDir !== FALSE) {
+			$sOrder = ' ORDER BY ';
+			switch($iSortCol) {
+				case 2:		$sOrder .= 'menu_controller ';		break;
+				case 3:		$sOrder .= 'menu_action ';			break;
+				default:	$sOrder .= 'c_date ';				break;
+			}
+			$sOrder .= $sSortDir;
+		}
+
+		$sql = ' SELECT '.
+			   '     menu_srl, menu_name, menu_type, menu_controller, menu_action, description, c_date '.
+			   ' FROM '.$this->slave_db->dbprefix('menus').$sWhere.$sOrder.$sLimit;
+        $query = $this->slave_db->query($sql);
+	
+		if($query->num_rows() <= 0) {
+			// 데이터가 없으므로 바로 리턴한다.
+			return $this->success_code;
+		}
+
+		$str_arr = array();
+		foreach($query->result() as $row) {
+			array_push($str_arr, $row->menu_name);
+			array_push($str_arr, $row->description);
+			$row->DT_RowId = 'menu_'.$row->menu_srl;
+			
+			unset($row->menu_srl);
+			
+			array_push($data['aaData'], $row);
+		}
+		$query->free_result();
+		
+		// menu_name, description 다국어 변환
+		$str_arr = $this->cmodel->getTextsByLanguage($str_arr);
+		foreach($data['aaData'] as $row) {
+			$row->menu_name = $str_arr[$row->menu_name];
+			$row->description = $str_arr[$row->description];
+		}
+
+		// filter row count 를 가져온다
+		$sql = ' SELECT COUNT(1) as count '.
+			   ' FROM '.$this->slave_db->dbprefix('menus').$sWhere;
+		$query = $this->slave_db->query($sql);
+		
+		$row = $query->row_array();
+		$query->free_result();
+		
+		$data['iTotalRecords'] = $all_menu_count.'';		// 총 row 갯수
+		$data['iTotalDisplayRecords'] = $row['count'].'';	// filter 된 row 갯수
+
 		return $this->success_code;
 	}
 
@@ -228,15 +418,15 @@ class Service_model extends CI_Model {
 			}
 		}
 		
-		// menu name, menu description 다국어 매핑
-		$menu_names = array();
-		foreach($tree_data as $value) {
-			array_push($menu_names, $value['menu_name']);
-			array_push($menu_names, $value['description']);
-		}
-		$menu_names = $this->cmodel->getTextsByLanguage($menu_names);
-		
 		if(count($tree_data) > 0) {
+			// menu name, menu description 다국어 매핑
+			$menu_names = array();
+			foreach($tree_data as $value) {
+				array_push($menu_names, $value['menu_name']);
+				array_push($menu_names, $value['description']);
+			}
+			$menu_names = $this->cmodel->getTextsByLanguage($menu_names);
+			
 			foreach($tree_data as $value) {
 				// 다국어로 되어 있는 값을 실제 값으로 가져 온다.
 				$value['menu_name'] = $menu_names[$value['menu_name']];

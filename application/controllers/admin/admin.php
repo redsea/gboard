@@ -143,7 +143,7 @@ class Admin extends CI_Controller {
 			}
 			
 			$service_list = array();
-			$this->service_model->getServiceMenu($service_list);
+			$this->service_model->getServiceList1($service_list);
 			
 			$data['service_list'] = $service_list;
 			
@@ -239,6 +239,45 @@ class Admin extends CI_Controller {
 		$this->benchmark->mark('end_admin_member_list');
 		log_message('info', 'admin_member_list T['.
 			$this->benchmark->elapsed_time('start_admin_member_list', 'end_admin_member_list').']');
+	}
+	
+	/**
+	 * service list 를 보여준다.
+	 */
+	public function service_list() {
+		$this->benchmark->mark('start_admin_service_list');
+		
+		// root 권한으로 접근 했는지 체크하고, 인증을 체크 한다.
+		if(!$this->isValidAuthorization('admin_service_list', 
+				'start_admin_service_list', 'end_admin_service_list')) {
+			return;
+		}
+		
+		$this->load->view('admin/service_list');
+		
+		$this->benchmark->mark('end_admin_service_list');
+		log_message('info', 'admin_service_list T['.
+			$this->benchmark->elapsed_time('start_admin_service_list', 'end_admin_service_list').']');
+	}
+	
+	/**
+	 * menu list 를 보여준다.
+	 */
+	public function menu_list() {
+		$this->benchmark->mark('start_admin_menu_list');
+		
+		// root 권한으로 접근 했는지 체크하고, 인증을 체크 한다.
+		if(!$this->isValidAuthorization('admin_menu_list', 
+				'start_admin_menu_list', 'end_admin_menu_list')) {
+			return;
+		}
+		
+		$this->load->view('admin/menu_list');
+		
+		$this->benchmark->mark('end_admin_menu_list');
+		log_message('info', 'admin_menu_list T['.
+			$this->benchmark->elapsed_time('start_admin_menu_list', 'end_admin_menu_list').']');
+		
 	}
 }
 ?>

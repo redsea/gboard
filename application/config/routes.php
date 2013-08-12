@@ -58,11 +58,17 @@ $route['file/(:any)'] = 'mfile/mfile/$1';
 $route['oauth'] = 'oauth20/oauth20/index';
 $route['oauth/(:any)'] = 'oauth20/oauth20/$1';
 
+// route for controllers/service/service.php
 $route['service'] = 'service/service/index';
 $route['service/(:any)'] = 'service/service/$1';
 
+// route for controllers/mlanguage/mlanguage.php
 $route['lang'] = 'mlanguage/mlanguage/index';
 $route['lang/(:any)'] = 'mlanguage/mlanguage/$1';
+
+// route for controllers/board/board.php
+$route['board'] = 'board/board/index';
+$route['board/(:any)'] = 'board/board/$1';
 
 
 /* End of file routes.php */

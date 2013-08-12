@@ -15,6 +15,8 @@ file_list:			'http://gboard.org/file/file_list',			// 파일 리스트
 file_detail:		'http://gboard.org/file/file_detail',		// 파일 상세 정보
 member_list:		'http://gboard.org/member/member_list',		// 유저 리스트
 member_detail:		'http://gboard.org/member/member_detail',	// 유저 상세 정보
+service_list2:		'http://gboard.org/service/service_list2',	// 서비스 리스트
+menu_list:			'http://gboard.org/service/menu_list',		// 메뉴 리스트
 	
 };}
 

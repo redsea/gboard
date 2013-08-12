@@ -68,10 +68,32 @@ body : {
 		
 		var $onItem = $('#view-port-menu-tab').children('.menu-tab-item-on');
 		$onItem.removeClass('menu-tab-item-on').children().first().removeClass('menu-tab-item-default-icon-on');
-		$index.addClass('menu-tab-item-on').children().first().addClass('menu-tab-item-default-icon-on');
 		
-		// TODO navigator 영역에 보여줄 것을 처리 한다.
-		console.log('> request ['+$index.attr('x-data-url')+']');
+		//$index.addClass('menu-tab-item-on').children().first().addClass('menu-tab-item-default-icon-on');
+		
+		var $inItem = $index.addClass('menu-tab-item-on').children().first();
+		$inItem.addClass('menu-tab-item-default-icon-on');
+		
+		var $viewContent = $('#view-port-menu-content').children('#service-'+$inItem.attr('x-service-id'));
+		
+		// 현재 보여주는 service view 를 숨기고 클릭한 service 의 view 를 보여 준다.
+		$('#view-port-menu-content').children().hide();
+		$viewContent.show();
+		
+		// dhkim 1
+		
+		if($viewContent.children().length <= 0) {
+			console.log('> request ['+$index.attr('x-data-url')+']');
+			console.log('> id['+$inItem.attr('x-service-id')+']');
+			
+			
+			// max tree depth 만큼 가져온다. depth 에 -1 으로 주면 서버에 설정된 max tree depth 로 변경 된다.
+			//gboard.ajax.admin_menu_tree(gboard.admin.main.ajax.cb_admin_menu_tree, 
+			//	'http://'+gboard.ajax.domain+'/'+service_menu.controller+'/'+service_menu.action+'/'+service_menu.service_id, 
+			//	{id:nid, content:'service-'+service_menu.service_id});
+			
+			
+		}
 	}
 }
 

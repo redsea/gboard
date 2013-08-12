@@ -17,7 +17,7 @@
 	
 	<script type="text/javascript" src="/resource/js/application/model/admin/data/text.js"></script>
 	<script type="text/javascript" src="/resource/js/application/model/admin/data/url.js"></script>
-	<script type="text/javascript" src="/resource/js/application/view/admin/file_list.js"></script>
+	<script type="text/javascript" src="/resource/js/application/view/admin/common_list.js"></script>
 	<script type="text/javascript" src="/resource/js/application/model/admin/file_list.js"></script>
 	
 	<script type="text/html" id="tpl-table-header">
