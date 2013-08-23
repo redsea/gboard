@@ -83,16 +83,15 @@ body : {
 		// dhkim 1
 		
 		if($viewContent.children().length <= 0) {
-			console.log('> request ['+$index.attr('x-data-url')+']');
-			console.log('> id['+$inItem.attr('x-service-id')+']');
-			
+			var nid = gboard.component.notification.addNotification(
+					gboard.admin.main.data.conf.text.page_makeup, 
+					gboard.admin.main.data.conf.text.main_page_makeup_desc
+				);
 			
 			// max tree depth 만큼 가져온다. depth 에 -1 으로 주면 서버에 설정된 max tree depth 로 변경 된다.
-			//gboard.ajax.admin_menu_tree(gboard.admin.main.ajax.cb_admin_menu_tree, 
-			//	'http://'+gboard.ajax.domain+'/'+service_menu.controller+'/'+service_menu.action+'/'+service_menu.service_id, 
-			//	{id:nid, content:'service-'+service_menu.service_id});
-			
-			
+			gboard.ajax.admin_menu_tree(gboard.admin.main.ajax.cb_admin_menu_tree, 
+				$index.attr('x-data-url'), 
+				{id:nid, content:'service-'+$inItem.attr('x-service-id')});
 		}
 	}
 }
@@ -144,9 +143,6 @@ valid_error: function(result, data, udata) {
 cb_admin_menu_tree: function(result, jqXHR, data, textStatus, errorThrown, udata) {
 	if(!gboard.admin.main.ajax.valid_error(result, data, udata)) { return; }
 
-	console.log(data);
-	console.log(udata);
-	
 	// 테스트 용으로 주욱 넣어 보자.
 	gboard.component.tree.init(udata.content, data.data, true);
 	
@@ -307,8 +303,6 @@ initServiceTab: function(service_list) {
 	// 첫번째 요소에 커서를 위치 시킨다.
 	var $current = $('#menu-tab-item-index0').addClass('menu-tab-item-on');
 	$current.children().first().addClass('menu-tab-item-default-icon-on');
-	
-	
 	
 	return min_width;
 },

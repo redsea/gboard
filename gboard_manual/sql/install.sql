@@ -430,7 +430,8 @@ VALUES
     ( '__usrLang21', 'dynamic', 'admin', 'service_list', '__usrLang22', NOW()+0 ),      # 서비스 메뉴 생성
     ( '__usrLang23', 'dynamic', 'admin', 'menu_list', '__usrLang24', NOW()+0 ),         # 메뉴 메뉴 생성
     ( '__usrLang25', 'dynamic', 'admin', 'menu_list', '__usrLang26', NOW()+0 ),         # 샘플 게시판1 생성
-    ( '__usrLang27', 'dynamic', 'admin', 'menu_list', '__usrLang26', NOW()+0 );         # 샘플 게시판2 생성
+    ( '__usrLang27', 'dynamic', 'admin', 'menu_list', '__usrLang26', NOW()+0 ),         # 샘플 게시판2 생성
+    ( '__usrLang26', 'folder', '', '', '__usrLang26', NOW()+0 );                        # 샘플 게시판 폴더 생성
 
 
 # create gbd_menu_tree. menu 를 보여주기 위해 menu 로 만든 tree 구조
@@ -465,8 +466,9 @@ VALUES
     (  9, 1, 0, 3, NOW()+0 ),  # 서비스 폴더 메뉴 추가
     ( 10, 1, 9, 1, NOW()+0 ),  # 서비스 메뉴 추가
     ( 11, 1, 9, 2, NOW()+0 ),  # 메뉴 메뉴 추가
-    ( 12, 2, 0, 1, NOW()+0 ),  # 샘플 게시판1 추가
-    ( 13, 2, 0, 2, NOW()+0 );  # 샘플 게시판2 추가
+    ( 12, 2, 14, 1, NOW()+0 ),  # 샘플 게시판1 추가
+    ( 13, 2, 14, 2, NOW()+0 ),  # 샘플 게시판2 추가
+    ( 14, 2, 0, 1, NOW()+0 );  # 샘플 게시판 폴더 추가
     
 
 
@@ -510,7 +512,9 @@ VALUES
     ( '__usrLang24', NOW()+0 ), # 메뉴 관리
     ( '__usrLang25', NOW()+0 ), # 샘플 게시판1
     ( '__usrLang26', NOW()+0 ), # 샘플 게시판
-    ( '__usrLang27', NOW()+0 ); # 샘플 게시판2
+    ( '__usrLang27', NOW()+0 ), # 샘플 게시판2
+    ( '__usrLang28', NOW()+0 ), # 전체
+    ( '__usrLang29', NOW()+0 ); # 게시물 전체
 
 
 # create gbd_text_ko. 실제 텍스트가 저장되는 테이블. 각 언어 마다 테이블이 분리 됨
@@ -583,7 +587,11 @@ VALUES
     ( 26, 'ko', '샘플 게시판' ),
     ( 26, 'en', '샘플 게시판' ),
     ( 27, 'ko', '샘플 게시판2' ),
-    ( 27, 'en', '샘플 게시판2' );
+    ( 27, 'en', '샘플 게시판2' ),
+    ( 28, 'ko', '전체' ),
+    ( 28, 'en', '전체' ),
+    ( 29, 'ko', '게시물 전체' ),
+    ( 29, 'en', '게시물 전체' );
 
 
 # 게시판 카테고리 테이블
@@ -602,6 +610,15 @@ CREATE TABLE `gbd_board_category` (
     PRIMARY KEY(`category_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
 
+# 샘플 게시판1 용 카테고리 생성
+INSERT INTO `gbd_board_category` 
+    ( `menu_srl`, `category_name`, `description`, `list_order`, `c_date` ) 
+VALUES 
+    ( 12, '__usrLang28', '__usrLang29', 1, NOW()+0 ),  # 샘플 게시판1 에 기본 카테고리 추가
+    ( 13, '__usrLang28', '__usrLang29', 1, NOW()+0 );  # 샘플 게시판2 에 기본 카테고리 추가
+
+
+
 
 # 게시판 게시물 테이블. 게시물의 내용은 board_document_content 에 저장된다.
 DROP TABLE IF EXISTS  `gbd_board_document`;
@@ -615,6 +632,7 @@ CREATE TABLE `gbd_board_document` (
 	`document_content` TEXT NULL ,
 	`read_count` bigint(11) DEFAULT '0', 
 	`like_count` bigint(11) DEFAULT '0', 
+	`file_count` bigint(11) DEFAULT '0', 
 	`blame_count` bigint(11) DEFAULT '0', 
 	`comment_count` bigint(11) DEFAULT '0', 
 	`secret` char(2) NOT NULL DEFAULT 'N', 
@@ -635,6 +653,23 @@ CREATE TABLE `gbd_board_document` (
     FOREIGN KEY( `category_srl`) REFERENCES `gbd_board_category`(`category_srl`) ON DELETE CASCADE, 
     PRIMARY KEY(`document_srl`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
+# 게시판에 sample document 를 추가 한다.
+INSERT INTO `gbd_board_document` 
+    ( `member_srl`, `menu_srl`, `category_srl`, `document_title`, `document_content`, `ipaddress`, `c_date` ) 
+VALUES 
+    ( 1, 12, 1, 'document title 1', 'document body 1', '127.0.0.1', NOW()+0 ),    # 샘플 게시판1 샘플 게시물1 추가
+    ( 1, 12, 1, 'document title 2', 'document body 2', '127.0.0.1', NOW()+0 ),    # 샘플 게시판1 샘플 게시물2 추가
+    ( 1, 12, 1, 'document title 3', 'document body 3', '127.0.0.1', NOW()+0 ),    # 샘플 게시판1 샘플 게시물3 추가
+    ( 1, 12, 1, 'document title 4', 'document body 4', '127.0.0.1', NOW()+0 ),    # 샘플 게시판1 샘플 게시물4 추가
+    ( 1, 12, 1, 'document title 5', 'document body 5', '127.0.0.1', NOW()+0 ),    # 샘플 게시판1 샘플 게시물5 추가
+    ( 1, 12, 1, 'document title 6', 'document body 6', '127.0.0.1', NOW()+0 ),    # 샘플 게시판1 샘플 게시물6 추가
+    ( 1, 12, 1, 'document title 7', 'document body 7', '127.0.0.1', NOW()+0 ),    # 샘플 게시판1 샘플 게시물7 추가
+    ( 1, 12, 1, 'document title 8', 'document body 8', '127.0.0.1', NOW()+0 ),    # 샘플 게시판1 샘플 게시물8 추가
+    ( 1, 12, 1, 'document title 9', 'document body 9', '127.0.0.1', NOW()+0 ),    # 샘플 게시판1 샘플 게시물9 추가
+    ( 1, 12, 1, 'document title 10', 'document body 10', '127.0.0.1', NOW()+0 ),  # 샘플 게시판1 샘플 게시물10 추가
+    ( 1, 12, 1, 'document title 11', 'document body 11', '127.0.0.1', NOW()+0 ),  # 샘플 게시판1 샘플 게시물11 추가
+    ( 1, 12, 1, 'document title 12', 'document body 12', '127.0.0.1', NOW()+0 );  # 샘플 게시판1 샘플 게시물12 추가
 
 
 # 게시판 게시물과 attach 파일 매핑 테이블

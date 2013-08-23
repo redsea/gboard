@@ -97,21 +97,7 @@
 		<div id="window-content-display" class="window-content-display">
 			<div id="view-port-depth-indicator" class="view-port-depth-indicator" data-bind="m_depth_ind:indicator"></div>
 			<!-- ko stopBinding: true -->
-			<div id="view-port-content-display" class="view-port-content-display">
-<!-- 				<iframe class="view-content-display" seamless="seamless"> -->
-<!-- 				</iframe> -->
-<!-- 				<div class="view-content-display"> -->
-					
-<!--
-					<div class="list-element-icon-simple-200-180">
-						<div class="list-element-icon-simple-200-180-image"></div>
-						<div class="list-element-icon-simple-200-180-text">한국어</div>
-					</div>
--->
-					
-<!-- 				</div> -->
-			
-			</div>
+			<div id="view-port-content-display" class="view-port-content-display"></div>
 			<!-- /ko -->
 			<div class="view-port-bottom-status-bar-right">
 				<div class="window-bottom-status-bar-line"></div>

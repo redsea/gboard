@@ -12,24 +12,24 @@ if(!gboard.component) { gboard.component = {}; }
 if(!gboard.component.tree) {gboard.component.tree={
 
 conf: {
-	initialized: {}, 				// tree init 함수 호출 한번만 해 주기 위해서
+	initialized: false, 			// tree init 함수 호출 한번만 해 주기 위해서
 	tree_cursor: 'tree-cursor',		// tree 커서의 id
-	tree_json: {},					// tree json
+	tree_json: null,				// tree json
 	prev_select_row_id: null		// 커서가 존재하는 이전 위치의 element(li)
 },
 
 event: {
-	folder: 'gbd-tree-folder-'		// folder arrow click event name header
+	folder: 'gbd-tree-folder'
 },
 
 data: {
-	tree_items: {}
+	tree_items: ko.observableArray()
 },
 
-actionTreeArrow: function(evt, udata, tag_id) {
+actionTreeArrow: function(evt, udata) {
 	evt.stopPropagation();
 	evt.preventDefault();
-	
+
 	var $arrow = $(udata[0]);
 	var index_path = $arrow.attr('x-pos');
 	var arr_index_path = index_path.split('-');
@@ -37,8 +37,8 @@ actionTreeArrow: function(evt, udata, tag_id) {
 	
 	// 화살표 영역을 눌렀을 때 반응 할 row element 를 찾는다
 	var idx = arr_index_path.shift();
-	var js_element = gboard.component.tree.conf.tree_json[tag_id][idx];
-	var ko_element = gboard.component.tree.data.tree_items[tag_id]()[idx];
+	var js_element = gboard.component.tree.conf.tree_json[idx];
+	var ko_element = gboard.component.tree.data.tree_items()[idx];
 	
 	while(arr_index_path.length > 0) {
 		idx = arr_index_path.shift();
@@ -73,12 +73,11 @@ actionTreeArrow: function(evt, udata, tag_id) {
 							evt.stopPropagation();
 							evt.preventDefault();
 							var $this = $(evt.target);
-							$('body').trigger(gboard.component.tree.event.folder+tag_id, [$this, tag_id]);
+							$('body').trigger(gboard.component.tree.event.folder, [$this]);
 						},
 						row_click_handler: {
 							single_action: false, 
-							double_action: (js_element.children[i].menu_type=='folder'?false:true),
-							tag_id: tag_id
+							double_action: (js_element.children[i].menu_type=='folder'?false:true)
 						}
 					});
 			}
@@ -107,17 +106,17 @@ actionTreeArrow: function(evt, udata, tag_id) {
  * tree 의 element 를 single click 했을 때의 반응.
  * 현재 single click 했을 때의 반응이 없어서 구현 하지 않았음.
  */
-actionRowSingleClick: function($element, tag_id) {
+actionRowSingleClick: function($element) {
 	// TODO single click 반응이 필요하면 구현 해야 한다.
 },
 
-actionRowDoubleClick: function($element, tag_id) {
+actionRowDoubleClick: function($element) {
 	var index_path = $element.children().first().next().attr('x-pos');
 	var arr_index_path = index_path.split('-');
 	
 	var indicator_label = [];
 	var idx = arr_index_path.shift();
-	var js_element = gboard.component.tree.conf.tree_json[tag_id][idx];
+	var js_element = gboard.component.tree.conf.tree_json[idx];
 	
 	indicator_label.push(js_element.menu_name);
 	
@@ -132,7 +131,7 @@ actionRowDoubleClick: function($element, tag_id) {
 		gboard.component.quickbar.pushCenterItem({
 			title: js_element.menu_name,
 			depth: indicator_label,
-			url: '/'+js_element.menu_controller+'/'+js_element.menu_action+'/'+js_element.menu_id,
+			url: '/'+js_element.menu_controller+'/'+js_element.menu_action,
 			type: js_element.menu_type
 		}, true);
 	}
@@ -159,30 +158,25 @@ actionRowDoubleClick: function($element, tag_id) {
  * @param show {boolean} init 와 동시에 보여줄지 말지 여부
  */
 init: function(tag_id, data, show) {
-	if(gboard.component.tree.conf.initialized[tag_id]) { return; }
+	//if(gboard.component.tree.conf.initialized) { return; }
 	
-	gboard.component.tree.data.tree_items[tag_id] = ko.observableArray();
+	console.log('--------->here');
 	
-	$('body').bind(gboard.component.tree.event.folder+tag_id, 
-			gboard.component.tree.actionTreeArrow);
+	
+	$('body').bind(gboard.component.tree.event.folder, gboard.component.tree.actionTreeArrow);
 	
 	// tag 를 추가하고 applyBinding 시킨다.
 	var $tree_area = $('#'+tag_id);
 	var $tree = $('<ul>').addClass('navigator-tree')
-		.attr('data-bind', "template:{name:'tpl-tree-item', foreach:tree_items['"+tag_id+"']}");
+		.attr('data-bind', "template:{name:'tpl-tree-item', foreach:tree_items}");
 	$tree_area.append($tree);
-	
 	ko.applyBindings(gboard.component.tree.data, $tree_area.get(0));
 	
-	
-	console.log(data);
-	
-	
-	gboard.component.tree.conf.tree_json[tag_id] = data;
+	gboard.component.tree.conf.tree_json = data;
 	
 	var item_count = 0;
 	for(var i=0 ; i<data.length ; i++) {
-		item_count = gboard.component.tree.data.tree_items[tag_id]().length;
+		item_count = gboard.component.tree.data.tree_items().length;
 	
 		// 원본과 knockout array 의 구조를 같이 할 것이기 때문에 원본에서의 패스만 알면 됨.
 		// 추가 삭제 할때도 원본을 같이 건드려 줘야 함.
@@ -201,7 +195,7 @@ init: function(tag_id, data, show) {
 		//                     single_action 이 true 이면 싱글 클릭에도 반응 한다.
 		//                     double_action 이 true 이면 더블 클릭에도 반응 한다.
 		
-		gboard.component.tree.data.tree_items[tag_id].push({
+		gboard.component.tree.data.tree_items.push({
 				id: 'tree-row-'+data[i].element_srl,
 				parent_index_path: i+'',
 				children: ko.observableArray(),
@@ -215,19 +209,18 @@ init: function(tag_id, data, show) {
 					evt.stopPropagation();
 					evt.preventDefault();
 					var $this = $(evt.target);
-					$('body').trigger(gboard.component.tree.event.folder+tag_id, [$this, tag_id]);
+					$('body').trigger(gboard.component.tree.event.folder, [$this]);
 				},
 				row_click_handler: {
 					single_action: false, 
-					double_action: (data[i].menu_type=='folder'?false:true),
-					tag_id: tag_id
+					double_action: (data[i].menu_type=='folder'?false:true)
 				}
 			});
 	}
 	
 	if(show) { $tree_area.show(); }
 		
-	gboard.component.tree.conf.initialized[tag_id] = true;
+	//gboard.component.tree.conf.initialized = true;
 }
 
 
@@ -255,7 +248,7 @@ ko.bindingHandlers.m_tree_row_single_click = {
 						clickTimeout = null;
 						clickCount = 0;
 						if(handler.double_action) {
-							gboard.component.tree.actionRowDoubleClick($element, handler.tag_id);
+							gboard.component.tree.actionRowDoubleClick($element);
 						}
 						return;
 					}
@@ -265,7 +258,7 @@ ko.bindingHandlers.m_tree_row_single_click = {
 								clickCount = 0;
 								clickTimeout = null;
 								if(handler.single_action) {
-									gboard.component.tree.actionRowSingleClick($element, handler.tag_id);
+									gboard.component.tree.actionRowSingleClick($element);
 								}
 								return;
 							}, delay);

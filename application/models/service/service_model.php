@@ -40,9 +40,9 @@ class Service_model extends CI_Model {
 		$parent_element_srl = implode(',', $parent_element_srl);
 		
 		$sql = ' SELECT '.
-		       '     A.element_srl as element_srl, A.menu_srl as menu_srl, A.parent_element_srl as parent_element_srl, '.
-		       '     B.menu_name as menu_name, B.menu_type as menu_type, B.menu_controller as menu_controller, '.
-		       '     B.menu_action as menu_action, B.description as description '.
+		       '     A.element_srl as element_srl, A.menu_srl as menu_id, A.parent_element_srl as parent_element_srl, '.
+		       '     B.menu_name as menu_name, B.menu_type as menu_type, '.
+		       '     B.menu_controller as menu_controller, B.menu_action as menu_action, B.description as description '.
 		       ' FROM '.
 		       '     ( '.
 		       '         SELECT '.
@@ -64,7 +64,7 @@ class Service_model extends CI_Model {
 			$row['parent'] = $row['parent_element_srl'];
 			$row['children'] = array();
 			
-			unset($row['menu_srl']);
+			//unset($row['menu_srl']);
 			unset($row['parent_element_srl']);
 			
 			array_push($leaf_data, $row);
@@ -381,7 +381,7 @@ class Service_model extends CI_Model {
 		
 		if($query->num_rows() <= 0) {
 			$err_code = $this->config->item('service_invalid_service_id', 'error_code/service');
-			log_message('warn', "getMenuTree E[$err_code] invalid service_id[$access_token]");
+			log_message('warn', "getMenuTree E[$err_code] invalid service_id");
 			return $err_code;
 		}
 		
@@ -447,6 +447,5 @@ class Service_model extends CI_Model {
 		
 		return $this->success_code;
 	}
-
 }
 ?>
